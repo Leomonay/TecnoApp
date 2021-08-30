@@ -1,6 +1,7 @@
 const Product = require ('../models/Product')
 
 async function addProduct (req,res){
+    console.log(req.body)
     try{
         const {
             name,size,unitaryPrice,description

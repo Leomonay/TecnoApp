@@ -1,8 +1,8 @@
 const express = require('express')
 const { addProduct, getProducts } = require('../controllers/productController')
 const upload = require('../libs/storage')
-const api = express.Router()
+const server = express.Router()
 
-api.post('/products', upload.single('image'), addProduct)
-api.get('/products', getProducts)
-module.exports=api
+server.post('/', upload.single('image'), addProduct)
+server.get('/', getProducts)
+module.exports=server

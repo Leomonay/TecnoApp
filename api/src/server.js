@@ -3,7 +3,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const morgan = require ('morgan');
 const routes = require('./routes/index.js');
-const productRoutes = require('./routes/products');
+//const productRoutes = require('./routes/products');
 
 const server = express();
 
@@ -12,7 +12,7 @@ const {CLIENT_URL} = process.env;
 server.use(express.json());
 server.name='TecnoApp';
 
-server.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
+server.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 server.use(bodyParser.json({ limit: '50mb' }));
 
 server.use('/public',express.static(`${__dirname}/storage/imgs`))
@@ -27,10 +27,8 @@ server.use((req,res, next)=>{
     next();
 });
 
-
-
-
-server.use('/v1',productRoutes);
+server.get('/',(req,res)=>res.send("Tecnoclima Server"));
+server.use('/v1',routes);
 
 server.use((err, req, res, next) => {
     // eslint-disable-line no-unused-vars
