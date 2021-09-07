@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 //set online telegram bot
-const bot = require('./src/telegramBot');
+    //const bot = require('./src/telegramBot');
 //load config
 const {appConfig, dbConfig} = require ('./config');
 const server = require('./src/server');

@@ -1,7 +1,10 @@
 const express = require('express')
-const { addArea, getAreas } = require('../controllers/areaController')
+const { addAreaFromApp, getAreas,deleteArea,deletePlantAreas } = require('../controllers/areaController')
 const server = express.Router()
 
-server.post('/', addArea)
+server.post('/', addAreaFromApp)
 server.get('/', getAreas)
+server.delete('/', deleteArea)
+server.delete('/deletePlantAreas', deletePlantAreas)
+
 module.exports=server

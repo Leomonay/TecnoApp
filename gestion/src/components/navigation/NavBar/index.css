@@ -1,0 +1,33 @@
+.navBarBackground{
+    display: flex;
+    align-items: center;
+    background-color: darkred;
+    padding: 5px;
+    color:white;
+    text-decoration: none;
+    font-size: 1.2rem;
+    flex-wrap: wrap;
+}
+.navBarLogo{
+    width: 13rem;
+    background-color: whitesmoke;
+    padding: 5px;
+    border-radius: 5px;
+    margin: 5px;
+}
+.navBarButton{
+    border: 1px solid grey;
+    border-radius: 5px;
+    color: whitesmoke;
+    text-decoration: none;
+    padding: 2px 5px;
+    margin-left: 10px;
+    background-color: rgb(173, 0, 0);
+    cursor:pointer
+}
+.navBarButton:hover{
+    background-color: red;
+}
+.navBarActive{
+    background-color: grey;
+}

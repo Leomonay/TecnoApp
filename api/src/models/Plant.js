@@ -7,7 +7,16 @@ var autoPopulateArea = function(next) {
   };
   
 const PlantSchema = Schema({
-    name:String,
+    name:{
+        type:String,
+        required: true,
+        unique: true
+    },
+    code:{
+        type:String,
+        required: true,
+        unique: true
+    },
     areas:[{
         type: Schema.Types.ObjectId,
         ref: 'Area',

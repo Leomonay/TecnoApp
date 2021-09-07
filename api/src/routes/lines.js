@@ -1,7 +1,7 @@
 const express = require('express')
-const { addLine, getLines } = require('../controllers/lineController')
+const { addLineFromApp, getLines } = require('../controllers/lineController')
 const server = express.Router()
 
-server.post('/', addLine)
+server.post('/', addLineFromApp)
 server.get('/', getLines)
 module.exports=server
