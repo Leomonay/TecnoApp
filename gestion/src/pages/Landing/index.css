@@ -27,7 +27,6 @@
     padding: .75em;
     border-radius: 1em;
     border: 1px solid grey;
-    box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
 
 }
 .landingCorp{
@@ -44,7 +43,7 @@
     justify-content: center;
     align-items: center;
     margin-left: .75em;;
-    min-width: 20em;
+    min-width: 18em;
 }
 .landingForms > h1, h2{
     margin-block-start: .4rem;
@@ -52,12 +51,12 @@
     text-align: center;
     width: 100%;
 }
-.landingForms > h1{
+/* .landingForms > h1{
     font-size: 2rem;
 }
 .landingForms > h2{
     font-size: 1.2rem;
-}
+} */
 
 .testButtons{
     display: flex;
@@ -89,7 +88,7 @@
     font-weight: bold;
 }
 
-@media(max-width:700px){
+@media(max-width:1035px){
     .carouselContainer{
         display: none;
     }

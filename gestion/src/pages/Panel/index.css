@@ -1,4 +1,6 @@
 .menuContainer{
     width: 15vw;
     min-width: 15rem;
+    padding:5px;
+    background-color: grey;
 }

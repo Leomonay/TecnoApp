@@ -44,7 +44,8 @@ const WorkOrderSchema = Schema(
         ref: 'device'
     },
     solicitor:{
-        type: String,
+        name: {type: String},
+        phone: {type: String}
     },
     initIssue:{
         date: {type: Date},

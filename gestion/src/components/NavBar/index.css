@@ -7,6 +7,7 @@
     text-decoration: none;
     font-size: 1.2rem;
     flex-wrap: wrap;
+    box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
 }
 .navBarLogo{
     width: 13rem;
@@ -14,6 +15,10 @@
     padding: 5px;
     border-radius: 5px;
     margin: 5px;
+    box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
+}
+.navBarLogo:active{
+    transform: scale(.95);
 }
 .navBarButton{
     border: 1px solid grey;
@@ -23,11 +28,18 @@
     padding: 2px 5px;
     margin-left: 10px;
     background-color: rgb(173, 0, 0);
-    cursor:pointer
+    cursor:pointer;
+    text-decoration: none;
+    box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
 }
 .navBarButton:hover{
     background-color: red;
+    color: white
 }
-.navBarActive{
-    background-color: grey;
+.navBarButton:active{
+    transform: scale(.95);
+}
+.active{
+    background-color: red;
+    color: white
 }

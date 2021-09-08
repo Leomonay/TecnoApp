@@ -3,14 +3,11 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link
 } from 'react-router-dom'
 import './App.css';
-import NavBar from './components/navigation/NavBar'
 import Landing from './pages/Landing'
+import OptionPanel from './pages/Panel';
 import Panel from './pages/Panel'
-import Equipos from './pages/Equipos'
-import OT from './pages/OT'
 
 
 function App() {
@@ -20,9 +17,7 @@ function App() {
           <Switch>
             <Route exact path="/" component={Landing} hideNavBar={true}/>
             <div>
-              <Route path='/panel' component={Panel} />
-              <Route path='/equipos' component={Equipos}/>
-              <Route path='/ot' component={OT} />
+              <Route exact path={['/panel','/panel/:option']} component={Panel} />
             </div>
           </Switch>
         </Router>

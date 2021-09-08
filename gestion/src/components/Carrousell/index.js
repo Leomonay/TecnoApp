@@ -1,5 +1,3 @@
-import {fs} from 'fs';
-import path  from 'path';
 import fabricas from '../../assets/carrousell/Fabricas.png'
 import logo from '../../assets/carrousell/Logo.png'
 import servicios from '../../assets/carrousell/servicios.png'
@@ -16,17 +14,16 @@ import {
 } from 'reactstrap';
 
 const images=[servicios,fabricas,surrey,logo]
-let i=1
 const items=[]
-images.map(e=>{
-    items.push({
-        src: e,
-        altText: 'Slide '+i,
-        caption:''
-    })
-    i++})
+for (let i=0; i<images.length; i++){
+  items.push({
+    src: images[i],
+    altText: 'Slide '+i,
+    caption:''
+  })
+}
 
-const Example = (props) => {
+const Example = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [animating, setAnimating] = useState(false);
 
@@ -47,7 +44,7 @@ const Example = (props) => {
     setActiveIndex(newIndex);
   }
 
-  const slides = items.map((item) => {
+  const slides = items.map(item => {
     return (
       <CarouselItem
         onExiting={() => setAnimating(true)}
