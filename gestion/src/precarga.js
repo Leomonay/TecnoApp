@@ -2650,19 +2650,21 @@ var BASE={
 }
 
 function checkNotRepeat(arrayObj){
-    var notRepeated = []
-    var repeated = []
-    for(let i =0;i<arrayObj.length;i++){
-        const  code=arrayObj[i]['Código']
-        if (notRepeated.includes(code)){
-            repeated.push(code)
-        }else{
-            notRepeated.push(code)
-        }
-    }
-    if(notRepeated.length==0){
-        return
-    }
-    return 'ningún código se repite'
+  var notRepeated = []
+  var repeated = []
+  for(let i =0;i<arrayObj.length;i++){
+      const  code=arrayObj[i]['Código']
+      if (notRepeated.includes(code)){
+          repeated.push(code)
+      }else{
+          notRepeated.push(code)
+      }
+  }
+  if(repeated.length==0){
+      return 'ningún código se repite'
+  }else{
+      console.log('se repiten:')
+      return (repeated)
+  }
 }
 export default BASE

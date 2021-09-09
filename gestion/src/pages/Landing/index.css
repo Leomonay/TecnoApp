@@ -51,12 +51,7 @@
     text-align: center;
     width: 100%;
 }
-/* .landingForms > h1{
-    font-size: 2rem;
-}
-.landingForms > h2{
-    font-size: 1.2rem;
-} */
+
 
 .testButtons{
     display: flex;
@@ -94,5 +89,8 @@
     }
     .landingLogo{
         width: 65vw;
+    }
+    .landingWelcome{
+        width: 90%;
     }
 }
