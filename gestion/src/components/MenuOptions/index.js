@@ -6,7 +6,6 @@ export default function MenuOptions() {
   const {data} = useSelector((state) => state.data);
 
   var options= data? data.options : JSON.parse(localStorage.getItem('tecnoApp')).options
-  console.log('menuOptions',options)
 
 
   function buildOption(option){

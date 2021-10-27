@@ -5,7 +5,8 @@ const DeviceOptionsSchema = Schema(
   {
     name:{
       type: String,
-      autoPopulate: true
+      autoPopulate: true,
+      unique: true
     },
     types:[{
       type: String,

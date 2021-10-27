@@ -1,34 +1,57 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import './index.css'
-import NavBar from '../../components/NavBar/index'
 import MenuOptions from '../../components/MenuOptions'
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router';
-import Tabla from '../../components/Table';
-
-
+import { callMostRecent, selectWorkOrder } from '../../actions/workOrderActions'
+import Table from '../../components/Table';
+import JsonViewer from '../../components/JsonViewer.js';
+import { getShortDate, cloneJson } from '../../utils/utils';
 
 export default function Panel(){
-  const {data} = useSelector((state) => state.data);
   const dispatch = useDispatch()
-  console.log('panelData:',data)
+  const {mostRecent,selected, tableHeaders} = useSelector((state) => state.workOrder);
+  const [filters, setFilters] = useState(null)
+  const [otList,setOTList]=useState([])
+
+  useEffect(()=>setFilters( { conditions: { class : 'Reclamo'}, limit: 10 } ) , [] )
   
+  useEffect(()=>{
+      let list = cloneJson(mostRecent)
+      list.map(ot=>
+        ot.closed = ot.closed? getShortDate(ot.closed):'')
+      setOTList(list)
+  },[mostRecent])
+
   const {option} = useParams()
-  console.log('panelOption',option)
 
-
+  useEffect(()=>filters&&dispatch(callMostRecent(filters)),[filters, dispatch])
+  
   return (
-    <div className='panelBackground'>
-      <NavBar/>
-      <div className='panelContainer'>
+    <div className='PanelBackground'>
         {option&&<MenuOptions/>}
-        <div>
-          <ul>
-            <li>Resumen de Info</li>
-            <Tabla></Tabla>
-          </ul>
+        <div className='panelContainer'>
+            <div className='panelWoResume'>
+              <div className='title'>10 reclamos más recientes</div>
+                <div className='wOData'>
+                <div className='wOTable'>
+                {mostRecent[0]&&<Table
+                  array={otList}
+                  headers={tableHeaders}
+                  clickFunction={(element)=>dispatch(selectWorkOrder(element))}
+                  name = {`recTable`}
+                  attrib = 'code'
+                  />}
+                </div>
+                <div className='tableViewer'>
+                  {selected&&<JsonViewer
+                    json={mostRecent.find(e=>e.code===selected)}
+                    title={`Detalle OT ${selected}`}
+                  />}
+                </div>
+              </div>
+            </div>
         </div>
-      </div>
     </div>
   );
 }

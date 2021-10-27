@@ -15,7 +15,8 @@ const ServicePointsSchema = Schema(
     },
     devices: [{
       type: Schema.Types.ObjectId,
-      ref: "Devices", 
+      ref: "Devices",
+      populate: true,
     }],
     gate: {
       type: String,

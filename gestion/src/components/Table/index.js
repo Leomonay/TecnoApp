@@ -1,54 +1,42 @@
-import React from 'react'
+import React, { useState } from 'react'
+import {useDispatch} from 'react-redux'
 import './index.css'
-import BASE from '../../precarga'
-import { useParams } from 'react-router';
+import { appConfig } from '../../config'
+// import {selectWorkOrder} from '../../actions/workOrderActions'
 
-export default function Tabla(){
-    const {option} = useParams()
-    if (!option)return(<div></div>)
-    const origen={
-        Reclamo: BASE.OTs.filter(e=>e.Clase=="Reclamo"),
-        OT: BASE.OTs.filter(e=>e.Clase!="Reclamo"),
-        Equipo: BASE.equipos
+export default function Table(props){
+    const [activeRow, setActiveRow]=useState('')
+    const {array, headers, clickFunction, name, attrib} = props
+
+    function handleClick(index, code){
+        setActiveRow(index)
+        clickFunction(code)
     }
-
-    function createTable(objArray){
-        const headers = Object.keys(objArray[0])
-
-        function headerCreator(headers){
-            return(
-                headers.map(e=>
-            <th key={e} scope="col">{e}</th>
-            ))
-        }
-
-        function rowcreator(headers, array){
-            return(
-                array.map(rowdata=>
-                    <tr>
-                    {headers.map(header=><td key={header}>{rowdata[header]}</td>)}
-                    </tr>
-                    )
-            )
-        }
-
-
-        return(
-            <table className='table'>
-                <tbody>
-                    <tr>
-                        {headerCreator(headers)}
-                    </tr>
-                        {rowcreator(headers,objArray)}
-                </tbody>
-            </table>
-        )
-    }
-
 
     return(
-        <div className='tableBackground'>
-            {createTable(origen[option])}
-        </div>
+      <table className='tableBackground'>
+
+            <thead className='tableHead'>
+                <tr className='tableHeadRow'>
+                    <th className='tableHeader'>Index</th>
+                    {headers.map(header=>
+                        <th className='tableHeader' key={header}>
+                            {(appConfig.headersRef[header] || header).toUpperCase()}
+                        </th>
+                        )}
+                </tr>
+            </thead>
+
+            <tbody className='tableBody'>
+                {array.map((element,index)=>
+                    <tr className={`tableBodyRow ${activeRow===index?'activeRow':''}`} key={index} onClick={()=>handleClick(index,element[attrib])}>
+                        <td className='tableValue'><b>{index+1}</b></td>
+                        {headers.map((header,index)=>
+                           <td className='tableValue' key={index}>{element[header]}</td>
+                        )}
+                    </tr>)}
+            </tbody>
+
+      </table>
     )
-}
+  }

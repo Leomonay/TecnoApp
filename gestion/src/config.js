@@ -1,3 +1,26 @@
+const appConfig={
+  url: 'http://localhost:3001/v1',
+  headersRef : {
+    code: 'Código',
+    class: 'Clase',
+    status: 'Estado',
+    device: 'Equipo',
+    description: 'Descripción',
+    solicitor: 'Solicitante',
+    registration: 'Alta',
+    clientWO: 'OT Cliente',
+    closed: 'Cierre',
+    cause: 'Causa',
+    line: 'Línea',
+    area: 'Área',
+    macroCause: 'Causa Macro'
+  },
+  plantConfig:{
+    code: 'SSN'
+  }
+}
+
+
 const opcionesPanel={
         Reclamo:{iniciar: "Iniciar reclamo", consultar: "Consultar reclamo", modificar: "Modificar reclamo", conformidad: "Dar conformidad"},
         Equipo:{area: "Crear área", linea: 'Crear línea', crearLS: "Crear lugar de servicio", crearEquipo: "Crear equipo", consultarEquipo: "Consultar Equipo", modEquipo: "Modificar equipo", solEquipo: "Solicitar equipo", apEquipo:"Aprobar Equipo"},
@@ -24,11 +47,7 @@ const permisos={
   supervisor:[Reclamo.consultar, OT.crear, OT.modificar, OT.cerrar] ,
 }
 
-const navOptions={
-  Reclamo: {url:'/reclamos/', text:'Gestión de Reclamos'},
-  Equipo: {url:'/equipos/', text:'Gestión de Equipos'},
-  OT: {url:'/OT/', text:'Gestión de OT'}
-}
+
 
 function getAccesos(perfil){
     let accesos=[]
@@ -47,4 +66,4 @@ getAccesos('cliente')
 
 
 
-export{opcionesPanel, permisos, getAccesos, navOptions}
+export{opcionesPanel, permisos, getAccesos, appConfig}

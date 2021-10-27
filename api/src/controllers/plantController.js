@@ -17,10 +17,10 @@ async function addPlant (req,res){
 }
 
 async function getPlantByName (plantName){
-    return bdPlant = await Plant.findOne({name:plantName})
+    return (await Plant.findOne({name:plantName}))
 }
 async function getPlantByCode (plantCode){
-    return bdPlant = await Plant.findOne({code:plantCode})
+    return (await Plant.findOne({code:plantCode}))
 }
 
 async function getPlants (req,res){

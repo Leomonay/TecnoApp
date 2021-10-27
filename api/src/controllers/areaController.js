@@ -1,7 +1,7 @@
 const Area = require ('../models/Area')
 const Plant = require ('../models/Plant')
-const {addItem,deleteItem} = require ('../utils/utils.js')
-const {index} = require ('../utils/tablesIndex.js')
+// const {addItem,deleteItem} = require ('../utils/utils.js')
+// const {index} = require ('../utils/tablesIndex.js')
 const mongoose = require('mongoose')
 
 async function addAreaFromApp(req,res){
@@ -21,7 +21,7 @@ async function addArea(areaName, areaCode, plantName){
         code: areaCode,
     })
     const areaStored = await area.save()
-    const plant = Area.findOne({code:plantName})
+    const plant = await Area.findOne({code:plantName})
     await plant.areas.push(mongoose.Types.ObjectId(areaStored._id))
     await plant.save()
     }catch(e){

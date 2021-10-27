@@ -1,16 +1,16 @@
 
-const initialState = {};
+const initialState = {
+    data:{},
+};
 
 
 export default function dataReducer (state = initialState,action){
     switch (action.type){
-        case 'UPDATE_DATA':
-        return{
-            ...state,
-            data: action.payload
-        };
+        // case 'SELECT_WO':
+        //     return{
+        //         ...state,
+        //         workorder: {...state.workOrder,selected: action.payload}
+        //     };
         default: return state;
     }
 }
-
-export const selectActiveWord = state=>state.palabraReducer.palabra;

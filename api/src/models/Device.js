@@ -70,7 +70,8 @@ const DeviceSchema = Schema(
     },
     servicePoints: [{
       type: Schema.Types.ObjectId,
-      ref: 'ServPoint'
+      ref: 'ServPoint',
+      populate: true,
     }],
       active:{
         type: Boolean

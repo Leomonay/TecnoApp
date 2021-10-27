@@ -4,3 +4,43 @@
     padding:5px;
     background-color: grey;
 }
+.panelContainer{
+    display: flex;
+    justify-content: center;
+    overflow-y: auto;
+    height: 100%; 
+}
+.title{
+    font-weight: bold;
+    font-size: 1.1rem;
+    text-decoration: underline;
+    margin: .3rem 0;
+    height: 1.5rem
+}
+.panelWoResume{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+.wOData{
+    display: flex;
+    font-size: .9rem;
+    width: 100%;
+    height: 20rem;
+}
+.wOTable{
+    display: flex;
+    width: 70%;
+    justify-content: center;
+    height: calc(100% - 3.1rem);
+    margin:1rem
+}
+.tableViewer{
+    background: rgba(255, 255, 255, .5);
+    width: 30%;
+    height: calc(100% - 2rem);
+    overflow: auto;
+    margin: 1rem;
+    border-radius: 0.5rem;
+}

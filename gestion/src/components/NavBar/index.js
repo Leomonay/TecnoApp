@@ -13,11 +13,16 @@ function NavBar() {
   const modo = JSON.parse(localStorage.getItem('tecnoApp')).modo
   const accesos = getAccesos(modo)
 
-  function buildNavLinks(acceso){
-    const path=`/panel/${acceso}`
+  const navOptions={
+    WorkOrders: {url:'/ots/', text:'Gestión de OT'},
+    Devices: {url:'/equipos/', text:'Gestión de Equipos'},
+  }
+
+  function buildNavLinks(navOption, index){
+    const path=navOption.url
     return(
-      <NavLink to={path} className='navBarButton' id={acceso} key={acceso} activeClassName="active" onClick={e=>handleClick(e)}>
-        {navOptions[acceso].text}
+      <NavLink to={path} key={index} className='navBarButton' activeClassName="activeNavLink">
+        {navOption.text}
       </NavLink>
     )
   }
@@ -43,8 +48,9 @@ function NavBar() {
 
   return (
     <nav className='navBarBackground'>
-        <Link exact to='/panel' onClick={e=>handleClick(e)}><img className='navBarLogo' src={logo} alt=''/></Link>
-        {accesos.map(buildNavLinks)}
+        <Link to='/panel' onClick={e=>handleClick(e)}><img className='navBarLogo' src={logo} alt=''/></Link>
+        {Object.keys(navOptions).map((option,index)=>buildNavLinks(navOptions[option],index))}
+        <NavLink to='/plan' className='navBarButton' activeClassName="active">Plan</NavLink>
     </nav>
   );
 }

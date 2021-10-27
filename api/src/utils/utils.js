@@ -1,67 +1,48 @@
-const mongoose = require('mongoose')
+const csv = require("fast-csv");
+const fs = require("mz/fs");
 
-//----------------------------------------------------------------------------------------------------------
-const objectFromArrays = function(keys,values){
-    var entries =[]
-    for (i=0;i<keys.length;i++){
-        entries.push([keys[i],values[i]])
+async function fromCsvToJson(filename, functionPush, type) {
+    let toAdd = [];
+    return new Promise((resolve, reject) => {
+      fs.createReadStream(__dirname + "/../../../tablas_en_csv/" + filename)
+        .pipe(csv.parse({ headers: true, delimiter: ";" }))
+        .on("error", (error) => {
+          console.error(error);
+          reject(error);
+        })
+        .on("data", async (row) => toAdd.push(functionPush(row)))
+        .on("end", async () => {
+          resolve(toAdd);
+        });
+    });
+  }
+  
+  function objectFromArrays(keys, values) {
+    var entries = [];
+    for (i = 0; i < keys.length; i++) {
+      entries.push([keys[i], values[i]]);
     }
-    var obj = Object.fromEntries(new Map(entries))
-    return obj
-}
-//----------------------------------------------------------------------------------------------------------
-async function addItem (properties,index,item){
-    try{
-        const parentId = properties[index[item].parentType]
-        var parentFound = await index[item].parentByCode(parentId)
-        const parent = parentFound? parentFound: await index[item].parentByName(parentId)
-        if(!parent){
-            res.status(400).send({message: `${index[item].parentType} no se encuentra en base de datos`})
-        }else{
-            if(await index[item].check(properties.name)){
-                return {status: 400, message: `${index[item].type} ${properties.name} ya existe en base de datos`}
-            }else{
-                const newItem = await index[item].add(properties)
-                const itemStored = await newItem.save()
-                await parent[index[item].ref].push(mongoose.Types.ObjectId(newItem._id))
-                await parent.save()
-                return{
-                    status: 201,
-                    item_Guardado: `${index[item].type} ${itemStored.name}`
-                }
-            }   
-        }
-    }catch (e){
-        return objectFromArrays([ 'status', index[item].type, 'error' ],[500, properties.name, e.message])
-    }
-}
-//-------------------------------------------------------------------------------------------------------------
-async function deleteItem(properties,index,item){
-    try{
-        //define item and parent
-        const itemToDelete = await index[item].self(properties.name);
-        
-        const parentId = properties[index[item].parentType]
-        var parentFound = await index[item].parentByCode(parentId)
-        const parent = parentFound? parentFound: await index[item].parentByName(parentId)
-        
-        //remove area from plant
-        await parent[ index[item].ref ].pull(itemToDelete._id)
-        await parent.save()
-        //remove area
-        await index[item].deleteSelf(properties.name)
-        //send areas
-        const storedParent = await index[item].parentByName(parentId).populate(index[item].ref).lean().exec()
-        return storedParent[index[item].ref].map(e=>e.name)
-    }catch(e){
-        console.log(e.message)
-        throw e.message
-    }
-}
+    var obj = Object.fromEntries(new Map(entries));
+    return obj;
+  }
 
+  function collectError(errorItems, message, item, name) {
+    errorItems.find((e) => e.error === message)
+      ? errorItems.find((e) => e.error === message)[item].push(name)
+      : errorItems.push(objectFromArrays(["error", item], [message, [name]]));
+  }
 
-module.exports={
-    objectFromArrays,
-    addItem,
-    deleteItem
-}
+  function finalResults(item, results) {
+    return {
+      item: item.toUpperCase(),
+      OK: objectFromArrays(["cantidad", item], [results.ok.length, results.ok]),
+      errores: { cantidad: results.errors.length, detalle: results.errors },
+    };
+  }
+
+  function getDate (date) {
+    var arrayDate = date.split(" ")[0].split("/");
+    return new Date(arrayDate[2], arrayDate[1]-1, arrayDate[0]);
+  };
+
+  module.exports = {fromCsvToJson, objectFromArrays, collectError, finalResults, getDate}
