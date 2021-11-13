@@ -1,0 +1,65 @@
+.App {
+  text-align: center;
+}
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+.appContainer{
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+}
+button, .button{
+  background-color: darkred;
+  color: white;
+  border-radius: 5em;
+  margin: 5px;
+  font-size: .8em;
+  padding: 5px;
+  width: fit-content;
+  min-width: 2rem;
+  text-align: center;
+}
+button:hover, .button:hover{
+  background-color: red; 
+}
+.button{
+  box-shadow: 2px 2px 2px grey;
+  cursor: pointer
+}
+.button:active{
+  transform: scale(.95);
+  box-shadow: 0 0 2px grey
+}
+*::-webkit-scrollbar{
+  -webkit-appearance: none;
+}
+*::-webkit-scrollbar:vertical{
+  width: .5rem;
+}
+*::-webkit-scrollbar:horizontal{
+  height: .5rem;
+}
+*::-webkit-scrollbar-thumb{
+  background: rgba(150,150,150,.5) ;
+  border-radius: 20px;
+}
+*::-webkit-scrollbar-track{
+  border-radius: .5rem;  
+}
+.hidden{
+  display:none
+}

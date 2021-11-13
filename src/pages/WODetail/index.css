@@ -1,0 +1,22 @@
+.detailBackground{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+.waiting{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: url('../../assets/icons/waiting.gif');
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 80vw;
+    height: 80vw;
+    color: whitesmoke;
+    text-shadow: 0 0 .5rem black;
+    font-weight: bolder;
+    font-size: 9vw;
+}
