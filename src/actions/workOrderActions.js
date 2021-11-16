@@ -63,14 +63,12 @@ export function resetNewOrder(){
 }
 export function searchWO(code){
     return async function(dispatch){
-        return fetch(`${appConfig.url}/workorder/${code}`)
+        return fetch(`${appConfig.url}/workorder/detail/${code}`)
             .then(response => response.json())
-            .then(json=>{
-                console.log('action json', json)
-                dispatch({
+            .then(json=> dispatch({
                     type: 'ORDER_DETAIL',
                     payload: json
                 })
-            })
+            )
         }
 }

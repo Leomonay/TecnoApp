@@ -1,9 +1,15 @@
 .detailBackground{
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
     height: 100%;
     width: 100%;
+}
+.detailSection{
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+    margin: .25rem
 }
 .waiting{
     display: flex;
@@ -13,10 +19,32 @@
     background-size: 100%;
     background-repeat: no-repeat;
     background-position: center;
+    margin-top: 20vw;
     width: 80vw;
     height: 80vw;
     color: whitesmoke;
     text-shadow: 0 0 .5rem black;
     font-weight: bolder;
     font-size: 9vw;
+}
+.detailCol{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(45deg, silver, whitesmoke, silver);
+    border-radius: .5rem;
+    width: 20%;
+    margin: .1rem
+}
+.detailDescription{
+    width: 50%;
+    padding: .5rem;
+}
+.detailLongText{
+    height: 10rem;
+    width: 100%;
+    background: whitesmoke;
+    text-indent: 1rem;
+    border-radius: .25rem;
+    box-shadow: 0 0 .2rem grey;
 }
