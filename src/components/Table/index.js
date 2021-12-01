@@ -7,10 +7,6 @@ export default function Table(props){
     const [activeRow, setActiveRow]=useState('')
     const {array, headers, clickFunction, onHover, attrib} = props
 
-    function handleMouseOver(code){
-        onHover && onHover(code)
-    }
-
     function handleClick(index, code){
         setActiveRow(index)
         clickFunction(code)

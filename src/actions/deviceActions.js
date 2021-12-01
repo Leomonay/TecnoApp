@@ -81,3 +81,31 @@ export function searchWODevice(devCode){
         })
     )}
 }
+export function deviceListByLine(lineName){
+
+    return async function(dispatch){
+        return fetch(`${appConfig.url}/devices/byLine/${lineName}`)
+            .then(response => response.json())
+            .then(json=>dispatch({
+                type: 'PARTIAL_LIST',
+                payload: json
+            }))
+            .catch(
+                e=>console.error(e.message)
+            )
+        }
+
+}
+export function deviceByName(string){
+    return async function (dispatch){
+        return fetch (`${appConfig.url}/devices/byName/${string}`)
+        .then (response => response.json())
+        .then(json=>dispatch({
+            type: 'PARTIAL_LIST',
+            payload: json
+        }))
+        .catch(
+            e=>console.error(e.message)
+        )
+    }
+}

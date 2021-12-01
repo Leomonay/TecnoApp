@@ -3,6 +3,7 @@ const initialState = {
     mostRecent:[],
     selected:null,
     workOrderOptions:{},
+    workOrderList:[],
     orderDetail:{},
     newOrderId:''
 }
@@ -28,6 +29,11 @@ export default function workOrderReducer (state = initialState,action){
             return{
                 ...state,
                 newOrderId: action.payload
+            };
+        case 'ORDER_LIST':
+            return{
+                ...state,
+                workOrderList: action.payload
             };
         case 'ORDER_DETAIL':
             return{

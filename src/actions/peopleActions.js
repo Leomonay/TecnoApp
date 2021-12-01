@@ -12,3 +12,14 @@ export function getWorkerList(){
         )
     }    
 }
+export function getSupervisors(){
+    return async function(dispatch){
+        return fetch(`${appConfig.url}/users/supervisors`)
+        .then(response => response.json())
+        .then(json=>dispatch({
+            type: 'SUPERVISORS',
+            payload: json
+            })
+        )
+    }    
+}

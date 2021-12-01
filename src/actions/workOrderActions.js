@@ -72,3 +72,21 @@ export function searchWO(code){
             )
         }
 }
+export function getWOList(conditions){
+    return async function(dispatch){
+        return fetch(`${appConfig.url}/workorder/list`,{
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body:JSON.stringify(conditions),
+        })
+            .then(response => response.json())
+            .then(json=> dispatch({
+                    type: 'ORDER_LIST',
+                    payload: json
+                })
+            )
+        }
+}

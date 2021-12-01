@@ -32,9 +32,11 @@ button, .button{
   width: fit-content;
   min-width: 2rem;
   text-align: center;
+  text-decoration: none;
 }
 button:hover, .button:hover{
-  background-color: red; 
+  background-color: red;
+  color: whitesmoke
 }
 .button{
   box-shadow: 2px 2px 2px grey;
@@ -62,4 +64,23 @@ button:hover, .button:hover{
 }
 .hidden{
   display:none
+}
+.removeButton{
+  background-color: none;
+  height: 1.5rem;
+  background-image: url('./assets/icons/trash2.png');
+  background-size: 80%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.editButton{
+  background-color: lightseagreen;
+  height: 1.5rem;
+  background-image: url('./assets/icons/editIcon.png');
+  background-size: 80%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.editButton:hover{
+  background-color: green;
 }

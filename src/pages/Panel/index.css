@@ -36,7 +36,7 @@
     align-items: center;
     height: calc(100% - 2rem);
     overflow-y: auto;
-    margin: 1rem;
+    margin: .5rem;
     padding: .5rem
 }
 .workOrderLi{

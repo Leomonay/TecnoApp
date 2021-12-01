@@ -1,5 +1,6 @@
 const initialState = {
-    workersList:[]
+    workersList:[],
+    supervisors:[]
 }
 
 export default function workOrderReducer (state = initialState,action){
@@ -9,6 +10,12 @@ export default function workOrderReducer (state = initialState,action){
                 ...state,
                 workersList: action.payload
             };
+        case 'SUPERVISORS':
+            return{
+                state,
+                supervisors: action.payload
+            }
         default: return state;
+
     }
 }

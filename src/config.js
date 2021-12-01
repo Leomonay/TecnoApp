@@ -1,6 +1,6 @@
 const appConfig={
-  // url: 'http://localhost:3001/v1',
-  url: 'https://tecnoserver.herokuapp.com/v1',
+  url: 'http://localhost:3001/v1',
+  // url: 'https://tecnoserver.herokuapp.com/v1',
   headersRef : {
     //Work Orders
     code: 'Código',
@@ -18,9 +18,12 @@ const appConfig={
     area: 'Área',
     macroCause: 'Causa Macro',
     supervisor: 'Supervisor',
+    idNumber: 'DNI',
+    phone: 'Teléfono',
 
     //Devices
     plant: 'Planta',
+    plantName: 'Planta',
     name: 'Nombre',
     type: 'Tipo',
     powerKcal: 'Pot Kcal',

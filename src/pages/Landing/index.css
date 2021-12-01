@@ -9,12 +9,13 @@
 .landingBackground{
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
     width: 100vw;
     height: 100vh;
     background-image: url('../../assets/icons/backgroundT.png');
     background-size: 5vw;
+    margin: auto;
+    overflow-y: auto;
 }
 
 .landingWelcome{
@@ -39,7 +40,7 @@
 .landingForms{
     display: flex;
     flex-direction: column;
-    width: 40%;
+    width: 20rem;
     justify-content: center;
     align-items: center;
     margin-left: .75em;;
@@ -83,9 +84,12 @@
     font-weight: bold;
 }
 
-@media(max-width:1035px){
+@media(max-width:900px){
     .carouselContainer{
         display: none;
+    }
+    .landingForms{
+        width: 80%
     }
     .landingLogo{
         width: 65vw;

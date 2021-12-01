@@ -78,14 +78,7 @@
     background: greenyellow;
     color: grey
 }
-.removeButton{
-    background-color: none;
-    height: 1.5rem;
-    background-image: url('../../../assets/icons/trash2.png');
-    background-size: 80%;
-    background-position: center;
-    background-repeat: no-repeat;
-}
+
 .trashIcon{
     height: 1.2rem;
 }
