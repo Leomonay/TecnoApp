@@ -62,7 +62,8 @@
     max-width: 100%
 }
 .generalWOOptions{
-    width: 15rem;
+    width: 30rem;
+    max-width: 90vw;
     border: 1px solid whitesmoke;
     border-radius: .5rem;
 }
@@ -77,6 +78,9 @@
 .longTextInput{
     width: 100%;
     height: 50%;
+}
+.upperRight{
+    float: right;
 }
 .wOInterventionList{
     display: flex;

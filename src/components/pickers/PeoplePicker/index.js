@@ -7,12 +7,9 @@ export default function PeoplePicker(props){
     const [idList,setIDList]=useState([])
 
     function updateList(worker){
-        let list = []
-        if( (idList.map(e=>e.id)).includes(worker)){
-            list = idList.filter(e=>e.id!==worker.id)
-        }else{
-            list = [ ...idList, worker ]
-        }
+        const list = idList.find(element=>element.id===worker.id)?
+            idList.filter(element=>element.id!==worker.id)
+            :[...idList, worker]
         setIDList(list)
         props.update(list)
     }
@@ -27,7 +24,7 @@ export default function PeoplePicker(props){
                     :title
                     }</div>
             {enableOptions&&<div className='peoplePickerListContainer'>
-                <div className='button close' onClick={()=>setEnableOptions(!enableOptions)}>X</div>
+                <button className='close' onClick={()=>setEnableOptions(!enableOptions)}>X</button>
                 <div className='peoplePickerList'>
                 {props.options.map((option, index)=>
                     <div className='peopleCard' key={index} onClick={()=>updateList({id: option.idNumber, name: option.name})}>

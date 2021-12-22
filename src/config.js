@@ -33,7 +33,15 @@ const appConfig={
     category: 'Categoría',
     regDate: 'Fecha Alta',
     environment: 'Ambiente',
-    servicePoints: 'Puntos de Servicio'
+    servicePoints: 'Puntos de Servicio',
+
+    //AdminUsers
+    charge: 'Cargo',
+    access: 'Acceso',
+    View: 'Vista',
+    Client: 'Usuario',
+    Worker: 'Técnico',
+    Internal: 'Interno'
   },
   plantConfig:{
     code: 'SSN'

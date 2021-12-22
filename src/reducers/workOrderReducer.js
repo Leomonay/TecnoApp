@@ -5,7 +5,8 @@ const initialState = {
     workOrderOptions:{},
     workOrderList:[],
     orderDetail:{},
-    newOrderId:''
+    newOrderId:'',
+    updateResult:'',
 }
 
 export default function workOrderReducer (state = initialState,action){
@@ -39,7 +40,12 @@ export default function workOrderReducer (state = initialState,action){
             return{
                 ...state,
                 orderDetail: action.payload
-            };                
+            };
+        case 'UPDATED_ORDER':
+            return{
+                ...state,
+                updateResult: action.payload
+            }                
         default: return state;
     }
 }

@@ -68,8 +68,9 @@ button:hover, .button:hover{
 .removeButton{
   background-color: none;
   height: 1.5rem;
+  min-width: 2.5rem;
   background-image: url('./assets/icons/trash2.png');
-  background-size: 80%;
+  background-size: 50%;
   background-position: center;
   background-repeat: no-repeat;
 }

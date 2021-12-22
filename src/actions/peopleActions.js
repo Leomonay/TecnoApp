@@ -23,3 +23,32 @@ export function getSupervisors(){
         )
     }    
 }
+export function getUserOptions(){
+    return async function(dispatch){
+        return fetch(`${appConfig.url}/users/options`)
+        .then(response => response.json())
+        .then(json=>dispatch({
+            type: 'USER_OPTIONS',
+            payload: json
+            })
+        )
+    } 
+}
+export function getUsersList(filters, plant){
+    return async function(dispatch){
+        return fetch(`${appConfig.url}/users/filtered`,{
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body:JSON.stringify({filters,plant})
+        })
+        .then(response => response.json())
+        .then(json=>dispatch({
+            type: 'USER_LIST',
+            payload: json
+            })
+        )
+    } 
+}

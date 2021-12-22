@@ -85,11 +85,13 @@
 .formInterventionRefrigerant{
     width: 5rem;
 }
-.disabledButton{
+.disabledButton, .disabledButton:hover{
     background: linear-gradient(45deg, grey, silver, grey);
     color: silver;
     text-shadow: 2px 2px 2px grey;
+    cursor: pointer
 }
+
 @media(max-width: 900px){
     #addInterventionTask{
         width: 80vw;

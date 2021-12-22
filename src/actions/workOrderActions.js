@@ -47,10 +47,30 @@ export function newWorkOrder(order){
         })
             .then(response => response.json())
             .then(json=>{
-                console.log('action json', json)
                 dispatch({
                     type: 'NEW_ORDER',
                     payload: json.orderId
+                })
+            })
+        }
+}
+export function updateOrder(code,update){
+    console.log('order',code, update)
+    return async function(dispatch){
+        return fetch(`${appConfig.url}/workorder/${code}`,{
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                },
+                body:JSON.stringify(update)
+        })
+            .then(response => response.json())
+            .then(json=>{
+                console.log('action json', json)
+                dispatch({
+                    type: 'UPDATED_ORDER',
+                    payload: json
                 })
             })
         }
@@ -72,6 +92,13 @@ export function searchWO(code){
             )
         }
 }
+export function resetDetail(){
+    return{
+        type: 'ORDER_DETAIL',
+        payload: ''
+    } 
+}
+
 export function getWOList(conditions){
     return async function(dispatch){
         return fetch(`${appConfig.url}/workorder/list`,{
@@ -82,11 +109,28 @@ export function getWOList(conditions){
             },
             body:JSON.stringify(conditions),
         })
-            .then(response => response.json())
-            .then(json=> dispatch({
-                    type: 'ORDER_LIST',
-                    payload: json
-                })
-            )
-        }
+        .then(response => response.json())
+        .then(json=> dispatch({
+                type: 'ORDER_LIST',
+                payload: json
+            })
+        )
+    }
+}
+export function deleteOrder(code){
+    return async function (dispatch){
+        return fetch(`${appConfig.url}/workorder/${code}`,{
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(json=> dispatch({
+            type: 'DELETED_ORDER',
+            payload: json
+            })
+        )
+    }
 }

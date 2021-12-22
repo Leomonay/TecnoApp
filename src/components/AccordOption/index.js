@@ -18,9 +18,10 @@ export default function AccordOption(props){
                 {`${props.name}${option}`}
             </div>
             {expansion&&<div className='accordChoiceContainer'>
-                {props.options.map(choice=>
+                {props.options.map((choice, index)=>
                     <div className='accordChoice'
-                    onClick={()=>selectOption(choice)}>
+                    onClick={()=>selectOption(choice)}
+                    key={index}>
                     {choice}
                 </div>)}
             </div>}

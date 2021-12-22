@@ -37,7 +37,7 @@ export default function LoginForm(){
             <input className="loginInput" type="password" id='passwordInput' />
             </div>
             <div className="loginButtons">
-                <div className='button' onClick={()=>login()}>Iniciar Sesión</div>
+                <button onClick={()=>login()}>Iniciar Sesión</button>
             </div>
         </div>
     )

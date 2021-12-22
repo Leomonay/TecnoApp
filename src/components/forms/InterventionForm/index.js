@@ -10,11 +10,10 @@ export default function AddIntervention(props){
     const [freon, setFreon]=useState(false)
     const [errors, setErrors] = useState(false)
 
-    useEffect(()=>console.log('errors', errors),[errors])
     useEffect(()=>{
         function checkIntervention(){
             let check = false
-            check = !!(intervention.date && intervention.time && intervention.workers && intervention.task)
+            check = !!(intervention.date && intervention.time && intervention.workers && intervention.workers.length>1 && intervention.task)
             if (intervention.refrigerant && intervention.refrigerant[0].cylinder){
                 intervention.refrigerant.map(cyl=>(!cyl.cylinder || !cyl.init || !cyl.final)? check=false:'')
             }
@@ -69,6 +68,8 @@ export default function AddIntervention(props){
         setFreon(!freon)
     }
 
+    useEffect(()=>console.log('intervention.workers', intervention.workers),[intervention.workers])
+
     return(
         <div className='addInterventionForm'>
             <div className='formTitle'>
@@ -114,7 +115,7 @@ export default function AddIntervention(props){
                     <PeoplePicker name='Intervinientes'
                         options={workersList}
                         update={(idArray)=>setIntervention({...intervention, workers: idArray})}/>
-                    {(!intervention.workers || intervention.workers.length<2) &&
+                    {( (!intervention.workers) || intervention.workers.length<2) &&
                         <div className='errorMessage'>Debe ingresar al menos 2 personas.</div>}
                 </div>
                 
@@ -176,17 +177,17 @@ export default function AddIntervention(props){
                 </label>
 
 
-                <div className='button addButton' onClick={()=>addCylinder()}><b>+</b></div>
-                <div className='button removeButton' onClick={()=>removeCylinder(index)}/>
+                <button className='button addButton' onClick={()=>addCylinder()}><b>+</b></button>
+                <button className='button removeButton' onClick={()=>removeCylinder(index)}/>
             </div>)}
 
             <div className='addInterventionSection'>
                 {errors?
-                    <div className='button'
+                    <button className='button'
                     onClick={()=>saveIntervention()}>
-                        <b>AGREGAR INTERVENCIÓN</b></div>
-                    :<div className='button disabledButton'>
-                        <b>AGREGAR INTERVENCIÓN</b></div>
+                        <b>AGREGAR INTERVENCIÓN</b></button>
+                    :<button className='disabledButton'>
+                        <b>AGREGAR INTERVENCIÓN</b></button>
                         }
             </div>
         </div>

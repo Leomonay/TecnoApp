@@ -76,10 +76,10 @@ export default function RegisterForm(){
             </div>
         )}
         <div className="loginButtons">
-            <div className={`button ${!validate&&'disabledButton'}`}
+            <button className={`button ${!validate&&'disabledButton'}`}
                 onClick={()=>validate&&addNewUser()}>
                 Registrar Usuario
-            </div>
+            </button>
         </div>
         </div>)
 }

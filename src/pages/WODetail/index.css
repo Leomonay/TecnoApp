@@ -9,7 +9,7 @@
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    width: 65rem;
+    width: 90%;
     margin: .25rem
 }
 .waiting{
@@ -62,6 +62,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-wrap: wrap;
     width: 100%;
     margin: .1rem
 }
@@ -118,4 +119,15 @@
 .interventionGas{
     display: flex;
     margin: 0 .5rem
+}
+@media(max-width:900px){
+    .interventionLi{
+        flex-direction: column;
+    }
+    .detailSection{
+        font-size: .9rem;
+    }
+    .detailRow{
+        margin: .2rem 0
+    }
 }

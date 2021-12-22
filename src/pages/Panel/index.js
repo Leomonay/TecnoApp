@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import {Link} from 'react-router-dom'
 import './index.css'
-import MenuOptions from '../../components/MenuOptions'
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router';
 import { callMostRecent } from '../../actions/workOrderActions'
 
 export default function Panel(){
   const dispatch = useDispatch()
-  const {option} = useParams()
   const {mostRecent} = useSelector((state) => state.workOrder);
   const [selectedWO, selectWO]=useState(null)
   const [filters, setFilters] = useState(null)
@@ -18,15 +15,14 @@ export default function Panel(){
   
   return (
     <div className='PanelBackground'>
-        {option&&<MenuOptions/>}
         <div className='panelContainer'>
             <div className='panelWoResume'>
               <div className='title'>10 reclamos más recientes</div>
  
                 <div className='wOData'>
                   <div className='wOList'>
-                    {mostRecent[0]&&mostRecent.map(ot=>
-                      <div className='liContainer'>
+                    {mostRecent[0]&&mostRecent.map((ot, index)=>
+                      <div className='liContainer' key={index}>
                         <div className={`workOrderLi ${ot.status.toLowerCase()}`} onClick={()=>selectWO(ot)}>
                           <div className='liHeader'>
                             <div><b>OT {ot.code}</b> - {ot.status}</div>

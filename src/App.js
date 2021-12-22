@@ -15,6 +15,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getUserFromToken } from './actions/dataActions';
 import { ProtectedRoute } from './routes/ProtectedRoute';
 import WorkOrderCreation from './components/forms/WOForm';
+import AdminUsers from './pages/Admin/Users';
+import AdminPanel from './pages/Admin/AdminPanel';
 
 function App() {
   const {userData} = useSelector(state=>state.data)
@@ -47,6 +49,10 @@ function App() {
               <ProtectedRoute exact path ='/ots' component={WorkOrders} auth={access.isLogged}/>
               <ProtectedRoute path ='/ots/new' component={WorkOrderCreation} auth={access.isLogged}/>
               <ProtectedRoute path ='/ots/detail/:code' component={WODetail} auth={access.isLogged}/>
+              <ProtectedRoute path ='/ots/edit/:code' component={WorkOrderCreation} auth={access.isLogged}/>
+
+              <ProtectedRoute path ={['/admin/:selected','/admin']} component={AdminPanel} auth={access.isAdmin}/>
+              {/* <ProtectedRoute path ='/admin/users' component={AdminUsers} auth={access.isAdmin}/> */}
               <Route exact path={'/plan'} component={Plan}/>
             </Layout>
           </Switch>

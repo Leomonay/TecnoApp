@@ -1,54 +1,39 @@
-.workOrderHeader{
-  display: grid;
-  grid-template-columns: auto auto auto auto;
+.filter{
+  width: 4rem;
 }
-.wOli{
-  display: flex;
-  margin: .2rem 0;
-  width: 100%;
-  color: darkslategray;
-  text-decoration: none;
+.centerSB{
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap-reverse;
 }
-.woLi:hover{
-  
+.centerRight{
+  justify-content: right;
+  align-items: center;
+  flex-wrap: wrap-reverse;
 }
-.wOItem{
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  padding: .5rem;
-  background:linear-gradient(45deg , silver, whitesmoke, silver);
-  border-radius: 1rem;
-  box-shadow: 0 0 .5rem grey;
+.createButton{
+  font-size: 1.5rem;
+  box-shadow: 0 0 .5rem red;
 }
-.itemRow{
-  display: flex;
-  flex-wrap: wrap;
-}
-.itemField{
-  margin: 0 .5rem
-}
-.buttonsRow{
+.searchForm{
   display: flex;
   align-items: center;
 }
-.solved{
-  box-shadow: 0 0 .2rem green;
+.dateInput{
+  width: 9rem;
 }
-.solved:hover{
-  transform: scale(1.02);
-  background: linear-gradient(45deg, mintcream, whitesmoke, mintcream);
-  color: darkgreen
+.workOrderHeader{
+  display: flex;
+  /* flex-direction: column; */
+  /* flex-wrap: wrap; */
 }
-.pendant{
-  box-shadow: 0 0 .2rem red;
+.workOrderHeader> .column{
+  min-width: 19rem
 }
-.pendant:hover{
-  transform: scale(1.01 1.02);
-  background: linear-gradient(45deg, mistyrose, whitesmoke, mistyrose);
-  color: darkred
+.textInput{
+  width: 10rem;
+  height: 1.8rem;
 }
-
 
 /*FILTERS*/
 .filterOption{
@@ -56,14 +41,19 @@
   justify-content: space-between;
   width: 15rem;
 }
+.codeInput{
+  width: 4rem;
+  margin: 0 .2rem;
+  justify-content: center;
+}
 .section{
   display: flex;
   width: 100%;
+  align-items: center;
 }
 .column{
   display: flex;
   flex-direction: column;
-  border: 1px solid black;
   padding: .5rem;
 }
 .fifth{
@@ -95,8 +85,5 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-  }
-  .workOrderHeader> .column{
-    width: 20rem
   }
 }

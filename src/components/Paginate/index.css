@@ -1,0 +1,28 @@
+.paginate{
+    display: flex;
+    max-width: 90vw;
+}
+.pageButton{
+    display: flex;
+    height: fit-content;
+    width: 2rem;
+    padding: 0;
+    margin: 0 .2rem;
+    border-radius: .5rem;
+    box-shadow: .1rem .1rem .1rem grey;
+    justify-content: center;
+    cursor: pointer;
+}
+.currentPage{
+    background-color: darkred;
+    color: whitesmoke
+}
+.otherPage{
+    background-color: whitesmoke;
+    color: darkslategray
+}
+@media(max-width=900px){
+    .pageButton{
+        width: 1.5rem;
+    }
+}

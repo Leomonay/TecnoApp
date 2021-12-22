@@ -1,0 +1,43 @@
+.wOli{
+    display: flex;
+    margin: .2rem 0;
+    width: 100%;
+  }
+  .wOItem{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: .5rem;
+    background:linear-gradient(45deg , silver, whitesmoke, silver);
+    border-radius: 1rem;
+    box-shadow: 0 0 .5rem grey;
+    color: darkslategray;
+    text-decoration: none;
+  }
+  .itemRow{
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .itemField{
+    margin: 0 .5rem
+  }
+  .buttonsRow{
+    display: flex;
+    align-items: center;
+  }
+  .solved{
+    box-shadow: 0 0 .2rem green;
+  }
+  .solved:hover{
+    transform: scale(1.02);
+    background: linear-gradient(45deg, mintcream, whitesmoke, mintcream);
+    color: darkgreen
+  }
+  .pendant{
+    box-shadow: 0 0 .2rem red;
+  }
+  .pendant:hover{
+    transform: scale(1.01 1.02);
+    background: linear-gradient(45deg, mistyrose, whitesmoke, mistyrose);
+    color: darkred
+  }

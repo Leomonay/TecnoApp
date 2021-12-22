@@ -1,0 +1,8 @@
+.checkFilter{
+    transform: scale(1.5);
+    margin: .5rem
+}
+.cardList{
+    display: flex;
+    flex-wrap: wrap;
+}

@@ -4,7 +4,8 @@
     background-color: grey;
     margin: 0 .2rem;
     border-radius: .5rem;
-    color: whitesmoke
+    color: whitesmoke;
+    height: fit-content;
 }
 .dropdownInput{
     width: calc(10rem);

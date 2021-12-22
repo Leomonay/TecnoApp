@@ -1,6 +1,9 @@
 const initialState = {
     workersList:[],
-    supervisors:[]
+    supervisors:[],
+    userList:[],
+    userFilters:'',
+    userOptions:''
 }
 
 export default function workOrderReducer (state = initialState,action){
@@ -14,8 +17,17 @@ export default function workOrderReducer (state = initialState,action){
             return{
                 state,
                 supervisors: action.payload
-            }
+            };
+        case 'USER_LIST':
+            return{
+                ...state,
+                userList: action.payload
+            };
+        case 'USER_OPTIONS':
+            return{
+                ...state,
+                userOptions: action.payload
+            }      
         default: return state;
-
     }
 }

@@ -1,0 +1,33 @@
+.cardMainImg{
+    width: 90%;
+}
+.userCard{
+    display: flex;
+    flex-direction: column;
+    width: 7rem;
+    align-items: center;
+    background: linear-gradient(45deg, silver, whitesmoke, silver);
+    padding: .5rem;
+    border-radius: .5rem;
+    margin: .2rem;
+    box-shadow: 0 0 .2rem grey;
+    cursor: pointer;
+}
+.userCard>*{
+    text-align: center;
+}
+.userCard:active{
+    transform: scale(.98);
+    box-shadow: none;
+}
+.cardMainCaption{
+    display: flex;
+    height: 30%;
+    font-size: 75%;
+    font-weight: bold;
+    align-items: center;
+}
+.inactiveUser{
+    box-shadow: 0 0 .2rem darkred;
+    color: grey;
+}

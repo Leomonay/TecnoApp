@@ -3,7 +3,8 @@ const initialState = {
     data:{},
     userData:'',
     locationTree:{},
-    servicePointList:[]
+    servicePointList:[],
+    plantName:''
 };
 
 
@@ -28,6 +29,11 @@ export default function dataReducer (state = initialState,action){
             return{
                 ...state,
                 servicePointList: action.payload
+            }
+        case 'PLANT_NAME':
+            return{
+                ...state,
+                plantName: action.payload
             }
         default: return state;
     }

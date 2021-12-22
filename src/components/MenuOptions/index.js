@@ -1,21 +1,18 @@
 import React from 'react'
 import { useSelector } from 'react-redux';
+import { NavLink } from 'react-router-dom';
 import './index.css'
 
-export default function MenuOptions() {
-  const {data} = useSelector((state) => state.data);
+export default function MenuOptions(props) {
+  const {options} = props
 
-  var options= data? data.options : JSON.parse(localStorage.getItem('tecnoApp')).options
-
-
-  function buildOption(option){
+  function buildOption(option, index){
     return(
-      <div className='menuOption'>
-        {option}
-      </div>
+      <NavLink className='menuOption' key={index} to={option.url} activeClassName='activeOption'>
+        {option.caption}
+      </NavLink>
     )
   }
-
 
   return (
     <div className='menuOptionsBackground'>

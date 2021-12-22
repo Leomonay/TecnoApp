@@ -4,34 +4,15 @@ import { getLineServicePoints } from '../../actions/dataActions'
 import {Link} from 'react-router-dom'
 import { deviceByName, deviceListByLine } from '../../actions/deviceActions'
 import { getSupervisors } from '../../actions/peopleActions'
-import { getWOList } from '../../actions/workOrderActions'
+import { getWOList, resetDetail } from '../../actions/workOrderActions'
 import GetLocationTree from '../../components/dropdown/locationTree'
 import { cloneJson } from '../../utils/utils'
 import './index.css'
+import Paginate from '../../components/Paginate'
+import WorkOrderListItem from '../../components/workOrders/WorkOrderListItem'
 
-function workOrderListItem(order, index){
-  return(
-    <Link to={`/ots/detail/${order.code}`} className='wOli' key={index}>
-        <div className={`wOItem${order.close?' solved':' pendant'}`}>
-          <div className='itemRow wOLine1'>
-            <div className='itemField'><b>OT: </b>{order.code}</div> 
-            <div className='itemField'><b>Clase: </b>{order.class}</div> 
-            <div className='itemField'><b>Equipo: </b>{`(${order.device.code})-${order.device.name} (${order.line})`}</div> 
-            <div className='itemField'><b>Solicitada: </b>{`${order.solicitor} - ${order.date.split('T')[0]}`}</div> 
-            <div className='itemField'><b>Supervisor: </b>{order.supvervisor}</div>
-            <div className='itemField'><b>Cierre: </b>{order.close.split('T')[0] ||'Pendiente' }</div> 
-          </div>
-          <div className='itemRow'>
-          <div className='itemField'><b>Descripción: </b>{order.description}</div>
-          </div>
-        </div>
-        <div className='buttonsRow'>
-          <div className='button editButton' title='Modificar'/>
-          <div className='button removeButton' title='Eliminar'/>
-        </div>
-    </Link>
-  )
-}
+//Método para editar intervención
+//Asignar garrafas a personal
 
 export default function WorkOrders(){
   const {workOrderList} = useSelector(state => state.workOrder)
@@ -39,6 +20,8 @@ export default function WorkOrders(){
   const {partialList} = useSelector (state => state.devices)
   const {supervisors} = useSelector (state => state.people)
   const today = new Date()
+  const [code, setCode]=useState('')
+  const [filterList, setFilterList]=useState(false)
   const [conditions, setConditions]=useState({
     // from: new Date((new Date()).setMonth((new Date()).getMonth()-1)),
     // to: new Date(),
@@ -48,8 +31,7 @@ export default function WorkOrders(){
   })
   const [device, setDevice]=useState({})
   const dispatch = useDispatch()
-
-  useEffect(()=>dispatch(getSupervisors()),[dispatch])
+  const isAdmin = userData.access === 'Admin'
 
   function setLocations(obj){
     let cond = cloneJson(conditions)
@@ -62,138 +44,165 @@ export default function WorkOrders(){
     }
     setConditions({...cond,...obj})
   }
+
+  function handleSubmit(event){
+    event.preventDefault()
+    code&&dispatch(getWOList({code:code}))
+  }
+
   useEffect(()=>{
-    document.getElementById('dateFrom').value=conditions.from.toISOString().split('T')[0]
+    dispatch(getSupervisors())
+    dispatch(resetDetail())
+  },[dispatch])
+
+  useEffect(()=>console.log(userData),[userData])
+
+  useEffect(()=>{
+    const element = document.getElementById('dateFrom')
+    if (element) element.value=conditions.from.toISOString().split('T')[0]
   },[conditions.from])
   useEffect(()=>{
-    document.getElementById('dateTo').value=conditions.to.toISOString().split('T')[0]
+    const element = document.getElementById('dateTo') 
+    if(element) element.value=conditions.to.toISOString().split('T')[0]
   },[conditions.to])
-
-  useEffect(()=>console.log('conditions',conditions),[conditions])
   useEffect(()=>dispatch(getWOList(conditions)),[dispatch, conditions])
-  useEffect(()=>console.log('userData',userData),[userData])
 
   return(
     <div className='wOView'>
-      <div className='section'style={{justifyContent:'right', alignItems:'center', fontSize:'1.5rem'}}>
-                  <Link to='/ots/new' className='button'><b>+</b> Crear nueva OT</Link>
-      </div>
-      <div className='workOrderHeader'>
+      <div className={`section centerSB`}>
+
+        {filterList?
+          <div className='button' onClick={()=>setFilterList(false)}><b>BUSCAR POR CODIGO</b></div>
+        :
         <div className='column'>
-          <b>Período</b>
-          <div className='filterOption'><b>Desde: </b><input type='date' id='dateFrom'
-            defaultValue={conditions.from.toISOString().split('T')[0]}
-            onChange={(e)=>{console.log('value', e.target.value);e.target.value.length>8&&setConditions({...conditions, from: new Date(e.target.value)})}}  
-            /></div>
-          <div className='filterOption'><b>Hasta: </b><input type='date' id='dateTo'
-            defaultValue={conditions.to.toISOString().split('T')[0]}
-            onChange={(e)=>{console.log('value', e.target.value);setConditions({...conditions, to: new Date(e.target.value)})}}  
-            /></div>
           <div className='section'>
-            <div className='button fifth' onClick={()=>setConditions({
-              from: new Date(today.getFullYear(), today.getMonth(), today.getDate()),
-              to: new Date(today.getFullYear(), today.getMonth(), today.getDate()+1),
-            })}>Hoy</div>
-            <div className='button fifth' onClick={()=>setConditions({
-              from: new Date(today.getFullYear(), today.getMonth(), 1),
-              to: new Date(today.getFullYear(), today.getMonth()+1, 1),
-            })}>Este mes</div>
-            <div className='button fifth' onClick={()=>setConditions({
-              from: new Date(today.getFullYear(), today.getMonth()-1, 1),
-              to: new Date(today.getFullYear(), today.getMonth(), 1),
-            })}>Mes pasado</div>
-            <div className='button fifth' onClick={()=>setConditions({
-              from: new Date(today.getFullYear(), 0, 1),
-              to:new Date(today.getFullYear()+1, 0, 1),
-            })}>Este Año</div>
-            <div className='button fifth' onClick={()=>setConditions({
-              from: new Date(today.getFullYear()-1, 0, 1),
-              to:new Date(today.getFullYear(), 0, 1),
-            })}>Año Anterior</div>
+            <button onClick={()=>setFilterList(true)} style={{width:'100%'}}>
+              <b>BUSCAR FILTRANDO LISTA</b>
+            </button>
           </div>
-        </div>
-        <div className='column'>
-          <b>Ubicación</b>
-          <GetLocationTree
-            plant={(!userData.plant || userData.access==='Admin')? '' : userData.plant}
-            pickerFunction={obj=>setLocations(obj)}
-            />
-            {conditions.line&&<div className='section'>
-              <label className='dropdownLabel'>Lugar de Servicio</label>
-              <select className="dropdownInput" onChange={(e)=>setConditions({...conditions, servicePoint:e.target.value})}>
-                <option value=''>Sin seleccionar</option>
-                {servicePointList[0]&& servicePointList.map((sp, index)=>
-                <option key={index} value={sp}>
-                  {sp}
-                </option>)}
+          <form className='searchForm' onSubmit={(e)=>handleSubmit(e)}>
+              <label><b>N° OT: </b></label>
+              <input className='codeInput' type='text' onChange={(e)=>setCode(e.target.value)}/>
+              <button type='submit'>BUSCAR OT</button>
+            </form>
+        </div>}
+        <Link
+          to='/ots/new'
+          className='button createButton'
+          style={{fontSize:'1.5rem'}}
+          onClick={()=>dispatch(resetDetail())}>
+          <b>+</b> Crear nueva OT
+        </Link>
+      </div>
+
+
+      {filterList&&<div className='workOrderHeader'>
+          <div className='column'>
+            <b>Período</b>
+            <div className='filterOption'><b>Desde: </b><input className='dateInput' type='date' id='dateFrom'
+              defaultValue={conditions.from.toISOString().split('T')[0]}
+              onChange={(e)=>{console.log('value', e.target.value);e.target.value.length>8&&setConditions({...conditions, from: new Date(e.target.value)})}}  
+              /></div>
+            <div className='filterOption'><b>Hasta: </b><input className='dateInput' type='date' id='dateTo'
+              defaultValue={conditions.to.toISOString().split('T')[0]}
+              onChange={(e)=>{console.log('value', e.target.value);setConditions({...conditions, to: new Date(e.target.value)})}}  
+              /></div>
+            <div className='section'>
+              <button className='filter button' onClick={()=>setConditions({
+                from: new Date(today.getFullYear(), today.getMonth(), today.getDate()),
+                to: new Date(today.getFullYear(), today.getMonth(), today.getDate()+1),
+              })}>Hoy</button>
+              <button className='filter button' onClick={()=>setConditions({
+                from: new Date(today.getFullYear(), today.getMonth(), 1),
+                to: new Date(today.getFullYear(), today.getMonth()+1, 1),
+              })}>Este mes</button>
+              <button className='filter button' onClick={()=>setConditions({
+                from: new Date(today.getFullYear(), 0, 1),
+                to:new Date(today.getFullYear()+1, 0, 1),
+              })}>Este Año</button>
+            </div>
+          </div>
+          <div className='column'>
+            <b>Ubicación</b>
+            <GetLocationTree
+              plant={(!userData.plant || userData.access==='Admin')? '' : userData.plant}
+              pickerFunction={obj=>setLocations(obj)}
+              />
+              {conditions.line&&<div className='section'>
+                <label className='dropdownLabel'>Lugar de Servicio</label>
+                <select className="dropdownInput" onChange={(e)=>setConditions({...conditions, servicePoint:e.target.value})}>
+                  <option value=''>Sin seleccionar</option>
+                  {servicePointList[0]&& servicePointList.map((sp, index)=>
+                  <option key={index} value={sp}>
+                    {sp}
+                  </option>)}
+                </select>
+              </div>}
+          </div>
+          <div className='column'>
+            <section><b>Equipo: </b>{conditions.device&&`${conditions.device}`}</section>
+            <div className='section'>
+              <label className='dropdownLabel'>Código</label>
+              <input className="textInput" type='text' placeholder='AAA-000' onChange={(e)=>setDevice({...device, code:e.target.value})}/>
+              <button onClick={()=>setConditions({...conditions, device:device.code})}>OK</button>
+            </div>
+            <div className='section'>
+              <label className='dropdownLabel'>Nombre</label>
+              <input className="textInput" type='text' placeholder='coincidencia parcial' onChange={(e)=>setDevice({...device, name:e.target.value})}/>
+              <button onClick={()=>{
+                  dispatch(deviceByName(device.name))
+                  setDevice({...device, list:true})
+                  }}>OK</button>
+              {device.list && <div className='deviceSelector'>
+                <div className='section'
+                  style={{justifyContent:'right', alignItems:'center'}}>
+                    <b>Ocultar Lista</b>
+                  <button title='cerrar lista' onClick={()=>setDevice({...device, list:false})}>X</button>
+                </div>
+                {partialList&&partialList.map(dev=>
+                  <div className='deviceLi' onClick={()=>{
+                    setConditions({...conditions, device: dev.code})
+                    setDevice({...device, list:false})
+                    }}>
+                    {`(${dev.code}) (${dev.name})`}
+                  </div>)}
+              </div>}
+            </div>
+            <div className='section'>
+              <label className='dropdownLabel'>Lista</label>
+              <select className="dropdownInput" type='text' disabled={!conditions.line} onChange={(e)=>setConditions({...conditions, device: e.target.value})}>
+                <option value=''>{conditions.line?'Sin Seleccionar':'Seleccionar Línea'}</option>
+                {conditions.line && partialList[0] && partialList.map((device,index)=>
+                  <option key={index} value={device.code}>
+                      {`(${device.code}) ${device.name}`}
+                  </option>)}
               </select>
-            </div>}
-        </div>
-        <div className='column'>
-          <section><b>Equipo: </b>{conditions.device&&`${conditions.device}`}</section>
-          <div className='section'>
-            <label className='dropdownLabel'>Código</label>
-            <input type='text' placeholder='AAA-000' onChange={(e)=>setDevice({...device, code:e.target.value})}/>
-            <div className='button' onClick={()=>setConditions({...conditions, device:device.code})}>OK</div>
+            </div>
           </div>
-          <div className='section'>
-            <label className='dropdownLabel'>Nombre</label>
-            <input type='text' placeholder='coincidencia parcial' onChange={(e)=>setDevice({...device, name:e.target.value})}/>
-            <div className='button' 
-              onClick={()=>{
-                dispatch(deviceByName(device.name))
-                setDevice({...device, list:true})
-                }}>OK</div>
-            {device.list && <div className='deviceSelector'>
-              <div className='section'
-                style={{justifyContent:'right', alignItems:'center'}}>
-                  <b>Ocultar Lista</b>
-                <div className='button' title='cerrar lista' onClick={()=>setDevice({...device, list:false})}>X</div>
-              </div>
-              {partialList&&partialList.map(dev=>
-                <div className='deviceLi' onClick={()=>{
-                  setConditions({...conditions, device: dev.code})
-                  setDevice({...device, list:false})
-                  }}>
-                  {`(${dev.code}) (${dev.name})`}
-                </div>)}
-            </div>}
+          <div className='column'>
+              <label className='dropdownLabel'>Solicitó</label>
+              <input placeholder='coincidencia parcial' onChange={(e)=>setConditions({...conditions, solicitor: e.target.value})}/>
+              <br/>
+              <label className='dropdownLabel'>Supervisor</label>
+
+              <select className="dropdownInput" type='text' disabled={!supervisors} onChange={(e)=>setConditions({...conditions, supervisor: e.target.value})}>
+                <option value=''>{'Sin Seleccionar'}</option>
+                {supervisors[0] && supervisors.map((supervisor,index)=>
+                  <option key={index} value={supervisor.idNumber}>
+                      {supervisor.name}
+                  </option>)}
+              </select>
+
           </div>
-          <div className='section'>
-            <label className='dropdownLabel'>Lista</label>
-            <select className="dropdownInput" type='text' disabled={!conditions.line} onChange={(e)=>setConditions({...conditions, device: e.target.value})}>
-              <option value=''>{conditions.line?'Sin Seleccionar':'Seleccionar Línea'}</option>
-              {conditions.line && partialList[0] && partialList.map((device,index)=>
-                <option key={index} value={device.code}>
-                    {`(${device.code}) ${device.name}`}
-                </option>)}
-            </select>
-          </div>
-        </div>
-        <div className='column'>
-            <label className='dropdownLabel'>Solicitó</label>
-            <input placeholder='coincidencia parcial' onChange={(e)=>setConditions({...conditions, solicitor: e.target.value})}/>
-            <br/>
-            <label className='dropdownLabel'>Supervisor</label>
+      </div>}
 
-            <select className="dropdownInput" type='text' disabled={!supervisors} onChange={(e)=>setConditions({...conditions, supervisor: e.target.value})}>
-              <option value=''>{'Sin Seleccionar'}</option>
-              {supervisors[0] && supervisors.map((supervisor,index)=>
-                <option key={index} value={supervisor.idNumber}>
-                    {supervisor.name}
-                </option>)}
-            </select>
-
-        </div>
-      </div>
-
-      {userData.access==="Admin" && <div className='filterOption'><b>Plant: </b></div>}
-      <div className='wOList'>
+      {workOrderList.list?<div className='wOList'>
         <div className='title'>Listado de OT</div>
-        {workOrderList[0]?workOrderList.map((order, index)=>
-          workOrderListItem(order, index))
+        <Paginate length={Math.min(7,workOrderList.pages)} pages={workOrderList.pages} select={(pg)=>setConditions({...conditions,page:pg})}/>
+          {workOrderList.list.map((order, index)=>
+          <WorkOrderListItem key={index} order={order} index={index} isAdmin={isAdmin}/>)}
+          </div>
           :<div className='waiting'/>}
-      </div>
     </div>
   )
 }

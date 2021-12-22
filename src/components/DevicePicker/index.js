@@ -60,7 +60,9 @@ export default function DevicePicker(props){
                     :deviceFilters.line.map(e=>e.name))
                 :deviceFilters[key]}/>
             })}
-            <div className='button search' onClick={()=>dispatch(getPartialDeviceList(conditions))}>BUSCAR</div>
+            <button className='search' onClick={(e)=>{
+                e.preventDefault();dispatch(getPartialDeviceList(conditions))
+            }}>BUSCAR</button>
         </div>
     }
 
@@ -73,7 +75,7 @@ export default function DevicePicker(props){
         <div className='devicePickerBackground'>
             <div className='devicePickerHeader'>
                 <div className='title'>BÚSQUEDA DE EQUIPOS</div>
-                <div className='close button' onClick={()=>props.close()}><b>X</b></div>
+                <button className='close' onClick={()=>props.close()}><b>X</b></button>
             </div>
             <div className='devicePickerUpperSection'>
                 {Object.keys(deviceFilters).length>0&&<DeviceFilters/>}
