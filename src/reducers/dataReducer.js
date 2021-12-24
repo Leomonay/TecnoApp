@@ -1,7 +1,6 @@
 
 const initialState = {
     data:{},
-    userData:'',
     locationTree:{},
     servicePointList:[],
     plantName:''
@@ -10,11 +9,6 @@ const initialState = {
 
 export default function dataReducer (state = initialState,action){
     switch (action.type){
-        case 'USER_DATA':
-            return{
-                ...state,
-                userData: action.payload
-            };
         case 'TREE_PLANTS':
             return{
                 ...state,

@@ -26,3 +26,18 @@
 .menuOption:active{
     transform: scale(.95);
 }
+@media(max-width:900px){
+    .menuOptionsBackground{
+        flex-direction: row;
+        width: 100%;
+        justify-content: space-evenly;
+        height: 3rem;
+    }
+    .menuOption{
+        display: flex;
+        width: 20%;
+        justify-content: center;
+        align-items: center;
+        font-size: 1rem;
+    }
+}

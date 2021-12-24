@@ -17,7 +17,7 @@ const {headersRef} = appConfig
 export default function WorkOrderCreation(){
     const {partialList, selectedWODevice} = useSelector(state=>state.devices)
     const {workOrderOptions,newOrderId, orderDetail, updateResult} = useSelector(state=>state.workOrder)
-    const {userData} = useSelector(state=>state.data)
+    const {userData} = useSelector(state=>state.people)
     const [viewDevPicker,setViewDevPicker]=useState(false) //devicePickerBackground
     const [intervForm, setIntervForm] = useState(false)
     const [submitable, setSubmitable] = useState(false)

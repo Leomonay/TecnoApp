@@ -5,4 +5,12 @@
 .cardList{
     display: flex;
     flex-wrap: wrap;
+    justify-content: space-evenly;
+    height: calc(100% - 10rem);
+    overflow-y: auto;
+}
+.newUser{
+    float: right;
+    font-size: 1.3rem;
+    font-weight: bold;
 }

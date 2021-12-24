@@ -1,11 +1,5 @@
 import { appConfig } from "../config"
 
-export function updateData(data){
-    return{
-        type: 'UPDATE_DATA', // lo que activa mi acción
-        payload: data // el contenido de datos que va 
-    }
-}
 export function authentication(data){
     return async function(dispatch){
         return fetch(`${appConfig.url}/users/auth`,{
@@ -71,27 +65,6 @@ export function getPlantLocationTree(plantName){
         .then(json=>{
             dispatch({
                 type: 'LOCATION_TREE',
-                payload: json
-            })
-        })
-    }
-}
-
-export function addUser(user){
-    return async function (dispatch){
-        return fetch(`${appConfig.url}/users`,{
-            method: 'POST',
-            headers:{
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(user)
-        })
-        .then(response=>response.json())
-        .then(json=>{
-            console.log('json', json)
-            dispatch({
-                type: 'NEW_USER',
                 payload: json
             })
         })

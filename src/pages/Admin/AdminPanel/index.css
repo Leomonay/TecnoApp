@@ -1,4 +1,4 @@
-.pageBackground{
+.adminBackground{
     display: flex;
     height: 100%;
     width: 100%;
@@ -6,4 +6,14 @@
 }
 .adminOptionSelected{
     width: calc(100% - 10rem);
+    height: 100%;
+}
+@media(max-width:900px){
+    .adminBackground{
+        flex-direction: column;
+    }
+    .adminOptionSelected{
+        width: 100%;
+        height: calc(100% - 3rem);
+    }
 }

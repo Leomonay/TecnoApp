@@ -5,7 +5,7 @@ import './index.css'
 
 export default function LoginForm(){
     const dispatch = useDispatch()
-    const {userData} = useSelector(state => state.data)
+    const {userData} = useSelector(state => state.people)
     const [enter, setEnter] = useState(false)
 
     function login(){

@@ -34,9 +34,11 @@
     width: 100%;
 }
 .formInput{
+    display: flex;
+    flex-wrap: wrap;
     margin: 0 .2rem;
     width: 100%;
-    max-width: 10rem;
+    /* max-width: 10rem; */
 }
 .formSideBar{
     display: Flex;

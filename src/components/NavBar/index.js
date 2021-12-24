@@ -5,13 +5,13 @@ import { Link, NavLink } from 'react-router-dom';
 import { useSelector } from "react-redux";
 
 function NavBar() {
-  const {userData} = useSelector(state=>state.data)
+  const {userData} = useSelector(state=>state.people)
   const isAdmin = userData.access === 'Admin'
   console.log('isAdmin', isAdmin)
 
   const navOptions=[
     {section: 'Gestión de OT', url:'/ots', crud:true},
-    {section:'Gestión de Equipos', url:'/equipos', crud:true},
+    // {section:'Gestión de Equipos', url:'/equipos', crud:true},
     {section:'Plan', url:'/plan', crud:true},
   ]
 
