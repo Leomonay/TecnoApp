@@ -1,22 +1,31 @@
 import React from "react";
+
 import { useDispatch } from "react-redux";
+import { useState } from "react";
+
 import styles from "./LinesList.module.css";
+
 import {
   getLineServicePoints,
   getPlantLines,
   getPlantLocation,
-  deleteLine,
+  deleteLine,getLineData
 } from "../../../../actions/addPlantsActions.js";
+
+import AddLines from "../AddLines/addLines";
+import UpdateLine from "../updateLine/UpdateLine";
 
 export default function LinesList({
   lines,
   plantName,
   areaName,
-  handleEditLine,
   setSelectedData,
   selectedData,
 }) {
   const dispatch = useDispatch();
+
+  let [showModal, setShowModal] = useState(false);
+  let [showModalUpdate, setShowModalUpdate] = useState(false);
 
   const handleChangeLines = (e) => {
     if (e.target.checked) {
@@ -25,10 +34,35 @@ export default function LinesList({
     }
   };
 
+  //Función boton editar una linea de la lista
+  let [updateLineData, setUpdateLineData] = useState({
+    newName: "",
+    newCode: "",
+    oldName: "",
+    oldCode: "",
+  });
+
+  const handleEditLine = async (event) => {
+    let response = await dispatch(getLineData(event.target.value));
+
+    setUpdateLineData({
+      newName: response.name,
+      newCode: response.code,
+      oldName: response.name,
+      oldCode: response.code,
+    });
+
+    setShowModalUpdate(true)
+  };
+
+  //Fin funciones para editar una linea de la lista
+
   //Funcion para borrar una linea
 
   const handleDeleteLine = async (event) => {
     event.preventDefault();
+    let plantLocations = await dispatch(getLineServicePoints(event.target.value));
+    if (plantLocations.length === 0) {
     let response = await dispatch(deleteLine({ name: event.target.value }));
     if (response.message) {
       alert(response.message);
@@ -36,14 +70,34 @@ export default function LinesList({
       alert("El área fue borrada");
     }
     await dispatch(getPlantLocation(plantName));
-    await dispatch(getPlantLines(areaName));
+    await dispatch(getPlantLines(areaName));}else {
+      alert("La planta contiene LÍNEAS debe eliminarlas primero");
+    }
   };
   //Fin función para borrar una linea
 
   return (
     <div>
+
+<AddLines
+        areaName={areaName}
+        plantName={plantName}
+        setShowModal={setShowModal}
+        showModal={showModal}
+      />
+
+      <UpdateLine
+        setUpdateLineData={setUpdateLineData}
+        updateLineData={updateLineData}
+        plantName={selectedData.plantName}
+        areaName={selectedData.areaName}
+        setShowModalUpdate={setShowModalUpdate}
+        showModalUpdate={showModalUpdate}
+      />
+
+
       <label>Lineas</label>
-      <button title="Agregar Linea">Agregar Linea</button>
+      <button title="Agregar Linea" onClick={() => setShowModal(true)}>Agregar Linea</button>
       <div className={styles.divScroll}>
         <div className={styles.containerLabel}>
           {lines.length !== 0 &&

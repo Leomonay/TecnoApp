@@ -8,8 +8,12 @@ import {
   getAreaData,
 } from "../../../../actions/addPlantsActions.js";
 
-const AddLines = ({ areaName, plantName }) => {
+import styles from "./addLines.module.css";
+
+const AddLines = ({ areaName, plantName, setShowModal, showModal }) => {
   const dispatch = useDispatch();
+
+  const showHideClassName = showModal ? "displayblock" : "displaynone";
 
   let [inputLine, setInputLine] = useState({
     name: "",
@@ -39,6 +43,7 @@ const AddLines = ({ areaName, plantName }) => {
       name: "",
       code: "",
     });
+    setShowModal(false);
   };
   //Fin de la función para agregar una planta nueva
 
@@ -60,59 +65,67 @@ const AddLines = ({ areaName, plantName }) => {
   //fin funmción de agregar áreas al listado
 
   return (
-    <div>
-      <form onSubmit={(e) => handleSubmitLines(e)} id="addLine">
-        <div>
+    <div className={styles[showHideClassName]}>
+      <section className={styles.modalmain}>
+        <div className={styles.container}>
+          <form onSubmit={(e) => handleSubmitLines(e)} id="addLine">
+            <div>
+              <h4>Agregar areas</h4>
+              <div>
+                <label>Nombre: </label>
+                <input
+                  type="text"
+                  name="name"
+                  autoComplete="off"
+                  value={inputLine.name}
+                  onChange={(e) => handleChangLine(e)}
+                  placeholder="Ingrese el nombre..."
+                />
+              </div>
+              <div>
+                <label>Código: </label>
+                <input
+                  type="text"
+                  name="code"
+                  autoComplete="off"
+                  value={inputLine.code}
+                  onChange={(e) => handleChangLine(e)}
+                  placeholder="Ingrese el código..."
+                />
+              </div>
+            </div>
+          </form>
+
+
+          <button key="addLine" onClick={() => handleAddLine()}>
+            Agregar Linea
+          </button>
+          <button type="submit" key="submitFormButton" form="addLine">
+            Crear Lineas
+          </button>
           <div>
-            <label>Nombre: </label>
-            <input
-              type="text"
-              name="name"
-              autoComplete="off"
-              value={inputLine.name}
-              onChange={(e) => handleChangLine(e)}
-              placeholder="Ingrese el nombre..."
-            />
-          </div>
-          <div>
-            <label>Código </label>
-            <input
-              type="text"
-              name="code"
-              autoComplete="off"
-              value={inputLine.code}
-              onChange={(e) => handleChangLine(e)}
-              placeholder="Ingrese el código..."
-            />
+            {inputLines.length !== 0 &&
+              inputLines.map((element) => {
+                return (
+                  <div>
+                    <span>
+                      {element.name} {element.code}
+                    </span>
+                    <button
+                      onClick={(event) => hanldeDeleteLine(event)}
+                      key={element.name}
+                      value={element.code}
+                      id={element.name + element.code}
+                    >
+                      X
+                    </button>
+                  </div>
+                );
+              })}
           </div>
         </div>
-      </form>
-      <button key="addLine" onClick={() => handleAddLine()}>
-        Agregar Linea
-      </button>
-      <button type="submit" key="submitFormButton" form="addLine">
-        Crear Lineas
-      </button>
-      <div>
-        {inputLines.length !== 0 &&
-          inputLines.map((element) => {
-            return (
-              <div>
-                <span>
-                  {element.name} {element.code}
-                </span>
-                <button
-                  onClick={(event) => hanldeDeleteLine(event)}
-                  key={element.name}
-                  value={element.code}
-                  id={element.name + element.code}
-                >
-                  X
-                </button>
-              </div>
-            );
-          })}
-      </div>
+        <button onClick={() => setShowModal(false)}>Cerrar</button>
+      </section>
     </div>
   );
 };

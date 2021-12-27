@@ -1,6 +1,6 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import {useEffect, useState } from "react";
+
 import {
   getPlantLocation,
   getPlantLines,
@@ -8,78 +8,28 @@ import {
   updateServicePoint,
 } from "../../../../actions/addPlantsActions.js";
 
+import styles from "./UpdateSP.module.css";
+
 const UpdateSP = ({
-  updateSPData1,
-  setUpdateSPData1,
+  updateSPData,
+  setUpdateSPData,
   plantName,
   areaName,
   lineName,
+  setShowModalUpdate,
+  showModalUpdate,
 }) => {
   const dispatch = useDispatch();
 
-  let [updateSPData,setUpdateSPData] = useState({
-    newName: "",
-    newCode: "",
-    newGate: "",
-    newAceria: false,
-    newCaloria: false,
-    newTareaPeligrosa: false,
-    oldName: "",
-    oldCode: "",
-    oldGate: "",
-    oldAceria: false,
-    oldCaloria: false,
-    oldTareaPeligrosa: false,
-  })
-useEffect(() => {
-    setUpdateSPData(updateSPData1)
-}, [updateSPData1])
+  const showHideClassName = showModalUpdate ? "displayblock" : "displaynone";
+
   //Función boton editar una planta de la lista
 
   const handleUpdateSP = async (event) => {
-    console.log(event);
-    if (event.target.name === "aceria") {
-      if (event.target.checked) {
-        setUpdateSPData({
-          ...updateSPData,
-          newAceria: true,
-        });
-      } else {
-        setUpdateSPData({
-          ...updateSPData,
-          newAceria: false,
-        });
-      }
-    } else if (event.target.name === "caloria") {
-      if (event.target.checked) {
-        setUpdateSPData({
-          ...updateSPData,
-          newCaloria: true,
-        });
-      } else {
-        setUpdateSPData({
-          ...updateSPData,
-          newCaloria: false,
-        });
-      }
-    } else if (event.target.name === "tareaPeligrosa") {
-      if (event.target.checked) {
-        setUpdateSPData({
-          ...updateSPData,
-          newTareaPeligrosa: true,
-        });
-      } else {
-        setUpdateSPData({
-          ...updateSPData,
-          newTareaPeligrosa: false,
-        });
-      }
-    } else {
-      setUpdateSPData({
-        ...updateSPData,
-        [event.target.name]: event.target.value,
-      });
-    }
+    setUpdateSPData({
+      ...updateSPData,
+      [event.target.name]: event.target.value,
+    });
   };
   const handleSubmitUpdateArea = async (event) => {
     event.preventDefault();
@@ -102,84 +52,109 @@ useEffect(() => {
       newTareaPeligrosa: false,
       oldName: "",
       oldCode: "",
-      oldGate: "",
-      oldAceria: false,
-      oldCaloria: false,
-      oldTareaPeligrosa: false,
     });
+
+    setShowModalUpdate(false);
   };
   //Fin funciones para editar una planta de la lista
 
   return (
-    <div>
-      <form onSubmit={(e) => handleSubmitUpdateArea(e)} id="updateSP">
-        <div>
-          <div>
-            <label>Nombre: </label>
-            <input
-              type="text"
-              name="newName"
-              autoComplete="off"
-              value={updateSPData.newName}
-              onChange={(e) => handleUpdateSP(e)}
-              placeholder="Ingrese el nombre..."
-            />
-          </div>
-          <div>
-            <label>Código: </label>
-            <input
-              type="text"
-              name="newCode"
-              autoComplete="off"
-              value={updateSPData.newCode}
-              onChange={(e) => handleUpdateSP(e)}
-              placeholder="Ingrese el código..."
-            />
-          </div>
+    <div className={styles[showHideClassName]}>
+      <section className={styles.modalmain}>
+        <div className={styles.container}>
+          <form onSubmit={(e) => handleSubmitUpdateArea(e)} id="updateSP">
+            <div className={styles.containerInputs}>
+              <h4>Editar planta</h4>
+              <div>
+                <div className={styles.inputs}>
+                  <label>Nombre: </label>
+                  <input
+                    type="text"
+                    name="newName"
+                    autoComplete="off"
+                    value={updateSPData.newName}
+                    onChange={(e) => handleUpdateSP(e)}
+                    placeholder="Ingrese el nombre..."
+                  />
+                </div>
+                <div className={styles.inputs}>
+                  <label>Código: </label>
+                  <input
+                    type="text"
+                    name="newCode"
+                    autoComplete="off"
+                    value={updateSPData.newCode}
+                    onChange={(e) => handleUpdateSP(e)}
+                    placeholder="Ingrese el código..."
+                  />
+                </div>
 
-          <div>
-            <label>Puerta </label>
-            <input
-              type="text"
-              name="newGate"
-              autoComplete="off"
-              value={updateSPData.newGate}
-              onChange={(e) => handleUpdateSP(e)}
-              placeholder="Ingrese la puerta..."
-            />
-          </div>
-          <div>
-            <label>Aceria </label>
-            <input
-              type="checkbox"
-              name="newAceria"
-              checked={updateSPData.newAceria}
-              onChange={(e) => handleUpdateSP(e)}
-            />
-          </div>
-          <div>
-            <label>Caloria </label>
-            <input
-              type="checkbox"
-              name="newCaloria"
-              checked={updateSPData.newCaloria}
-              onChange={(e) => handleUpdateSP(e)}
-            />
-          </div>
-          <div>
-            <label>Tarea Peligrosa </label>
-            <input
-              type="checkbox"
-              name="newTareaPeligrosa"
-              checked={updateSPData.newTareaPeligrosa}
-              onChange={(e) => handleUpdateSP(e)}
-            />
+                <div>
+                  <label>Puerta </label>
+                  <input
+                    type="text"
+                    name="newGate"
+                    autoComplete="off"
+                    value={updateSPData.newGate}
+                    onChange={(e) => handleUpdateSP(e)}
+                    placeholder="Ingrese la puerta..."
+                  />
+                </div>
+
+                <div>
+                  <label>Aceria </label>
+                  <select name="newAceria" onChange={(e) => handleUpdateSP(e)}>
+                    <option value={false} selected={updateSPData.newAceria}>
+                      No
+                    </option>
+                    <option value={true} selected={updateSPData.newAceria}>
+                      Si
+                    </option>
+                  </select>
+                </div>
+                <div>
+                  <label>Caloria </label>
+                  <select name="newCaloria" onChange={(e) => handleUpdateSP(e)}>
+                    <option value={false} selected={updateSPData.newCaloria}>
+                      No
+                    </option>
+                    <option value={true} selected={updateSPData.newCaloria}>
+                      Si
+                    </option>
+                  </select>
+                </div>
+                <div>
+                  <label>Tarea Peligrosa </label>
+                  <select
+                    name="newTareaPeligrosa"
+                    onChange={(e) => handleUpdateSP(e)}
+                  >
+                    <option
+                      value={false}
+                      selected={updateSPData.newTareaPeligrosa}
+                    >
+                      No
+                    </option>
+                    <option
+                      value={true}
+                      selected={updateSPData.newTareaPeligrosa}
+                    >
+                      Si
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </form>
+          <div className={styles.buttonContainer}>
+            <button type="submit" key="submitFormButton" form="updateSP">
+              Guardar Cambios SP
+            </button>
+
+            <button onClick={() => setShowModalUpdate(false)}>Cerrar</button>
           </div>
         </div>
-      </form>
-      <button type="submit" key="submitFormButton" form="updateSP">
-        Guardar Cambios SP
-      </button>
+      </section>
     </div>
   );
 };

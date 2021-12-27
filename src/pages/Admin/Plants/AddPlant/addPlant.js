@@ -5,9 +5,12 @@ import {
   getPlantList,
   addPlant,
 } from "../../../../actions/addPlantsActions.js";
+import styles from "./addPlant.module.css";
 
-const AddPlant = () => {
+const AddPlant = ({ setShowModal, showModal }) => {
   const dispatch = useDispatch();
+  
+  const showHideClassName = showModal ? "displayblock" : "displaynone";
 
   let [inputPlant, setInputPlant] = useState({
     name: "",
@@ -33,40 +36,49 @@ const AddPlant = () => {
       name: "",
       code: "",
     });
+    setShowModal(false);
   };
   //Fin de la función para agregar una planta nueva
 
   return (
-    <div>
-      <form onSubmit={(e) => handleSubmitPlant(e)} id="addPlant">
-        <div>
-          <div>
-            <label>Nombre: </label>
-            <input
-              type="text"
-              name="name"
-              autoComplete="off"
-              value={inputPlant.name}
-              onChange={(e) => handleChangePlant(e)}
-              placeholder="Ingrese el nombre..."
-            />
-          </div>
-          <div>
-            <label>Código </label>
-            <input
-              type="text"
-              name="code"
-              autoComplete="off"
-              value={inputPlant.code}
-              onChange={(e) => handleChangePlant(e)}
-              placeholder="Ingrese el código..."
-            />
-          </div>
+    <div className={styles[showHideClassName]}>
+      <section className={styles.modalmain}>
+        <div className={styles.container}>
+          <form onSubmit={(e) => handleSubmitPlant(e)} id="addPlant">
+            <div className={styles.containerInputs}>
+              <h4>Agregar nueva planta</h4>
+              <div className={styles.inputs}>
+                <label>Nombre: </label>
+                <input
+                  type="text"
+                  name="name"
+                  autoComplete="off"
+                  value={inputPlant.name}
+                  onChange={(e) => handleChangePlant(e)}
+                  placeholder="Ingrese el nombre..."
+                />
+              </div>
+              <div className={styles.inputs}>
+                <label>Código: </label>
+                <input
+                  type="text"
+                  name="code"
+                  autoComplete="off"
+                  value={inputPlant.code}
+                  onChange={(e) => handleChangePlant(e)}
+                  placeholder="Ingrese el código..."
+                />
+              </div>
+            </div>
+          </form>
+            <div className={styles.buttonContainer}>
+              <button type="submit" key="submitFormButton" form="addPlant">
+                Crear Planta
+              </button>
+              <button onClick={() => setShowModal(false)}>Cerrar</button>
+            </div>
         </div>
-      </form>
-      <button type="submit" key="submitFormButton" form="addPlant">
-        Crear Planta
-      </button>
+      </section>
     </div>
   );
 };

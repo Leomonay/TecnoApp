@@ -2,28 +2,67 @@ import React from "react";
 import styles from "./SPList.module.css";
 
 import { useDispatch } from "react-redux";
+import { useState } from "react";
 
 import {
   getLineServicePoints,
   getPlantLines,
   getPlantLocation,
   deleteServicePoint,
+  getSPData,
 } from "../../../../actions/addPlantsActions.js";
+
+import AddServicePoints from "../AddServicePoints/addServicePoints";
+import UpdateSP from "../UpdateSP/UpdateSP";
 
 export default function SPList({
   servicePoints,
   plantName,
   areaName,
   lineName,
-  handleEditServicePoint,
 }) {
   const dispatch = useDispatch();
+
+  let [showModal, setShowModal] = useState(false);
+  let [showModalUpdate, setShowModalUpdate] = useState(false);
+
+  //Función boton editar un SP de la lista
+  let [updateSPData, setUpdateSPData] = useState({
+    newName: "",
+    newCode: "",
+    newGate: "",
+    newAceria: false,
+    newCaloria: false,
+    newTareaPeligrosa: false,
+    oldName: "",
+    oldCode: "",
+  });
+
+  const handleEditServicePoint = async (event) => {
+    let response = await dispatch(getSPData(event.target.value));
+    setUpdateSPData({
+      newName: response.name,
+      newCode: response.code,
+      newGate: response.gate,
+      newAceria: response.aceria,
+      newCaloria: response.caloria,
+      newTareaPeligrosa: response.tareaPeligrosa,
+      oldName: response.name,
+      oldCode: response.code,
+    });
+    setShowModalUpdate(true);
+  };
+
+  //Fin funciones para editar un SP de la lista
 
   //Funcion para borrar un SP
 
   const handleDeleteSP = async (event) => {
     event.preventDefault();
-    let response = await dispatch(
+    let servicePointData = await dispatch(getSPData(event.target.value));
+    console.log('servpoindata',servicePointData)
+    if(servicePointData.devices.length === 0)
+    {let response = await dispatch(
       deleteServicePoint({ name: event.target.value })
     );
     if (response.message) {
@@ -33,15 +72,37 @@ export default function SPList({
     }
     await dispatch(getPlantLocation(plantName));
     await dispatch(getPlantLines(areaName));
-    await dispatch(getLineServicePoints(lineName));
+    await dispatch(getLineServicePoints(lineName));}else {
+      alert("El SP contiene EQUIPOS debe eliminarlos primero");
+    }
   };
   //Fin función para borrar un SP
 
   return (
     <div>
+      <AddServicePoints
+        lineName={lineName}
+        plantName={plantName}
+        areaName={areaName}
+        setShowModal={setShowModal}
+        showModal={showModal}
+      />
+
+      <UpdateSP
+        setUpdateSPData={setUpdateSPData}
+        updateSPData={updateSPData}
+        lineName={lineName}
+        plantName={plantName}
+        areaName={areaName}
+                setShowModalUpdate={setShowModalUpdate}
+        showModalUpdate={showModalUpdate}
+      />
+
       <label>Puntos de Servicio</label>
 
-      <button title="Agregar Pto. Serv.">Agregar Pto. Serv.</button>
+      <button title="Agregar Pto. Serv." onClick={() => setShowModal(true)}>
+        Agregar Pto. Serv.
+      </button>
       <div className={styles.divScrollServPoints}>
         <div className={styles.containerLabel}>
           {servicePoints.length !== 0 &&
@@ -56,7 +117,7 @@ export default function SPList({
                     value={element}
                     onClick={(e) => handleDeleteSP(e)}
                   />
-                 <button
+                  <button
                     className={styles.editButton}
                     title="Edit"
                     key={"edit" + element}

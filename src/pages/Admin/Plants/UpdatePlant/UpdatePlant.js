@@ -2,77 +2,88 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import {
   getPlantList,
-  updatePlant
+  updatePlant,
 } from "../../../../actions/addPlantsActions.js";
-
-const UpdatePlant = ({ updatePlantData, setUpdatePlantData}) => {
+import styles from './UpdatePlant.module.css'
+const UpdatePlant = ({
+  updatePlantData,
+  setUpdatePlantData,
+  setShowModalUpdate,
+  showModalUpdate,
+}) => {
   const dispatch = useDispatch();
 
+  //Función boton editar una planta de la lista
 
- //Función boton editar una planta de la lista
+  const handleUpdatePlant = async (event) => {
+    setUpdatePlantData({
+      ...updatePlantData,
+      [event.target.name]: event.target.value,
+    });
+  };
+  const handleSubmitUpdatePlant = async (event) => {
+    event.preventDefault();
+    let response = await dispatch(updatePlant(updatePlantData));
 
-const handleUpdatePlant = async (event) => {
-  setUpdatePlantData({
-    ...updatePlantData,
-    [event.target.name]: event.target.value,
-  });
-};
-const handleSubmitUpdatePlant = async (event) => {
-  event.preventDefault();
-  let response = await dispatch(updatePlant(updatePlantData));
+    dispatch(getPlantList());
 
-  dispatch(getPlantList());
-
-  if (response.plantUpdated.acknowledged) {
-    alert("Cambios Realizados");
-  } else {
-    alert("No se pudieron hacer los cambios");
-  }
-  setUpdatePlantData({
-    newName: "",
-    newCode: "",
-    oldName: "",
-    oldCode: "",
-  });
-};
-//Fin funciones para editar una planta de la lista
-
-
+    if (response.plantUpdated.acknowledged) {
+      alert("Cambios Realizados");
+    } else {
+      alert("No se pudieron hacer los cambios");
+    }
+    setUpdatePlantData({
+      newName: "",
+      newCode: "",
+      oldName: "",
+      oldCode: "",
+    });
+    setShowModalUpdate(false);
+  };
+  //Fin funciones para editar una planta de la lista
+  const showHideClassName = showModalUpdate ? "displayblock" : "displaynone";
 
   return (
-    <div>
-      <form
-        onSubmit={(e) => handleSubmitUpdatePlant(e)}
-        id="updatePlant"
-      >
-        <div>
-          <div>
-            <label>Nombre: </label>
-            <input
-              type="text"
-              name="newName"
-              autoComplete="off"
-              value={updatePlantData.newName}
-              onChange={(e) => handleUpdatePlant(e)}
-              placeholder="Ingrese el nombre..."
-            />
-          </div>
-          <div>
-            <label>Código </label>
-            <input
-              type="text"
-              name="newCode"
-              autoComplete="off"
-              value={updatePlantData.newCode}
-               onChange={(e) => handleUpdatePlant(e)}
-              placeholder="Ingrese el código..."
-            />
+    <div className={styles[showHideClassName]}>
+      <section className={styles.modalmain}>
+        <div className={styles.container}>
+          <form onSubmit={(e) => handleSubmitUpdatePlant(e)} id="updatePlant">
+            <div className={styles.containerInputs}>
+              <h4>Editar planta</h4>
+              <div>
+                <div className={styles.inputs}>
+                  <label>Nombre: </label>
+                  <input
+                    type="text"
+                    name="newName"
+                    autoComplete="off"
+                    value={updatePlantData.newName}
+                    onChange={(e) => handleUpdatePlant(e)}
+                    placeholder="Ingrese el nombre..."
+                  />
+                </div>
+                <div className={styles.inputs}>
+                  <label>Código: </label>
+                  <input
+                    type="text"
+                    name="newCode"
+                    autoComplete="off"
+                    value={updatePlantData.newCode}
+                    onChange={(e) => handleUpdatePlant(e)}
+                    placeholder="Ingrese el código..."
+                  />
+                </div>
+              </div>
+            </div>
+          </form>
+          <div className={styles.buttonContainer}>
+            <button type="submit" key="submitFormButton" form="updatePlant">
+              Guardar Cambios
+            </button>
+            <button onClick={() => setShowModalUpdate(false)}>Cerrar</button>
           </div>
         </div>
-      </form>
-      <button type="submit" key="submitFormButton" form="updatePlant">
-        Guardar Cambios
-      </button>
+      </section>
     </div>
   );
 };

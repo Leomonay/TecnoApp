@@ -4,7 +4,7 @@ const initialState = {
   lines: [],
   servicePoints: [],
   locationTree: {},
-  actualData: {}
+  actualData: {},
 };
 
 export default function addPlantsReducer(state = initialState, action) {
@@ -14,6 +14,9 @@ export default function addPlantsReducer(state = initialState, action) {
       return {
         ...state,
         plants: plants,
+        areas: [],
+        lines: [],
+        servicePoints: [],
       };
     case "GET_LOCATIONS":
       console.log("Location Tree", action.payload);
@@ -21,6 +24,8 @@ export default function addPlantsReducer(state = initialState, action) {
       return {
         ...state,
         areas: areas,
+        lines: [],
+        servicePoints: [],
         locationTree: action.payload,
       };
 
@@ -29,17 +34,18 @@ export default function addPlantsReducer(state = initialState, action) {
       return {
         ...state,
         lines: lines,
+        servicePoints: [],
       };
-      case "GET_SERVICEPOINTS":
-        return {
-          ...state,
-          servicePoints: action.payload,
-        };
-        case "ACTUAL_DATA":
-          return {
-            ...state,
-            actualData: action.payload,
-          };
+    case "GET_SERVICEPOINTS":
+      return {
+        ...state,
+        servicePoints: action.payload,
+      };
+    case "ACTUAL_DATA":
+      return {
+        ...state,
+        actualData: action.payload,
+      };
     default:
       return state;
   }

@@ -22,6 +22,7 @@ export function getPlantLocation(plantName) {
           type: "GET_LOCATIONS",
           payload: json.tree,
         });
+        return json.tree
       });
   };
 }
@@ -45,6 +46,7 @@ export function getLineServicePoints(line) {
           type: "GET_SERVICEPOINTS",
           payload: json,
         });
+        return json
       });
   };
 }

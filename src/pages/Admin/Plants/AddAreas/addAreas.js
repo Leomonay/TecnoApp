@@ -7,8 +7,12 @@ import {
   getPlantData,
 } from "../../../../actions/addPlantsActions.js";
 
-const AddAreas = ({ plantName }) => {
+import styles from "./addAreas.module.css";
+
+const AddAreas = ({ plantName, setShowModal, showModal }) => {
   const dispatch = useDispatch();
+
+  const showHideClassName = showModal ? "displayblock" : "displaynone";
 
   let [inputArea, setInputArea] = useState({
     name: "",
@@ -29,7 +33,6 @@ const AddAreas = ({ plantName }) => {
 
     let response = await dispatch(addArea(datos));
 
-
     await dispatch(getPlantLocation(plantName));
     if (response.length === 0) {
       alert(response.message);
@@ -41,6 +44,7 @@ const AddAreas = ({ plantName }) => {
       name: "",
       code: "",
     });
+    setShowModal(false);
   };
   //Fin de la función para agregar una planta nueva
 
@@ -62,59 +66,66 @@ const AddAreas = ({ plantName }) => {
   //fin funmción de agregar áreas al listado
 
   return (
-    <div>
-      <form onSubmit={(e) => handleSubmitAreas(e)} id="addArea">
-        <div>
-          <div>
-            <label>Nombre: </label>
-            <input
-              type="text"
-              name="name"
-              autoComplete="off"
-              value={inputArea.name}
-              onChange={(e) => handleChangArea(e)}
-              placeholder="Ingrese el nombre..."
-            />
-          </div>
-          <div>
-            <label>Código </label>
-            <input
-              type="text"
-              name="code"
-              autoComplete="off"
-              value={inputArea.code}
-              onChange={(e) => handleChangArea(e)}
-              placeholder="Ingrese el código..."
-            />
-          </div>
-        </div>
-      </form>
-      <button key="addArea" onClick={() => handleAddArea()}>
-        Agregar Areas
-      </button>
-      <button type="submit" key="submitFormButton" form="addArea">
-        Crear Areas
-      </button>
-      <div>
-        {inputAreas.length !== 0 &&
-          inputAreas.map((element) => {
-            return (
+    <div className={styles[showHideClassName]}>
+      <section className={styles.modalmain}>
+        <div className={styles.container}>
+          <form onSubmit={(e) => handleSubmitAreas(e)} id="addArea">
+            <div>
+              <h4>Agregar areas</h4>
               <div>
-                <span>
-                  {element.name} {element.code}
-                </span>
-                <button
-                  onClick={(event) => hanldeDeleteArea(event)}
-                  key={element.name}
-                  value={element.code}
-                  id={element.name + element.code}
-                >
-                  X
-                </button>
+                <label>Nombre: </label>
+                <input
+                  type="text"
+                  name="name"
+                  autoComplete="off"
+                  value={inputArea.name}
+                  onChange={(e) => handleChangArea(e)}
+                  placeholder="Ingrese el nombre..."
+                />
               </div>
-            );
-          })}
-      </div>
+              <div>
+                <label>Código: </label>
+                <input
+                  type="text"
+                  name="code"
+                  autoComplete="off"
+                  value={inputArea.code}
+                  onChange={(e) => handleChangArea(e)}
+                  placeholder="Ingrese el código..."
+                />
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <button key="addArea" onClick={() => handleAddArea()}>
+          Agregar Area
+        </button>
+        <button type="submit" key="submitFormButton" form="addArea">
+          Crear Areas
+        </button>
+        <div>
+          {inputAreas.length !== 0 &&
+            inputAreas.map((element) => {
+              return (
+                <div>
+                  <span>
+                    {element.name} {element.code}
+                  </span>
+                  <button
+                    onClick={(event) => hanldeDeleteArea(event)}
+                    key={element.name}
+                    value={element.code}
+                    id={element.name + element.code}
+                  >
+                    X
+                  </button>
+                </div>
+              );
+            })}
+        </div>
+        <button onClick={() => setShowModal(false)}>Cerrar</button>
+      </section>
     </div>
   );
 };

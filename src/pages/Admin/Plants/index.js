@@ -35,100 +35,6 @@ export default function AdminPlants() {
     linesName: "",
     spName: "",
   });
-  //Función boton editar una planta de la lista
-  let [updatePlantData, setUpdatePlantData] = useState({
-    newName: "",
-    newCode: "",
-    oldName: "",
-    oldCode: "",
-  });
-
-  const handleEditPlant = async (event) => {
-    let response = await dispatch(getPlantData(event.target.value));
-    setUpdatePlantData({
-      newName: response.name,
-      newCode: response.code,
-      oldName: response.name,
-      oldCode: response.code,
-    });
-  };
-  //Fin funciones para editar un area de la lista
-
-  //Función boton editar un area de la lista
-  let [updateAreaData, setUpdateAreaData] = useState({
-    newName: "",
-    newCode: "",
-    oldName: "",
-    oldCode: "",
-  });
-
-  const handleEditArea = async (event) => {
-    let response = await dispatch(getAreaData(event.target.value));
-    setUpdateAreaData({
-      newName: response.name,
-      newCode: response.code,
-      oldName: response.name,
-      oldCode: response.code,
-    });
-  };
-  //Fin funciones para editar un area de la lista
-
-  //Función boton editar una linea de la lista
-  let [updateLineData, setUpdateLineData] = useState({
-    newName: "",
-    newCode: "",
-    oldName: "",
-    oldCode: "",
-  });
-
-  const handleEditLine = async (event) => {
-    let response = await dispatch(getLineData(event.target.value));
-
-    setUpdateLineData({
-      newName: response.name,
-      newCode: response.code,
-      oldName: response.name,
-      oldCode: response.code,
-    });
-  };
-
-  //Fin funciones para editar una linea de la lista
-
-  //Función boton editar un SP de la lista
-  let [updateSPData, setUpdateSPData] = useState({
-    newName: "",
-    newCode: "",
-    newGate: "",
-    newAceria: false,
-    newCaloria: false,
-    newTareaPeligrosa: false,
-    oldName: "",
-    oldCode: "",
-    oldGate: "",
-    oldAceria: false,
-    oldCaloria: false,
-    oldTareaPeligrosa: false,
-  });
-
-  const handleEditServicePoint = async (event) => {
-    let response = await dispatch(getSPData(event.target.value));
-    setUpdateSPData({
-      newName: response.name,
-      newCode: response.code,
-      newGate: response.gate,
-      newAceria: response.aceria,
-      newCaloria: response.caloria,
-      newTareaPeligrosa: response.tareaPeligrosa,
-      oldName: response.name,
-      oldCode: response.code,
-      oldGate: response.gate,
-      oldAceria: response.aceria,
-      oldCaloria: response.caloria,
-      oldTareaPeligrosa: response.tareaPeligrosa,
-    });
-  };
-
-  //Fin funciones para editar un SP de la lista
 
   useEffect(() => dispatch(getPlantList()), [dispatch]);
 
@@ -139,7 +45,6 @@ export default function AdminPlants() {
         <div>
           <PlantList
             plants={plants}
-            handleEditPlant={handleEditPlant}
             setSelectedData={setSelectedData}
             selectedData={selectedData}
           />
@@ -149,7 +54,6 @@ export default function AdminPlants() {
           <AreasList
             areas={areas}
             plantName={selectedData.plantName}
-            handleEditArea={handleEditArea}
             setSelectedData={setSelectedData}
             selectedData={selectedData}
           />
@@ -162,7 +66,6 @@ export default function AdminPlants() {
             areaName={selectedData.areaName}
             setSelectedData={setSelectedData}
             selectedData={selectedData}
-            handleEditLine={handleEditLine}
           />
         </div>
 
@@ -172,51 +75,9 @@ export default function AdminPlants() {
             plantName={selectedData.plantName}
             areaName={selectedData.areaName}
             lineName={selectedData.linesName}
-            handleEditServicePoint={handleEditServicePoint}
           />
         </div>
       </div>
-
-      <AddPlant />
-
-      <UpdatePlant
-        setUpdatePlantData={setUpdatePlantData}
-        updatePlantData={updatePlantData}
-      />
-
-      <AddAreas plantName={selectedData.plantName} />
-
-      <UpdateArea
-        setUpdateAreaData={setUpdateAreaData}
-        updateAreaData={updateAreaData}
-        plantName={selectedData.plantName}
-      />
-
-      <AddLines
-        areaName={selectedData.areaName}
-        plantName={selectedData.plantName}
-      />
-
-      <UpdateLine
-        setUpdateLineData={setUpdateLineData}
-        updateLineData={updateLineData}
-        plantName={selectedData.plantName}
-        areaName={selectedData.areaName}
-      />
-
-      <AddServicePoints
-        lineName={selectedData.linesName}
-        plantName={selectedData.plantName}
-        areaName={selectedData.areaName}
-      />
-
-      <UpdateSP
-        setUpdateSPData1={setUpdateSPData}
-        updateSPData1={updateSPData}
-        plantName={selectedData.plantName}
-        areaName={selectedData.areaName}
-        lineName={selectedData.linesName}
-      />
     </div>
   );
 }
