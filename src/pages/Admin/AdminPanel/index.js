@@ -17,10 +17,9 @@ export default function AdminPanel(){
     ]
     useEffect(() => console.log(selected), [selected])
 
-    return(<div className='pageBackground'>
+    return(<div className='adminBackground'>
         <MenuOptions options={options}/>
         {selected==='usuarios'&&<AdminUsers/>}
-        {/* <div>{selected=='usuarios'&&'HOLA'}</div> */}
         {selected==='equipos'&&<AdminDevices/>}
         {selected==='plantas'&&<AdminPlants/>}
         {selected==='plan'&&<AdminPlan/>}

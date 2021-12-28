@@ -1,12 +1,13 @@
 .cardMainImg{
-    width: 90%;
+    width: 70%;
 }
 .userCard{
     display: flex;
     flex-direction: column;
-    width: 7rem;
+    width: 8rem;
+    height: 12rem;
     align-items: center;
-    background: linear-gradient(45deg, silver, whitesmoke, silver);
+    background: linear-gradient(45deg, palegreen, whitesmoke, palegreen);
     padding: .5rem;
     border-radius: .5rem;
     margin: .2rem;
@@ -16,9 +17,8 @@
 .userCard>*{
     text-align: center;
 }
-.userCard:active{
-    transform: scale(.98);
-    box-shadow: none;
+.userCard:hover{
+    box-shadow: 0 0 .2rem white;
 }
 .cardMainCaption{
     display: flex;
@@ -29,5 +29,34 @@
 }
 .inactiveUser{
     box-shadow: 0 0 .2rem darkred;
+    background: linear-gradient(45deg, silver, whitesmoke,silver);
     color: grey;
+}
+.cardButton{
+    height: 2rem;
+    width: 2rem;
+    border-radius: 1rem;
+    background-color: none;
+    background-size: 110%;
+    background-position: center;
+    background-repeat: no-repeat;
+    max-height: none;
+    min-width: none;
+    padding: 0;
+}
+
+.editButton{
+    background-image: url('../../../assets/icons/editIcon.png');
+}
+.minusButton{
+    background-image: url('../../../assets/icons/minus.png');
+}
+.plusButton{
+    background-image: url('../../../assets/icons/plus.png');
+}
+@media(max-width:900px){
+    .userCard{
+        transform: scale(.75);
+        margin: -1rem;
+    }
 }

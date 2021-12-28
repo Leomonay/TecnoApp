@@ -11,7 +11,7 @@ const {headersRef} = appConfig
 export default function WODetail(){
     const {code} = useParams()
     const {orderDetail} = useSelector(state=>state.workOrder)
-    const {userData} = useSelector(state=>state.data)
+    const {userData} = useSelector(state=>state.people)
     const dispatch = useDispatch()
     const [warning, setWarning]=useState(false)
 

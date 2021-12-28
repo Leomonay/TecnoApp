@@ -15,11 +15,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getUserFromToken } from './actions/dataActions';
 import { ProtectedRoute } from './routes/ProtectedRoute';
 import WorkOrderCreation from './components/forms/WOForm';
-import AdminUsers from './pages/Admin/Users';
 import AdminPanel from './pages/Admin/AdminPanel';
 
 function App() {
-  const {userData} = useSelector(state=>state.data)
+  const {userData} = useSelector(state=>state.people)
   const [loading, setLoading]=useState(true)
   const [access, setAccess] = useState({})
   const dispatch = useDispatch()
