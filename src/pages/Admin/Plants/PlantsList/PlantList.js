@@ -83,7 +83,7 @@ export default function PlantList({ plants, setSelectedData, selectedData }) {
             {plants.length !== 0 &&
               plants.map((element) => {
                 return (
-                  <div className={styles.cuerpo}>
+                  <div className={styles.cuerpo} key={"divCuerpo" + element}>
                   <input
                       key={"input" + element}
                       type="radio"

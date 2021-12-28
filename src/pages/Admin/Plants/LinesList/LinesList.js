@@ -31,10 +31,6 @@ export default function LinesList({
 
   useEffect(() => {
     if (areaName !== "") setHabilButtonCreate(false);
-  });
-
-  useEffect(() => {
-    if (areaName !== "") setHabilButtonCreate(false);
     else setHabilButtonCreate(true);
   }, [areaName]);
 
@@ -125,7 +121,7 @@ export default function LinesList({
           {lines.length !== 0 &&
             lines.map((element) => {
               return (
-                <div className={styles.cuerpo}>
+                <div className={styles.cuerpo} key={"divCuerpo" + element}>
                   <input
                     key={"input" + element}
                     type="radio"

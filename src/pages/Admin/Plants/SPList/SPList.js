@@ -29,10 +29,6 @@ export default function SPList({
 
   useEffect(() => {
     if (lineName !== "") setHabilButtonCreate(false);
-  });
-
-  useEffect(() => {
-    if (lineName !== "") setHabilButtonCreate(false);
     else setHabilButtonCreate(true);
   }, [lineName]);
 
@@ -123,7 +119,7 @@ export default function SPList({
           {servicePoints.length !== 0 &&
             servicePoints.map((element) => {
               return (
-                <div className={styles.cuerpo}>
+                <div className={styles.cuerpo} key={"divCuerpo" + element}>
                   <label key={"label" + element}>{element}</label>
                   <button
                     className={styles.removeButton}

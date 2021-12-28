@@ -27,10 +27,6 @@ export default function AreasList({
 
   useEffect(() => {
     if (plantName !== "") setHabilButtonCreate(false);
-  });
-
-  useEffect(() => {
-    if (plantName !== "") setHabilButtonCreate(false);
     else setHabilButtonCreate(true);
   }, [plantName]);
 
@@ -116,7 +112,7 @@ export default function AreasList({
             {areas.length !== 0 &&
               areas.map((element) => {
                 return (
-                  <div className={styles.cuerpo}>
+                  <div className={styles.cuerpo} key={"divCuerpo" + element}>
                     <input
                       key={"input" + element}
                       type="radio"
