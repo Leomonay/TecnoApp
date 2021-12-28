@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 
 import {
@@ -23,11 +23,22 @@ export default function AreasList({
   const dispatch = useDispatch();
   let [showModal, setShowModal] = useState(false);
   let [showModalUpdate, setShowModalUpdate] = useState(false);
+  let [habilButtonCreate, setHabilButtonCreate] = useState(true);
+
+  useEffect(() => {
+    if (plantName !== "") setHabilButtonCreate(false);
+  });
+
+  useEffect(() => {
+    if (plantName !== "") setHabilButtonCreate(false);
+    else setHabilButtonCreate(true);
+  }, [plantName]);
 
   const handleChangeAreas = (e) => {
     if (e.target.checked) {
       dispatch(getPlantLines(e.target.value));
-      setSelectedData({ ...selectedData, areaName: e.target.value });
+      setSelectedData({ ...selectedData, areaName: e.target.value, linesName: "",
+      spName: "" });
     }
   };
 
@@ -47,7 +58,7 @@ export default function AreasList({
       oldName: response.name,
       oldCode: response.code,
     });
-    setShowModalUpdate(true)
+    setShowModalUpdate(true);
   };
   //Fin funciones para editar un area de la lista
 
@@ -56,15 +67,16 @@ export default function AreasList({
   const handleDeleteArea = async (event) => {
     event.preventDefault();
     let plantLocations = await dispatch(getPlantLocation(plantName));
-  
+
     if (plantLocations[event.target.value].length === 0) {
-    let response = await dispatch(deleteArea({ name: event.target.value }));
-    if (response.message) {
-      alert(response.message);
+      let response = await dispatch(deleteArea({ name: event.target.value }));
+      if (response.message) {
+        alert(response.message);
+      } else {
+        alert("El área fue borrada");
+      }
+      dispatch(getPlantLocation(plantName));
     } else {
-      alert("El área fue borrada");
-    }
-    dispatch(getPlantLocation(plantName));}else {
       alert("La planta contiene LÍNEAS debe eliminarlas primero");
     }
   };
@@ -88,7 +100,7 @@ export default function AreasList({
 
       <div>
         <label>Areas</label>
-        <button title="Agregar Area" onClick={() => setShowModal(true)}>
+        <button title="Agregar Area" onClick={() => setShowModal(true)} disabled={habilButtonCreate}>
           Agregar Area
         </button>
         <div className={styles.divScroll}>

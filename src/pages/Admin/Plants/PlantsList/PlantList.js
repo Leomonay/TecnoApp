@@ -57,7 +57,9 @@ export default function PlantList({ plants, setSelectedData, selectedData }) {
   const handleChangePlants = (e) => {
     if (e.target.checked) {
       dispatch(getPlantLocation(e.target.value));
-      setSelectedData({ ...selectedData, plantName: e.target.value });
+      setSelectedData({plantName: e.target.value,areaName: "",
+      linesName: "",
+      spName: "", });
     }
   };
 

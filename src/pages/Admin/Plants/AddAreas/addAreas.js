@@ -65,13 +65,18 @@ const AddAreas = ({ plantName, setShowModal, showModal }) => {
 
   //fin funmción de agregar áreas al listado
 
+  const handleClose = () =>{
+    setInputAreas([])
+    setShowModal(false)
+  }
+
   return (
     <div className={styles[showHideClassName]}>
       <section className={styles.modalmain}>
-        <div className={styles.container}>
-          <form onSubmit={(e) => handleSubmitAreas(e)} id="addArea">
-            <div>
-              <h4>Agregar areas</h4>
+        <h4>Agregar areas</h4>
+        <div className={styles.colContent}>
+          <div className={styles.container}>
+            <form onSubmit={(e) => handleSubmitAreas(e)} id="addArea">
               <div>
                 <label>Nombre: </label>
                 <input
@@ -94,37 +99,40 @@ const AddAreas = ({ plantName, setShowModal, showModal }) => {
                   placeholder="Ingrese el código..."
                 />
               </div>
+            </form>
+            <div>
+              <button key="addArea" onClick={() => handleAddArea()}>
+                Agregar Area
+              </button>
+              <button type="submit" key="submitFormButton" form="addArea">
+                Crear Areas
+              </button>
+              <button onClick={() => handleClose()}>Cerrar</button>
             </div>
-          </form>
-        </div>
+          </div>
 
-        <button key="addArea" onClick={() => handleAddArea()}>
-          Agregar Area
-        </button>
-        <button type="submit" key="submitFormButton" form="addArea">
-          Crear Areas
-        </button>
-        <div>
-          {inputAreas.length !== 0 &&
-            inputAreas.map((element) => {
-              return (
-                <div>
-                  <span>
-                    {element.name} {element.code}
-                  </span>
-                  <button
-                    onClick={(event) => hanldeDeleteArea(event)}
-                    key={element.name}
-                    value={element.code}
-                    id={element.name + element.code}
-                  >
-                    X
-                  </button>
-                </div>
-              );
-            })}
+          <div className={styles.inputsAreasList}>
+            <h5>Áreas a agregar:</h5>
+            {inputAreas.length !== 0 &&
+              inputAreas.map((element) => {
+                return (
+                  <div>
+                    <span>
+                      {element.name} {element.code}
+                    </span>
+                    <button
+                      onClick={(event) => hanldeDeleteArea(event)}
+                      key={element.name}
+                      value={element.code}
+                      id={element.name + element.code}
+                    >
+                      X
+                    </button>
+                  </div>
+                );
+              })}
+          </div>
         </div>
-        <button onClick={() => setShowModal(false)}>Cerrar</button>
       </section>
     </div>
   );

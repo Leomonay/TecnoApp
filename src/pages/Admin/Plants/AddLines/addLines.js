@@ -64,13 +64,18 @@ const AddLines = ({ areaName, plantName, setShowModal, showModal }) => {
 
   //fin funmción de agregar áreas al listado
 
+  const handleClose = () =>{
+    setInputLines([])
+    setShowModal(false)
+  }
+
   return (
     <div className={styles[showHideClassName]}>
       <section className={styles.modalmain}>
-        <div className={styles.container}>
-          <form onSubmit={(e) => handleSubmitLines(e)} id="addLine">
-            <div>
-              <h4>Agregar areas</h4>
+        <h4>Agregar Líneas</h4>
+        <div className={styles.colContent}>
+          <div className={styles.container}>
+            <form onSubmit={(e) => handleSubmitLines(e)} id="addLine">
               <div>
                 <label>Nombre: </label>
                 <input
@@ -93,17 +98,20 @@ const AddLines = ({ areaName, plantName, setShowModal, showModal }) => {
                   placeholder="Ingrese el código..."
                 />
               </div>
+            </form>
+            <div>
+              <button key="addLine" onClick={() => handleAddLine()}>
+                Agregar Linea
+              </button>
+              <button type="submit" key="submitFormButton" form="addLine">
+                Crear Lineas
+              </button>
+              <button onClick={() => handleClose()}>Cerrar</button>
             </div>
-          </form>
+          </div>
 
-
-          <button key="addLine" onClick={() => handleAddLine()}>
-            Agregar Linea
-          </button>
-          <button type="submit" key="submitFormButton" form="addLine">
-            Crear Lineas
-          </button>
-          <div>
+          <div className={styles.inputsAreasList}>
+            <h5>Áreas a agregar:</h5>
             {inputLines.length !== 0 &&
               inputLines.map((element) => {
                 return (
@@ -124,7 +132,6 @@ const AddLines = ({ areaName, plantName, setShowModal, showModal }) => {
               })}
           </div>
         </div>
-        <button onClick={() => setShowModal(false)}>Cerrar</button>
       </section>
     </div>
   );

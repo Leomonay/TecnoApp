@@ -2,7 +2,7 @@ import React from "react";
 import styles from "./SPList.module.css";
 
 import { useDispatch } from "react-redux";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import {
   getLineServicePoints,
@@ -25,6 +25,16 @@ export default function SPList({
 
   let [showModal, setShowModal] = useState(false);
   let [showModalUpdate, setShowModalUpdate] = useState(false);
+  let [habilButtonCreate, setHabilButtonCreate] = useState(true);
+
+  useEffect(() => {
+    if (lineName !== "") setHabilButtonCreate(false);
+  });
+
+  useEffect(() => {
+    if (lineName !== "") setHabilButtonCreate(false);
+    else setHabilButtonCreate(true);
+  }, [lineName]);
 
   //Función boton editar un SP de la lista
   let [updateSPData, setUpdateSPData] = useState({
@@ -60,19 +70,20 @@ export default function SPList({
   const handleDeleteSP = async (event) => {
     event.preventDefault();
     let servicePointData = await dispatch(getSPData(event.target.value));
-    console.log('servpoindata',servicePointData)
-    if(servicePointData.devices.length === 0)
-    {let response = await dispatch(
-      deleteServicePoint({ name: event.target.value })
-    );
-    if (response.message) {
-      alert(response.message);
+    console.log("servpoindata", servicePointData);
+    if (servicePointData.devices.length === 0) {
+      let response = await dispatch(
+        deleteServicePoint({ name: event.target.value })
+      );
+      if (response.message) {
+        alert(response.message);
+      } else {
+        alert("El SP fue borrado");
+      }
+      await dispatch(getPlantLocation(plantName));
+      await dispatch(getPlantLines(areaName));
+      await dispatch(getLineServicePoints(lineName));
     } else {
-      alert("El SP fue borrado");
-    }
-    await dispatch(getPlantLocation(plantName));
-    await dispatch(getPlantLines(areaName));
-    await dispatch(getLineServicePoints(lineName));}else {
       alert("El SP contiene EQUIPOS debe eliminarlos primero");
     }
   };
@@ -94,13 +105,17 @@ export default function SPList({
         lineName={lineName}
         plantName={plantName}
         areaName={areaName}
-                setShowModalUpdate={setShowModalUpdate}
+        setShowModalUpdate={setShowModalUpdate}
         showModalUpdate={showModalUpdate}
       />
 
       <label>Puntos de Servicio</label>
 
-      <button title="Agregar Pto. Serv." onClick={() => setShowModal(true)}>
+      <button
+        title="Agregar Pto. Serv."
+        onClick={() => setShowModal(true)}
+        disabled={habilButtonCreate}
+      >
         Agregar Pto. Serv.
       </button>
       <div className={styles.divScrollServPoints}>

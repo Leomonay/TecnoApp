@@ -1,7 +1,7 @@
 import React from "react";
 
 import { useDispatch } from "react-redux";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import styles from "./LinesList.module.css";
 
@@ -26,11 +26,22 @@ export default function LinesList({
 
   let [showModal, setShowModal] = useState(false);
   let [showModalUpdate, setShowModalUpdate] = useState(false);
+  let [habilButtonCreate, setHabilButtonCreate] = useState(true);
+
+  useEffect(() => {
+    if (areaName !== "") setHabilButtonCreate(false);
+  });
+
+  useEffect(() => {
+    if (areaName !== "") setHabilButtonCreate(false);
+    else setHabilButtonCreate(true);
+  }, [areaName]);
 
   const handleChangeLines = (e) => {
     if (e.target.checked) {
       dispatch(getLineServicePoints(e.target.value));
-      setSelectedData({ ...selectedData, linesName: e.target.value });
+      setSelectedData({ ...selectedData, linesName: e.target.value,
+        spName: "" });
     }
   };
 
@@ -97,7 +108,7 @@ export default function LinesList({
 
 
       <label>Lineas</label>
-      <button title="Agregar Linea" onClick={() => setShowModal(true)}>Agregar Linea</button>
+      <button title="Agregar Linea" onClick={() => setShowModal(true)} disabled={habilButtonCreate}>Agregar Linea</button>
       <div className={styles.divScroll}>
         <div className={styles.containerLabel}>
           {lines.length !== 0 &&
