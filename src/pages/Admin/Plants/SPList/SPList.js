@@ -123,8 +123,8 @@ export default function SPList({
           {servicePoints.length !== 0 &&
             servicePoints.map((element) => {
               return (
-                <label key={"label" + element}>
-                  {element}
+                <div className={styles.cuerpo}>
+                  <label key={"label" + element}>{element}</label>
                   <button
                     className={styles.removeButton}
                     title="Eliminar"
@@ -139,7 +139,7 @@ export default function SPList({
                     value={element}
                     onClick={(e) => handleEditServicePoint(e)}
                   />
-                </label>
+                </div>
               );
             })}
         </div>

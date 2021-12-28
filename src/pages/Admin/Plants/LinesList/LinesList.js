@@ -9,7 +9,8 @@ import {
   getLineServicePoints,
   getPlantLines,
   getPlantLocation,
-  deleteLine,getLineData
+  deleteLine,
+  getLineData,
 } from "../../../../actions/addPlantsActions.js";
 
 import AddLines from "../AddLines/addLines";
@@ -40,8 +41,11 @@ export default function LinesList({
   const handleChangeLines = (e) => {
     if (e.target.checked) {
       dispatch(getLineServicePoints(e.target.value));
-      setSelectedData({ ...selectedData, linesName: e.target.value,
-        spName: "" });
+      setSelectedData({
+        ...selectedData,
+        linesName: e.target.value,
+        spName: "",
+      });
     }
   };
 
@@ -63,7 +67,7 @@ export default function LinesList({
       oldCode: response.code,
     });
 
-    setShowModalUpdate(true)
+    setShowModalUpdate(true);
   };
 
   //Fin funciones para editar una linea de la lista
@@ -72,16 +76,19 @@ export default function LinesList({
 
   const handleDeleteLine = async (event) => {
     event.preventDefault();
-    let plantLocations = await dispatch(getLineServicePoints(event.target.value));
+    let plantLocations = await dispatch(
+      getLineServicePoints(event.target.value)
+    );
     if (plantLocations.length === 0) {
-    let response = await dispatch(deleteLine({ name: event.target.value }));
-    if (response.message) {
-      alert(response.message);
+      let response = await dispatch(deleteLine({ name: event.target.value }));
+      if (response.message) {
+        alert(response.message);
+      } else {
+        alert("El área fue borrada");
+      }
+      await dispatch(getPlantLocation(plantName));
+      await dispatch(getPlantLines(areaName));
     } else {
-      alert("El área fue borrada");
-    }
-    await dispatch(getPlantLocation(plantName));
-    await dispatch(getPlantLines(areaName));}else {
       alert("La planta contiene LÍNEAS debe eliminarlas primero");
     }
   };
@@ -89,8 +96,7 @@ export default function LinesList({
 
   return (
     <div>
-
-<AddLines
+      <AddLines
         areaName={areaName}
         plantName={plantName}
         setShowModal={setShowModal}
@@ -106,15 +112,20 @@ export default function LinesList({
         showModalUpdate={showModalUpdate}
       />
 
-
       <label>Lineas</label>
-      <button title="Agregar Linea" onClick={() => setShowModal(true)} disabled={habilButtonCreate}>Agregar Linea</button>
+      <button
+        title="Agregar Linea"
+        onClick={() => setShowModal(true)}
+        disabled={habilButtonCreate}
+      >
+        Agregar Linea
+      </button>
       <div className={styles.divScroll}>
         <div className={styles.containerLabel}>
           {lines.length !== 0 &&
             lines.map((element) => {
               return (
-                <label key={"label" + element}>
+                <div className={styles.cuerpo}>
                   <input
                     key={"input" + element}
                     type="radio"
@@ -123,7 +134,7 @@ export default function LinesList({
                     value={element}
                     onChange={(e) => handleChangeLines(e)}
                   />
-                  {element}
+                  <label key={"label" + element}>{element}</label>
                   <button
                     className={styles.removeButton}
                     title="Eliminar"
@@ -138,7 +149,7 @@ export default function LinesList({
                     value={element}
                     onClick={(e) => handleEditLine(e)}
                   />
-                </label>
+                </div>
               );
             })}
         </div>

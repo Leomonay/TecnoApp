@@ -37,8 +37,12 @@ export default function AreasList({
   const handleChangeAreas = (e) => {
     if (e.target.checked) {
       dispatch(getPlantLines(e.target.value));
-      setSelectedData({ ...selectedData, areaName: e.target.value, linesName: "",
-      spName: "" });
+      setSelectedData({
+        ...selectedData,
+        areaName: e.target.value,
+        linesName: "",
+        spName: "",
+      });
     }
   };
 
@@ -100,7 +104,11 @@ export default function AreasList({
 
       <div>
         <label>Areas</label>
-        <button title="Agregar Area" onClick={() => setShowModal(true)} disabled={habilButtonCreate}>
+        <button
+          title="Agregar Area"
+          onClick={() => setShowModal(true)}
+          disabled={habilButtonCreate}
+        >
           Agregar Area
         </button>
         <div className={styles.divScroll}>
@@ -108,7 +116,7 @@ export default function AreasList({
             {areas.length !== 0 &&
               areas.map((element) => {
                 return (
-                  <label key={"label" + element}>
+                  <div className={styles.cuerpo}>
                     <input
                       key={"input" + element}
                       type="radio"
@@ -117,7 +125,7 @@ export default function AreasList({
                       value={element}
                       onChange={(e) => handleChangeAreas(e)}
                     />
-                    {element}
+                    <label key={"label" + element}>{element}</label>
                     <button
                       className={styles.removeButton}
                       title="Eliminar"
@@ -132,7 +140,7 @@ export default function AreasList({
                       value={element}
                       onClick={(e) => handleEditArea(e)}
                     />
-                  </label>
+                  </div>
                 );
               })}
           </div>

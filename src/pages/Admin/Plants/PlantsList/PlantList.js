@@ -83,8 +83,8 @@ export default function PlantList({ plants, setSelectedData, selectedData }) {
             {plants.length !== 0 &&
               plants.map((element) => {
                 return (
-                  <label key={"label" + element}>
-                    <input
+                  <div className={styles.cuerpo}>
+                  <input
                       key={"input" + element}
                       type="radio"
                       id={element}
@@ -92,7 +92,9 @@ export default function PlantList({ plants, setSelectedData, selectedData }) {
                       value={element}
                       onChange={(e) => handleChangePlants(e)}
                     />
+                    <label key={"label" + element}>
                     {element}
+                    </label>
 
                     <button
                       key={"delete" + element}
@@ -108,7 +110,7 @@ export default function PlantList({ plants, setSelectedData, selectedData }) {
                       value={element}
                       onClick={(e) => handleEditPlant(e)}
                     />
-                  </label>
+                    </div>
                 );
               })}
           </div>

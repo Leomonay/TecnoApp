@@ -88,13 +88,18 @@ const AddServicePoints = ({
 
   //fin funmción de agregar áreas al listado
 
+  const handleClose = () => {
+    setInputServicePoints([]);
+    setShowModal(false);
+  };
+
   return (
     <div className={styles[showHideClassName]}>
       <section className={styles.modalmain}>
-        <div className={styles.container}>
-          <form onSubmit={(e) => handleSubmitLines(e)} id="addServicePoint">
-            <div>
-              <h4>Agregar areas</h4>
+        <h4>Agregar areas</h4>
+        <div className={styles.colContent}>
+          <div className={styles.container}>
+            <form onSubmit={(e) => handleSubmitLines(e)} id="addServicePoint">
               <div>
                 <label>Nombre: </label>
                 <input
@@ -165,16 +170,28 @@ const AddServicePoints = ({
                   <option value={true}>Si</option>
                 </select>
               </div>
-            </div>
-          </form>
+            </form>
 
-          <button key="addServicePoint" onClick={() => handleAddServicePoint()}>
-            Agregar Service Point
-          </button>
-          <button type="submit" key="submitFormButton" form="addServicePoint">
-            Crear Service Point
-          </button>
-          <div>
+            <div>
+              <button
+                key="addServicePoint"
+                onClick={() => handleAddServicePoint()}
+              >
+                Agregar SP
+              </button>
+              <button
+                type="submit"
+                key="submitFormButton"
+                form="addServicePoint"
+              >
+                Crear SP
+              </button>
+              <button onClick={() => handleClose()}>Cerrar</button>
+            </div>
+          </div>
+
+          <div className={styles.inputsSPList}>
+            <h5>Áreas a agregar:</h5>
             {inputServicePoints.length !== 0 &&
               inputServicePoints.map((element) => {
                 return (
@@ -195,7 +212,6 @@ const AddServicePoints = ({
               })}
           </div>
         </div>
-        <button onClick={() => setShowModal(false)}>Cerrar</button>
       </section>
     </div>
   );

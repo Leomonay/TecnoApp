@@ -24,7 +24,19 @@
     background-repeat: no-repeat;
   }
 
-  .containerLabel{
+  .cuerpo{
+    display: grid;
+    grid-template-areas:
+    "input label button button";
+    grid-template-columns: 15% 1fr 18%;
+    align-items: center;
+    justify-items: stretch;
+    margin-right: 10px;
+    /* grid-template-rows: 80px 1fr 50px; */
+}
+
+
+  /* .containerLabel{
     display: flex;
     flex-direction: column;
 }
@@ -33,4 +45,4 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-}
+} */

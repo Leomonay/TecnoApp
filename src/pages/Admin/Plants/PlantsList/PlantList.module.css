@@ -24,13 +24,21 @@
     background-repeat: no-repeat;
   }
 
-  .containerLabel{
-    display: flex;
-    flex-direction: column;
+  .cuerpo{
+    display: grid;
+    grid-template-areas:
+    "input label button button";
+    grid-template-columns: 15% 1fr 18%;
+    align-items: center;
+    justify-items: center;
+    margin-right: 10px;
+    /* grid-template-rows: 80px 1fr 50px; */
 }
 
-.containerLabel label{
+
+
+/* .containerLabel label{
     display: flex;
     flex-direction: row;
     align-items: center;
-}
+} */
