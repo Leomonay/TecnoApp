@@ -79,13 +79,13 @@
     display: flex;
   }
   
-  .inputsAreasList {
+  .inputsLinesList {
     overflow-y: scroll;
     height: 400px;
     /* width: 45%; */
   }
   
-  .inputsAreasList div{
+  .inputsLinesList div{
     display: flex;
     flex-direction: row;
     justify-content: space-between;

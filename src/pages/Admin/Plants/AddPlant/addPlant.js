@@ -9,7 +9,7 @@ import styles from "./addPlant.module.css";
 
 const AddPlant = ({ setShowModal, showModal }) => {
   const dispatch = useDispatch();
-  
+
   const showHideClassName = showModal ? "displayblock" : "displaynone";
 
   let [inputPlant, setInputPlant] = useState({
@@ -17,9 +17,14 @@ const AddPlant = ({ setShowModal, showModal }) => {
     code: "",
   });
 
+  const [errors, setErrors] = useState(true);
+
   //Función crear planta
   const handleChangePlant = (event) => {
     setInputPlant({ ...inputPlant, [event.target.name]: event.target.value });
+    if (inputPlant.name.length !== 0 && inputPlant.code.length !== 0)
+      setErrors(false);
+    else setErrors(true);
   };
 
   const handleSubmitPlant = async (event) => {
@@ -39,6 +44,15 @@ const AddPlant = ({ setShowModal, showModal }) => {
     setShowModal(false);
   };
   //Fin de la función para agregar una planta nueva
+
+  const handleClose = () => {
+    setInputPlant({
+      name: "",
+      code: "",
+    });
+    setShowModal(false);
+    setErrors(true)
+  };
 
   return (
     <div className={styles[showHideClassName]}>
@@ -71,12 +85,23 @@ const AddPlant = ({ setShowModal, showModal }) => {
               </div>
             </div>
           </form>
-            <div className={styles.buttonContainer}>
+          <div className={styles.buttonContainer}>
+            {errors ?<button
+                type="submit"
+                key="submitFormButton"
+                form="addPlant"
+                disabled={errors}
+                className="disabledButton"
+              >
+                Crear Planta
+              </button> : 
               <button type="submit" key="submitFormButton" form="addPlant">
                 Crear Planta
               </button>
-              <button onClick={() => setShowModal(false)}>Cerrar</button>
-            </div>
+            }
+
+            <button onClick={() => handleClose()}>Cerrar</button>
+          </div>
         </div>
       </section>
     </div>

@@ -19,10 +19,14 @@ const AddAreas = ({ plantName, setShowModal, showModal }) => {
     code: "",
   });
   let [inputAreas, setInputAreas] = useState([]);
+  const [errors, setErrors] = useState(true);
 
   //Función crear area
   const handleChangArea = (event) => {
     setInputArea({ ...inputArea, [event.target.name]: event.target.value });
+    if (inputArea.name.length !== 0 && inputArea.code.length !== 0)
+      setErrors(false);
+    else setErrors(true);
   };
 
   const handleSubmitAreas = async (event) => {
@@ -45,6 +49,7 @@ const AddAreas = ({ plantName, setShowModal, showModal }) => {
       code: "",
     });
     setShowModal(false);
+    
   };
   //Fin de la función para agregar una planta nueva
 
@@ -61,14 +66,20 @@ const AddAreas = ({ plantName, setShowModal, showModal }) => {
       name: "",
       code: "",
     });
+    setErrors(true);
   };
 
   //fin funmción de agregar áreas al listado
 
-  const handleClose = () =>{
-    setInputAreas([])
-    setShowModal(false)
-  }
+  const handleClose = () => {
+    setInputAreas([]);
+    setInputArea({
+      name: "",
+      code: "",
+    });
+    setShowModal(false);
+    setErrors(true);
+  };
 
   return (
     <div className={styles[showHideClassName]}>
@@ -101,12 +112,35 @@ const AddAreas = ({ plantName, setShowModal, showModal }) => {
               </div>
             </form>
             <div>
-              <button key="addArea" onClick={() => handleAddArea()}>
-                Agregar Area
-              </button>
-              <button type="submit" key="submitFormButton" form="addArea">
-                Crear Areas
-              </button>
+              {errors ? (
+                <button
+                  key="addAreaDisabled"
+                  disabled={errors}
+                  className="disabledButton"
+                >
+                  Agregar Area
+                </button>
+              ) : (
+                <button key="addArea" onClick={() => handleAddArea()}>
+                  Agregar Area
+                </button>
+              )}
+              {inputAreas.length === 0 ? (
+                <button
+                  disabled={inputAreas.length === 0}
+                  className="disabledButton"
+                >
+                  Crear Areas
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  key="submitFormButton"
+                  form="addArea"
+                 >
+                  Crear Areas
+                </button>
+              )}
               <button onClick={() => handleClose()}>Cerrar</button>
             </div>
           </div>
@@ -118,7 +152,7 @@ const AddAreas = ({ plantName, setShowModal, showModal }) => {
                 return (
                   <div>
                     <span>
-                      {element.name} {element.code}
+                      ({element.code}) {element.name}
                     </span>
                     <button
                       onClick={(event) => hanldeDeleteArea(event)}

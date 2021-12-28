@@ -31,13 +31,20 @@ const AddServicePoints = ({
     tareaPeligrosa: false,
   });
   let [inputServicePoints, setInputServicePoints] = useState([]);
+  const [errors, setErrors] = useState(true);
 
-  //Función crear lineas
+  //Función crear sp
   const handleChangServicePoint = (event) => {
     setInputServicePoint({
       ...inputServicePoint,
       [event.target.name]: event.target.value,
     });
+    if (
+      inputServicePoint.name.length !== 0 &&
+      inputServicePoint.code.length !== 0
+    )
+      setErrors(false);
+    else setErrors(true);
   };
 
   const handleSubmitLines = async (event) => {
@@ -65,7 +72,7 @@ const AddServicePoints = ({
     });
     setShowModal(false);
   };
-  //Fin de la función para agregar una planta nueva
+  //Fin de la función para agregar una sp nueva
 
   const hanldeDeleteServicePoint = (event) => {
     setInputServicePoints(
@@ -73,7 +80,7 @@ const AddServicePoints = ({
     );
   };
 
-  //Funcion para agregar areas al listado
+  //Funcion para agregar sp al listado
   const handleAddServicePoint = () => {
     setInputServicePoints([...inputServicePoints, inputServicePoint]);
     setInputServicePoint({
@@ -84,13 +91,23 @@ const AddServicePoints = ({
       caloria: false,
       tareaPeligrosa: false,
     });
+    setErrors(true);
   };
 
-  //fin funmción de agregar áreas al listado
+  //fin funmción de agregar sp al listado
 
   const handleClose = () => {
     setInputServicePoints([]);
+    setInputServicePoint({
+      name: "",
+      code: "",
+      gate: "",
+      aceria: false,
+      caloria: false,
+      tareaPeligrosa: false,
+    });
     setShowModal(false);
+    setErrors(true);
   };
 
   return (
@@ -123,7 +140,7 @@ const AddServicePoints = ({
                 />
               </div>
               <div>
-                <label>Puerta </label>
+                <label>Puerta: </label>
                 <input
                   type="text"
                   name="gate"
@@ -135,7 +152,7 @@ const AddServicePoints = ({
               </div>
 
               <div>
-                <label>Aceria </label>
+                <label>Aceria: </label>
                 <select
                   name="aceria"
                   onChange={(e) => handleChangServicePoint(e)}
@@ -147,7 +164,7 @@ const AddServicePoints = ({
                 </select>
               </div>
               <div>
-                <label>Caloria </label>
+                <label>Caloria: </label>
                 <select
                   name="caloria"
                   onChange={(e) => handleChangServicePoint(e)}
@@ -159,7 +176,7 @@ const AddServicePoints = ({
                 </select>
               </div>
               <div>
-                <label>Tarea Peligrosa </label>
+                <label>Tarea Peligrosa: </label>
                 <select
                   name="tareaPeligrosa"
                   onChange={(e) => handleChangServicePoint(e)}
@@ -173,19 +190,39 @@ const AddServicePoints = ({
             </form>
 
             <div>
-              <button
-                key="addServicePoint"
-                onClick={() => handleAddServicePoint()}
-              >
-                Agregar SP
-              </button>
-              <button
-                type="submit"
-                key="submitFormButton"
-                form="addServicePoint"
-              >
-                Crear SP
-              </button>
+              {errors ? (
+                <button
+                  key="addSPDisabled"
+                  disabled={errors}
+                  className="disabledButton"
+                >
+                  Agregar SP
+                </button>
+              ) : (
+                <button
+                  key="addServicePoint"
+                  onClick={() => handleAddServicePoint()}
+                >
+                  Agregar SP
+                </button>
+              )}
+
+              {inputServicePoints.length === 0 ? (
+                <button
+                  disabled={inputServicePoints.length === 0}
+                  className="disabledButton"
+                >
+                  Crear SP
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  key="submitFormButton"
+                  form="addServicePoint"
+                >
+                  Crear SP
+                </button>
+              )}
               <button onClick={() => handleClose()}>Cerrar</button>
             </div>
           </div>
@@ -197,7 +234,7 @@ const AddServicePoints = ({
                 return (
                   <div>
                     <span>
-                      {element.name} {element.code}
+                      ({element.code}) {element.name}
                     </span>
                     <button
                       onClick={(event) => hanldeDeleteServicePoint(event)}

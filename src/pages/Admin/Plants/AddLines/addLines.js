@@ -20,10 +20,14 @@ const AddLines = ({ areaName, plantName, setShowModal, showModal }) => {
     code: "",
   });
   let [inputLines, setInputLines] = useState([]);
+  const [errors, setErrors] = useState(true);
 
   //Función crear lineas
   const handleChangLine = (event) => {
     setInputLine({ ...inputLine, [event.target.name]: event.target.value });
+    if (inputLine.name.length !== 0 && inputLine.code.length !== 0)
+      setErrors(false);
+    else setErrors(true);
   };
 
   const handleSubmitLines = async (event) => {
@@ -36,7 +40,7 @@ const AddLines = ({ areaName, plantName, setShowModal, showModal }) => {
     if (response.length === 0) {
       alert(response.message);
     } else {
-      alert("Las areas fueron creadas");
+      alert("Las líneas fueron creadas");
     }
     setInputLines([]);
     setInputLine({
@@ -45,7 +49,7 @@ const AddLines = ({ areaName, plantName, setShowModal, showModal }) => {
     });
     setShowModal(false);
   };
-  //Fin de la función para agregar una planta nueva
+  //Fin de la función para agregar una línea nueva
 
   const hanldeDeleteLine = (event) => {
     setInputLines(
@@ -53,21 +57,27 @@ const AddLines = ({ areaName, plantName, setShowModal, showModal }) => {
     );
   };
 
-  //Funcion para agregar areas al listado
+  //Funcion para agregar líneas al listado
   const handleAddLine = () => {
     setInputLines([...inputLines, inputLine]);
     setInputLine({
       name: "",
       code: "",
     });
+    setErrors(true);
   };
 
-  //fin funmción de agregar áreas al listado
+  //fin funmción de agregar líneas al listado
 
-  const handleClose = () =>{
-    setInputLines([])
-    setShowModal(false)
-  }
+  const handleClose = () => {
+    setInputLines([]);
+    setInputLine({
+      name: "",
+      code: "",
+    });
+    setShowModal(false);
+    setErrors(true);
+  };
 
   return (
     <div className={styles[showHideClassName]}>
@@ -100,24 +110,45 @@ const AddLines = ({ areaName, plantName, setShowModal, showModal }) => {
               </div>
             </form>
             <div>
-              <button key="addLine" onClick={() => handleAddLine()}>
-                Agregar Linea
-              </button>
-              <button type="submit" key="submitFormButton" form="addLine">
-                Crear Lineas
-              </button>
+              {errors ? (
+                <button
+                  key="addLineDisabled"
+                  disabled={errors}
+                  className="disabledButton"
+                >
+                  Agregar Línea
+                </button>
+              ) : (
+                <button key="addLine" onClick={() => handleAddLine()}>
+                  Agregar Línea
+                </button>
+              )}
+
+              {inputLines.length === 0 ? (
+                <button
+                  disabled={inputLines.length === 0}
+                  className="disabledButton"
+                >
+                  Crear Lineas
+                </button>
+              ) : (
+                <button type="submit" key="submitFormButton" form="addLine">
+                  Crear Lineas
+                </button>
+              )}
+
               <button onClick={() => handleClose()}>Cerrar</button>
             </div>
           </div>
 
-          <div className={styles.inputsAreasList}>
-            <h5>Áreas a agregar:</h5>
+          <div className={styles.inputsLinesList}>
+            <h5>Líneas a agregar:</h5>
             {inputLines.length !== 0 &&
               inputLines.map((element) => {
                 return (
                   <div>
                     <span>
-                      {element.name} {element.code}
+                      ({element.code}) {element.name}
                     </span>
                     <button
                       onClick={(event) => hanldeDeleteLine(event)}
