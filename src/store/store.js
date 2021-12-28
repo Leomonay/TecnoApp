@@ -3,13 +3,15 @@ import dataReducer from '../reducers/dataReducer';
 import workOrderReducer from '../reducers/workOrderReducer';
 import deviceReducer from '../reducers/deviceReducer';
 import peopleReducer from '../reducers/peopleReducer';
+import addPlantsReducer from '../reducers/addPlantsReducer'
 import thunk from 'redux-thunk'
 
 const reducers = combineReducers({
     data: dataReducer,
     workOrder: workOrderReducer,
     devices: deviceReducer,
-    people: peopleReducer
+    people: peopleReducer,
+    addPlants: addPlantsReducer
 })
 
 const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
