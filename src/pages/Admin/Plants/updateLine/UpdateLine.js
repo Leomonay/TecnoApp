@@ -34,7 +34,6 @@ const UpdateLine = ({
     let response = await dispatch(updateLine(updateLineData));
     await dispatch(getPlantLocation(plantName));
     await dispatch(getPlantLines(areaName));
-    console.log("response", response);
     if (response.lineUpdated.acknowledged) {
       alert("Cambios Realizados");
     } else {

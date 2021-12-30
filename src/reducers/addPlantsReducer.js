@@ -19,7 +19,6 @@ export default function addPlantsReducer(state = initialState, action) {
         servicePoints: [],
       };
     case "GET_LOCATIONS":
-      console.log("Location Tree", action.payload);
       let areas = Object.keys(action.payload);
       return {
         ...state,

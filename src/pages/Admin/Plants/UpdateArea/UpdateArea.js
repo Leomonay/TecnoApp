@@ -26,13 +26,12 @@ const UpdateArea = ({
       [event.target.name]: event.target.value,
     });
   };
-  
+
   const handleSubmitUpdateArea = async (event) => {
     event.preventDefault();
     let response = await dispatch(updateArea(updateAreaData));
 
     dispatch(getPlantLocation(plantName));
-    console.log("response", response);
     if (response.areaUpdated.acknowledged) {
       alert("Cambios Realizados");
     } else {

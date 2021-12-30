@@ -5,6 +5,7 @@ import AdminDevices from '../Devices'
 import AdminPlan from '../Plan'
 import AdminPlants from '../Plants'
 import AdminUsers from '../Users'
+import AdminCylinders from '../Cylinders'
 import './index.css'
 
 export default function AdminPanel(){
@@ -14,6 +15,7 @@ export default function AdminPanel(){
         {caption: 'Equipos', url: '/admin/equipos'},
         {caption: 'Plantas', url: '/admin/plantas'},
         {caption: 'Plan', url: '/admin/plan'},
+        {caption: 'Garrafas', url: '/admin/garrafas'},
     ]
     useEffect(() => console.log(selected), [selected])
 
@@ -23,5 +25,7 @@ export default function AdminPanel(){
         {selected==='equipos'&&<AdminDevices/>}
         {selected==='plantas'&&<AdminPlants/>}
         {selected==='plan'&&<AdminPlan/>}
+        {selected==='garrafas'&&<AdminCylinders/>}
+        
     </div>)
 }
