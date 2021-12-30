@@ -100,13 +100,26 @@ export default function AreasList({
 
       <div>
         <label>Areas</label>
-        <button
-          title="Agregar Area"
-          onClick={() => setShowModal(true)}
-          disabled={habilButtonCreate}
-        >
-          Agregar Area
-        </button>
+
+        {habilButtonCreate ? (
+          <button
+            key="submitFormButton"
+            title="Agregar Area"
+            disabled={habilButtonCreate}
+            className="disabledButton"
+          >
+            Agregar Area
+          </button>
+        ) : (
+          <button
+            title="Agregar Area"
+            onClick={() => setShowModal(true)}
+            disabled={habilButtonCreate}
+          >
+            Agregar Area
+          </button>
+        )}
+
         <div className={styles.divScroll}>
           <div className={styles.containerLabel}>
             {areas.length !== 0 &&

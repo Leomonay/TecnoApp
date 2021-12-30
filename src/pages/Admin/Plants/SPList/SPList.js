@@ -66,7 +66,6 @@ export default function SPList({
   const handleDeleteSP = async (event) => {
     event.preventDefault();
     let servicePointData = await dispatch(getSPData(event.target.value));
-    console.log("servpoindata", servicePointData);
     if (servicePointData.devices.length === 0) {
       let response = await dispatch(
         deleteServicePoint({ name: event.target.value })
@@ -107,13 +106,25 @@ export default function SPList({
 
       <label>Puntos de Servicio</label>
 
-      <button
-        title="Agregar Pto. Serv."
-        onClick={() => setShowModal(true)}
-        disabled={habilButtonCreate}
-      >
-        Agregar Pto. Serv.
-      </button>
+      {habilButtonCreate ? (
+        <button
+          key="submitFormButton"
+          title="Agregar Area"
+          disabled={habilButtonCreate}
+          className="disabledButton"
+        >
+          Agregar Pto. Serv.
+        </button>
+      ) : (
+        <button
+          title="Agregar Pto. Serv."
+          onClick={() => setShowModal(true)}
+          disabled={habilButtonCreate}
+        >
+          Agregar Pto. Serv.
+        </button>
+      )}
+
       <div className={styles.divScrollServPoints}>
         <div className={styles.containerLabel}>
           {servicePoints.length !== 0 &&
