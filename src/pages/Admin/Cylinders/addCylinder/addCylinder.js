@@ -1,7 +1,10 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
-import { addCylinder,getCylinderList } from "../../../../actions/adminCylindersActions";
+import {
+  addCylinder,
+  getCylinderList,
+} from "../../../../actions/adminCylindersActions";
 import styles from "./addCylinder.module.css";
 
 const AddCylinder = ({ setShowModal, showModal }) => {
@@ -19,26 +22,31 @@ const AddCylinder = ({ setShowModal, showModal }) => {
     code: "",
     refrigerant: "",
     initialStock: "",
-    assignedTo: "",
+    assignedTo: "default",
     status: "",
   });
 
   const [errors, setErrors] = useState(true);
 
   const handleChange = (event) => {
-    setInputCylinder({
+    let newCylinder = {
       ...inputCylinder,
       [event.target.name]: event.target.value,
-    });
+    };
+    console.log(newCylinder)
+    setInputCylinder(newCylinder);
     if (
-      inputCylinder.code !== "" &&
-      inputCylinder.refrigerant !== "" &&
-      inputCylinder.initialStock !== "" &&
-      // inputCylinder.assignedTo !== "" &&
-      inputCylinder.status !== ""
-    )
+      newCylinder.code !== "" &&
+      newCylinder.refrigerant !== "" &&
+      newCylinder.initialStock !== "" &&
+      newCylinder.assignedTo !== "default" &&
+      newCylinder.status !== ""
+    ) {
       setErrors(false);
-    else setErrors(true);
+    } else {
+      setErrors(true);
+    }
+    newCylinder={}
   };
 
   //Función para agregar una garrafa
@@ -46,16 +54,17 @@ const AddCylinder = ({ setShowModal, showModal }) => {
   const handleSubmitCylinder = async (event) => {
     event.preventDefault();
     let response = await dispatch(addCylinder(inputCylinder));
-      dispatch(getCylinderList())
-          alert(response);
-
+    alert(response);
+    
     setInputCylinder({
       code: "",
       refrigerant: "",
       initialStock: "",
-      assignedTo: "",
+      assignedTo: "default",
       status: "",
-        });
+    });
+    dispatch(getCylinderList());
+    setErrors(true);
     setShowModal(false);
   };
 
@@ -66,11 +75,11 @@ const AddCylinder = ({ setShowModal, showModal }) => {
       code: "",
       refrigerant: "",
       initialStock: "",
-      assignedTo: "",
+      assignedTo: "default",
       status: "",
-        });
-    setShowModal(false);
+    });
     setErrors(true);
+    setShowModal(false);
   };
 
   return (
@@ -104,8 +113,8 @@ const AddCylinder = ({ setShowModal, showModal }) => {
             </div>
             <div>
               <label>Refrigerante: </label>
-              <select name="refrigerant" onChange={(e) => handleChange(e)}>
-                <option selected={true}>Seleccionar Refrigerante</option>
+              <select name="refrigerant" onChange={(e) => handleChange(e)} defaultValue={0} value={inputCylinder.refrigerant}>
+                <option value="">Seleccionar Refrigerante</option>
                 {refrigerants.length !== 0 &&
                   refrigerants.map((element) => {
                     return (
@@ -118,8 +127,8 @@ const AddCylinder = ({ setShowModal, showModal }) => {
             </div>
             <div>
               <label>Trabajador: </label>
-              <select name="assignedTo" onChange={(e) => handleChange(e)}>
-                <option  selected={true}>Seleccionar Trabajador</option>
+              <select name="assignedTo" onChange={(e) => handleChange(e)} value={inputCylinder.assignedTo}>
+                <option value="default">Seleccionar Trabajador</option>
                 <option value="">Stock</option>
                 {workers.length !== 0 &&
                   workers.map((element) => {
@@ -133,8 +142,8 @@ const AddCylinder = ({ setShowModal, showModal }) => {
             </div>
             <div>
               <label>Status: </label>
-              <select name="status" onChange={(e) => handleChange(e)}>
-                <option  selected={true}>Seleccionar Status</option>
+              <select name="status" onChange={(e) => handleChange(e)} value={inputCylinder.status}>
+                <option value="">Seleccionar Status</option>
                 {statusGarrafa.map((element) => {
                   return (
                     <option key={"status" + element} value={element}>
@@ -146,23 +155,23 @@ const AddCylinder = ({ setShowModal, showModal }) => {
             </div>
           </form>
           <div>
-          {errors ? (
-            <button
-              type="submit"
-              key="submitFormButton"
-              form="addPlant"
-              disabled={errors}
-              className="disabledButton"
-            >
-              Cargar
-            </button>
-          ) : (
-            <button type="submit" key="submitFormButton" form="addCylinder">
-              Cargar
-            </button>
-          )}
-           <button onClick={() => handleClose()}>Cerrar</button>
-           </div>
+            {errors ? (
+              <button
+                type="submit"
+                key="submitFormButton"
+                form="addPlant"
+                disabled={errors}
+                className="disabledButton"
+              >
+                Cargar
+              </button>
+            ) : (
+              <button type="submit" key="submitFormButton" form="addCylinder">
+                Cargar
+              </button>
+            )}
+            <button onClick={() => handleClose()}>Cerrar</button>
+          </div>
         </div>
       </section>
     </div>
