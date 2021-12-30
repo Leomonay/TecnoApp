@@ -29,7 +29,7 @@ const UpdateCylinder = ({
         oldAssignedTo: cylinderData.assignedTo,
         oldStatus: cylinderData.status,
       }),
-    [cylinderData,setUpdateCylinderData]
+    [cylinderData, setUpdateCylinderData]
   );
 
   const handleUpdateCylinder = async (event) => {
@@ -65,65 +65,59 @@ const UpdateCylinder = ({
     <div className={styles[showHideClassName]}>
       <section className={styles.modalmain}>
         <div className={styles.container}>
+          <h4>Editar Garrafa</h4>
           <form
             onSubmit={(e) => handleSubmitUpdateCylinder(e)}
             id="updateCylinder"
           >
             <div className={styles.containerInputs}>
-              <h4>Editar Garrafa</h4>
+              <label>Code: {updateCylinderData.oldCode}</label>
               <div>
-                <label>Code: {updateCylinderData.oldCode}</label>
-                {/* <label>Refrigerante: {updateCylinderData.oldrefrigerant}</label>
-                <label>Stock Inicial: {updateCylinderData.oldinitialStock}</label>
-                <label>Stock Actual: {updateCylinderData.oldactualStock}</label> */}
-
-                <div>
-                  <label>Trabajador: </label>
-                  <select
-                    name="newAssignedTo"
-                    onChange={(e) => handleUpdateCylinder(e)}
+                <label>Trabajador: </label>
+                <select
+                  name="newAssignedTo"
+                  onChange={(e) => handleUpdateCylinder(e)}
+                >
+                  <option
+                    value=""
+                    selected={updateCylinderData.oldAssignedTo === ""}
                   >
-                    <option
-                      value=""
-                      selected={updateCylinderData.oldAssignedTo === ""}
-                    >
-                      Stock
-                    </option>
-                    {workers.length !== 0 &&
-                      workers.map((element) => {
-                        return (
-                          <option
-                            key={element.id}
-                            value={element.id}
-                            selected={
-                              updateCylinderData.oldAssignedTo === element.id
-                            }
-                          >
-                            {element.name}
-                          </option>
-                        );
-                      })}
-                  </select>
-                </div>
-                <div>
-                  <label>Status: </label>
-                  <select
-                    name="newStatus"
-                    onChange={(e) => handleUpdateCylinder(e)}
-                  >
-                    {statusGarrafa.map((element) => {
+                    Stock
+                  </option>
+                  {workers.length !== 0 &&
+                    workers.map((element) => {
                       return (
                         <option
-                          key={"status" + element}
-                          value={element}
-                          selected={updateCylinderData.oldStatus === element}
+                          key={element.id}
+                          value={element.id}
+                          selected={
+                            updateCylinderData.oldAssignedTo === element.id
+                          }
                         >
-                          {element}
+                          {element.name}
                         </option>
                       );
                     })}
-                  </select>
-                </div>
+                </select>
+              </div>
+              <div>
+                <label>Status: </label>
+                <select
+                  name="newStatus"
+                  onChange={(e) => handleUpdateCylinder(e)}
+                >
+                  {statusGarrafa.map((element) => {
+                    return (
+                      <option
+                        key={"status" + element}
+                        value={element}
+                        selected={updateCylinderData.oldStatus === element}
+                      >
+                        {element}
+                      </option>
+                    );
+                  })}
+                </select>
               </div>
             </div>
           </form>
