@@ -16,9 +16,9 @@ import WorkOrderListItem from '../../components/workOrders/WorkOrderListItem'
 
 export default function WorkOrders(){
   const {workOrderList} = useSelector(state => state.workOrder)
-  const {userData, servicePointList} = useSelector(state => state.data)
+  const {servicePointList} = useSelector(state => state.data)
   const {partialList} = useSelector (state => state.devices)
-  const {supervisors} = useSelector (state => state.people)
+  const {userData, supervisors} = useSelector (state => state.people)
   const today = new Date()
   const [code, setCode]=useState('')
   const [filterList, setFilterList]=useState(false)
@@ -27,7 +27,7 @@ export default function WorkOrders(){
     // to: new Date(),
     from: new Date((new Date()).setMonth((new Date()).getMonth()-7)),
     to: new Date((new Date()).setMonth((new Date()).getMonth()-6)),
-    plantName: userData.plant ||''
+    plantName: userData.plant || ''
   })
   const [device, setDevice]=useState({})
   const dispatch = useDispatch()
@@ -54,8 +54,6 @@ export default function WorkOrders(){
     dispatch(getSupervisors())
     dispatch(resetDetail())
   },[dispatch])
-
-  useEffect(()=>console.log(userData),[userData])
 
   useEffect(()=>{
     const element = document.getElementById('dateFrom')
@@ -101,11 +99,11 @@ export default function WorkOrders(){
             <b>Período</b>
             <div className='filterOption'><b>Desde: </b><input className='dateInput' type='date' id='dateFrom'
               defaultValue={conditions.from.toISOString().split('T')[0]}
-              onChange={(e)=>{console.log('value', e.target.value);e.target.value.length>8&&setConditions({...conditions, from: new Date(e.target.value)})}}  
+              onChange={(e)=>{e.target.value.length>8&&setConditions({...conditions, from: new Date(e.target.value)})}}  
               /></div>
             <div className='filterOption'><b>Hasta: </b><input className='dateInput' type='date' id='dateTo'
               defaultValue={conditions.to.toISOString().split('T')[0]}
-              onChange={(e)=>{console.log('value', e.target.value);setConditions({...conditions, to: new Date(e.target.value)})}}  
+              onChange={(e)=>{setConditions({...conditions, to: new Date(e.target.value)})}}  
               /></div>
             <div className='section'>
               <button className='filter button' onClick={()=>setConditions({

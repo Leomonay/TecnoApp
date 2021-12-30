@@ -74,7 +74,6 @@ export function searchWODevice(devCode){
         body:JSON.stringify({plant: plantCode, filters:{code:devCode}})
     })
         .then(response => response.json())
-        // .then(json => console.log(json))
         .then(json=>dispatch({
             type: 'DEVICE_WORK_ORDER_DETAIL',
             payload: json.list[0]
@@ -102,6 +101,20 @@ export function deviceByName(string){
         .then (response => response.json())
         .then(json=>dispatch({
             type: 'PARTIAL_LIST',
+            payload: json
+        }))
+        .catch(
+            e=>console.error(e.message)
+        )
+    }
+}
+
+export function getDeviceOptions(){
+    return async function (dispatch){
+        return fetch (`${appConfig.url}/devices/options`)
+        .then (response => response.json())
+        .then(json=>dispatch({
+            type: 'DEVICE_OPTIONS',
             payload: json
         }))
         .catch(

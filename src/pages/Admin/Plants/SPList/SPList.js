@@ -66,7 +66,6 @@ export default function SPList({
   const handleDeleteSP = async (event) => {
     event.preventDefault();
     let servicePointData = await dispatch(getSPData(event.target.value));
-    console.log("servpoindata", servicePointData);
     if (servicePointData.devices.length === 0) {
       let response = await dispatch(
         deleteServicePoint({ name: event.target.value })

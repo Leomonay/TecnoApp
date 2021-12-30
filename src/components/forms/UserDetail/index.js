@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { addUser, updateUser } from '../../../actions/peopleActions'
 import { cloneJson } from '../../../utils/utils'
@@ -25,8 +25,6 @@ export default function UserDetail(props){
         </div>
         )
     }
-
-    useEffect(()=>console.log('newUser',newUser),[newUser])
 
     function handleSubmit(e){
         e.preventDefault()

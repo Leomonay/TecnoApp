@@ -34,6 +34,7 @@ export function getUserOptions(){
         )
     } 
 }
+
 export function getUsersList(filters){
     return async function(dispatch){
         return fetch(`${appConfig.url}/users/filtered`,{
@@ -71,7 +72,6 @@ export function updateUser(idNumber, update){
     } 
 }
 export function addUser(user){
-    console.log('action user', user)
     return async function (dispatch){
         return fetch(`${appConfig.url}/users`,{
             method: 'POST',

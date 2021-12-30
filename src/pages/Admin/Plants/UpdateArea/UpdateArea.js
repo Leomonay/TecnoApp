@@ -32,7 +32,6 @@ const UpdateArea = ({
     let response = await dispatch(updateArea(updateAreaData));
 
     dispatch(getPlantLocation(plantName));
-    console.log("response", response);
     if (response.areaUpdated.acknowledged) {
       alert("Cambios Realizados");
     } else {

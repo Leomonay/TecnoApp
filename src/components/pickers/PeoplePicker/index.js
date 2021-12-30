@@ -4,7 +4,7 @@ import './index.css'
 export default function PeoplePicker(props){
     const title = `${props.name}`
     const [enableOptions, setEnableOptions]=useState(false)
-    const [idList,setIDList]=useState([])
+    const [idList,setIDList]=useState(props.idList || [])
 
     function updateList(worker){
         const list = idList.find(element=>element.id===worker.id)?

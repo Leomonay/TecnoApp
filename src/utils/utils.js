@@ -32,17 +32,6 @@ export function cloneJson(json){
         return json
     }
 }
-//prueba
-// const json1 = [{clave1: 1, clave2:'dos'},[3,4,'cinco'],6,new Date('2010 10 21'),'ocho']
-// const json2 = json1
-// json2[1][1]=5
-// console.log('json1',json1, 'json2', json2) // referencia
-
-// const json3 = (cloneJson(json1))
-// json3[3] = new Date('1986 05 13')
-// console.log('json1',json1,'json3',json3) // independiente
-
-
 
 export function BuildFilters(array){
 

@@ -4,7 +4,6 @@ import './index.css'
 export default function JsonViewer(props){
     const json = props.json || {}
     const headers = json?Object.keys(json):[]
-    console.log('json', json)
     return(
       <div className='JsonViewerBackground'>
         {props.title&&<div className='JsonViewerTitle'>{props.title}</div>}

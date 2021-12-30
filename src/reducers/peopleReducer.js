@@ -22,7 +22,7 @@ export default function workOrderReducer (state = initialState,action){
             };
         case 'SUPERVISORS':
             return{
-                state,
+                ...state,
                 supervisors: action.payload
             };
         case 'USER_LIST':

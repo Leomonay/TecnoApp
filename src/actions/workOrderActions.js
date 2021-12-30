@@ -55,7 +55,6 @@ export function newWorkOrder(order){
         }
 }
 export function updateOrder(code,update){
-    console.log('order',code, update)
     return async function(dispatch){
         return fetch(`${appConfig.url}/workorder/${code}`,{
             method: 'PUT',
@@ -67,7 +66,6 @@ export function updateOrder(code,update){
         })
             .then(response => response.json())
             .then(json=>{
-                console.log('action json', json)
                 dispatch({
                     type: 'UPDATED_ORDER',
                     payload: json

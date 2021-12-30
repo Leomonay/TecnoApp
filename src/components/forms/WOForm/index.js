@@ -46,8 +46,6 @@ export default function WorkOrderCreation(){
         setSubmitable(check)
     },[workOrderOptions, order])
 
-    useEffect(()=>console.log('orderDetail', orderDetail),[orderDetail])
-
     useEffect(()=>{
         if (!order.device) return
         if( (partialList.map(e=>e.code)).includes(order.device) ){
@@ -125,8 +123,6 @@ export default function WorkOrderCreation(){
         document.getElementById('deviceInput').value=orderDetail.device[0].item
 
     }},[orderDetail])
-
-    useEffect(()=>console.log('newOrder', order),[order])
 
     return(
         <div className='workOrderBackground'>

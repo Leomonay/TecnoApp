@@ -37,7 +37,6 @@ const UpdateSP = ({
     await dispatch(getPlantLocation(plantName));
     await dispatch(getPlantLines(areaName));
     await dispatch(getLineServicePoints(lineName));
-    console.log("response", response);
     if (response.spUpdated.acknowledged) {
       alert("Cambios Realizados");
     } else {

@@ -16,8 +16,6 @@ export default function AdminUsers(){
     const dispatch = useDispatch()
     const [userDetail,setUserDetail]=useState(null)
 
-    useEffect(()=>console.log(userDetail),[userDetail])
-
     useEffect(()=>{
         dispatch(getUserOptions())
         dispatch(getPlantList())

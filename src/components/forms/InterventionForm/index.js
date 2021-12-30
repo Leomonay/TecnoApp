@@ -68,8 +68,6 @@ export default function AddIntervention(props){
         setFreon(!freon)
     }
 
-    useEffect(()=>console.log('intervention.workers', intervention.workers),[intervention.workers])
-
     return(
         <div className='addInterventionForm'>
             <div className='formTitle'>

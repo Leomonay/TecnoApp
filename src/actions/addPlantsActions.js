@@ -282,7 +282,6 @@ export function deleteServicePoint(servicePoint) {
 }
 
 export function updateServicePoint(servicePoint) {
-  console.log('spUpdate', servicePoint)
   return async function (dispatch) {
    return fetch(`${appConfig.url}/servicePoints/update`, {
      method: "PUT",

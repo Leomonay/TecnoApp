@@ -46,7 +46,6 @@ export default function RegisterForm(){
     }
 
     function setLocation(location){
-        console.log('location', location)
         let obj = cloneJson(newUser)
         for (let item of ['plantName', 'area', 'line']){
             location[item]? obj[item]= location[item] : delete obj[item] 
@@ -54,9 +53,6 @@ export default function RegisterForm(){
         setNewUser(obj)
     }
 
-    useEffect(()=>console.log(newUser),[newUser])
-
-    
     return(<div className="loginForm">
         <h2>Complete el formulario para registrarse</h2>
         <GetLocationTree pickerFunction={(location)=>setLocation(location)}/>

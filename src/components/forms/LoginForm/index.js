@@ -25,7 +25,7 @@ export default function LoginForm(){
     //enrutamiento
 
     return(
-        <div className="loginForm">
+        <form className="loginForm" onSubmit={()=>login()}>
             <h1>Bienvenid@,</h1>
             <h2>Inicie sesión para comenzar</h2>
             <div className="loginInputContainer">
@@ -37,8 +37,8 @@ export default function LoginForm(){
             <input className="loginInput" type="password" id='passwordInput' />
             </div>
             <div className="loginButtons">
-                <button onClick={()=>login()}>Iniciar Sesión</button>
+                <button type='sumbit'>Iniciar Sesión</button>
             </div>
-        </div>
+        </form>
     )
 }

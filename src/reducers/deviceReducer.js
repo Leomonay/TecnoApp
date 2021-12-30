@@ -2,11 +2,12 @@ const initialState = {
     deviceFullList:[],
     deviceFilters:[],
     partialList:[],
+    deviceOptions:[],
     selectedWODevice:'',
     deviceView:''
 }
 
-export default function workOrderReducer (state = initialState,action){
+export default function deviceReducer (state = initialState,action){
     switch (action.type){
         case 'FULL_DEVICE_LIST':
             return{
@@ -33,6 +34,11 @@ export default function workOrderReducer (state = initialState,action){
                 ...state,
                 selectedWODevice: action.payload
             };
+        case 'DEVICE_OPTIONS':
+            return{
+                ...state,
+                deviceOptions: action.payload
+            }
         default: return state;
     }
 }

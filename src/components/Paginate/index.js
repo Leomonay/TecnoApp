@@ -5,12 +5,11 @@ import './index.css'
 
 export default function Paginate(props){
     const [current, setCurrent] = useState(1)
-    const pages  =parseInt(props.pages)
+    const pages = parseInt(props.pages)
     const delta = Math.floor(props.length/2)
     let indexes = []
 
     let first
-    console.log('pages', pages, 'current', current, 'delta', delta)
 
     if(current<=delta+1){
         first = 1
@@ -19,7 +18,7 @@ export default function Paginate(props){
     }else{
         first = current-delta
     }
-    const last = first + 2*delta
+    const last = Math.min(pages,first + 2*delta)
 
     for(let i=first;i<=last;i++){ 
         indexes.push(i)
