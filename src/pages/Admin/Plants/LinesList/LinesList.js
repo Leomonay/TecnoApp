@@ -109,13 +109,26 @@ export default function LinesList({
       />
 
       <label>Lineas</label>
-      <button
-        title="Agregar Linea"
-        onClick={() => setShowModal(true)}
-        disabled={habilButtonCreate}
-      >
-        Agregar Linea
-      </button>
+
+      {habilButtonCreate ? (
+        <button
+          key="submitFormButton"
+          title="Agregar Area"
+          disabled={habilButtonCreate}
+          className="disabledButton"
+        >
+          Agregar Linea
+        </button>
+      ) : (
+        <button
+          title="Agregar Linea"
+          onClick={() => setShowModal(true)}
+          disabled={habilButtonCreate}
+        >
+          Agregar Linea
+        </button>
+      )}
+
       <div className={styles.divScroll}>
         <div className={styles.containerLabel}>
           {lines.length !== 0 &&

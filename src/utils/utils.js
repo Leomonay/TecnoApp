@@ -59,3 +59,18 @@ export function BuildFilters(array){
 export function capitalize(word){
     return word[0].toUpperCase()+word.slice(1).toLowerCase()
 }
+
+export function  filterByWorker (worker, cylinders) {
+    let stateFiltered = cylinders.filter((element) => element.assignedTo === worker)
+     return stateFiltered;
+  };
+
+  export function  filterByRefrigerant (refrigerant, cylinders) {
+    let stateFiltered = cylinders.filter((element) => element.refrigerant === refrigerant)
+     return stateFiltered;
+  };
+
+  export function  filterByStatus (status, cylinders) {
+    let stateFiltered = cylinders.filter((element) => element.status === status)
+     return stateFiltered;
+  };

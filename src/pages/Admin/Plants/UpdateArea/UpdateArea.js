@@ -26,7 +26,7 @@ const UpdateArea = ({
       [event.target.name]: event.target.value,
     });
   };
-  
+
   const handleSubmitUpdateArea = async (event) => {
     event.preventDefault();
     let response = await dispatch(updateArea(updateAreaData));

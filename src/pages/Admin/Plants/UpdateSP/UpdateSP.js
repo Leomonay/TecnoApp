@@ -63,85 +63,77 @@ const UpdateSP = ({
         <h4>Editar planta</h4>
         <div className={styles.container}>
           <form onSubmit={(e) => handleSubmitUpdateArea(e)} id="updateSP">
-           
-              <div className={styles.inputs}>
-                <label>Nombre: </label>
-                <input
-                  type="text"
-                  name="newName"
-                  autoComplete="off"
-                  value={updateSPData.newName}
-                  onChange={(e) => handleUpdateSP(e)}
-                  placeholder="Ingrese el nombre..."
-                />
-              </div>
-              <div className={styles.inputs}>
-                <label>Código: </label>
-                <input
-                  type="text"
-                  name="newCode"
-                  autoComplete="off"
-                  value={updateSPData.newCode}
-                  onChange={(e) => handleUpdateSP(e)}
-                  placeholder="Ingrese el código..."
-                />
-              </div>
+            <div className={styles.inputs}>
+              <label>Nombre: </label>
+              <input
+                type="text"
+                name="newName"
+                autoComplete="off"
+                value={updateSPData.newName}
+                onChange={(e) => handleUpdateSP(e)}
+                placeholder="Ingrese el nombre..."
+              />
+            </div>
+            <div className={styles.inputs}>
+              <label>Código: </label>
+              <input
+                type="text"
+                name="newCode"
+                autoComplete="off"
+                value={updateSPData.newCode}
+                onChange={(e) => handleUpdateSP(e)}
+                placeholder="Ingrese el código..."
+              />
+            </div>
 
-              <div>
-                <label>Puerta </label>
-                <input
-                  type="text"
-                  name="newGate"
-                  autoComplete="off"
-                  value={updateSPData.newGate}
-                  onChange={(e) => handleUpdateSP(e)}
-                  placeholder="Ingrese la puerta..."
-                />
-              </div>
+            <div>
+              <label>Puerta </label>
+              <input
+                type="text"
+                name="newGate"
+                autoComplete="off"
+                value={updateSPData.newGate}
+                onChange={(e) => handleUpdateSP(e)}
+                placeholder="Ingrese la puerta..."
+              />
+            </div>
 
-              <div>
-                <label>Aceria </label>
-                <select name="newAceria" onChange={(e) => handleUpdateSP(e)}>
-                  <option value={false} selected={updateSPData.newAceria}>
-                    No
-                  </option>
-                  <option value={true} selected={updateSPData.newAceria}>
-                    Si
-                  </option>
-                </select>
-              </div>
-              <div>
-                <label>Caloria </label>
-                <select name="newCaloria" onChange={(e) => handleUpdateSP(e)}>
-                  <option value={false} selected={updateSPData.newCaloria}>
-                    No
-                  </option>
-                  <option value={true} selected={updateSPData.newCaloria}>
-                    Si
-                  </option>
-                </select>
-              </div>
-              <div>
-                <label>Tarea Peligrosa </label>
-                <select
-                  name="newTareaPeligrosa"
-                  onChange={(e) => handleUpdateSP(e)}
-                >
-                  <option
-                    value={false}
-                    selected={updateSPData.newTareaPeligrosa}
-                  >
-                    No
-                  </option>
-                  <option
-                    value={true}
-                    selected={updateSPData.newTareaPeligrosa}
-                  >
-                    Si
-                  </option>
-                </select>
-              </div>
-        
+            <div>
+              <label>Aceria </label>
+              <select name="newAceria" onChange={(e) => handleUpdateSP(e)}>
+                <option value={false} selected={updateSPData.newAceria}>
+                  No
+                </option>
+                <option value={true} selected={updateSPData.newAceria}>
+                  Si
+                </option>
+              </select>
+            </div>
+            <div>
+              <label>Caloria </label>
+              <select name="newCaloria" onChange={(e) => handleUpdateSP(e)}>
+                <option value={false} selected={updateSPData.newCaloria}>
+                  No
+                </option>
+                <option value={true} selected={updateSPData.newCaloria}>
+                  Si
+                </option>
+              </select>
+            </div>
+            <div>
+              <label>Tarea Peligrosa </label>
+              <select
+                name="newTareaPeligrosa"
+                onChange={(e) => handleUpdateSP(e)}
+              >
+                <option value={false} selected={updateSPData.newTareaPeligrosa}>
+                  No
+                </option>
+                <option value={true} selected={updateSPData.newTareaPeligrosa}>
+                  Si
+                </option>
+              </select>
+            </div>
           </form>
           <div className={styles.buttonContainer}>
             <button type="submit" key="submitFormButton" form="updateSP">
