@@ -38,6 +38,7 @@ const UpdateCylinder = ({
       [event.target.name]: event.target.value,
     });
   };
+  
   const handleSubmitUpdateCylinder = async (event) => {
     event.preventDefault();
     let response = await dispatch(updateCylinder(updateCylinderData));
