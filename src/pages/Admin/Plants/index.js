@@ -1,9 +1,7 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getPlantList,
- } from "../../../actions/addPlantsActions.js";
+import { getPlantList } from "../../../actions/addPlantsActions.js";
 import styles from "./index.module.css";
 
 import PlantList from "./PlantsList/PlantList.js";
@@ -27,43 +25,45 @@ export default function AdminPlants() {
   useEffect(() => dispatch(getPlantList()), [dispatch]);
 
   return (
-    <div className={styles.divPrincipal}>
-      <div>Administración de Plantas</div>
-      <div className={styles.divContainerScrolls}>
-        <div>
-          <PlantList
-            plants={plants}
-            setSelectedData={setSelectedData}
-            selectedData={selectedData}
-          />
-        </div>
+    <div className="adminOptionSelected">
+      <div className={styles.divPrincipal}>
+        <div>Administración de Plantas</div>
+        <div className={styles.divContainerScrolls}>
+          <div>
+            <PlantList
+              plants={plants}
+              setSelectedData={setSelectedData}
+              selectedData={selectedData}
+            />
+          </div>
 
-        <div>
-          <AreasList
-            areas={areas}
-            plantName={selectedData.plantName}
-            setSelectedData={setSelectedData}
-            selectedData={selectedData}
-          />
-        </div>
+          <div>
+            <AreasList
+              areas={areas}
+              plantName={selectedData.plantName}
+              setSelectedData={setSelectedData}
+              selectedData={selectedData}
+            />
+          </div>
 
-        <div>
-          <LinesList
-            lines={lines}
-            plantName={selectedData.plantName}
-            areaName={selectedData.areaName}
-            setSelectedData={setSelectedData}
-            selectedData={selectedData}
-          />
-        </div>
+          <div>
+            <LinesList
+              lines={lines}
+              plantName={selectedData.plantName}
+              areaName={selectedData.areaName}
+              setSelectedData={setSelectedData}
+              selectedData={selectedData}
+            />
+          </div>
 
-        <div>
-          <SPList
-            servicePoints={servicePoints}
-            plantName={selectedData.plantName}
-            areaName={selectedData.areaName}
-            lineName={selectedData.linesName}
-          />
+          <div>
+            <SPList
+              servicePoints={servicePoints}
+              plantName={selectedData.plantName}
+              areaName={selectedData.areaName}
+              lineName={selectedData.linesName}
+            />
+          </div>
         </div>
       </div>
     </div>

@@ -6,6 +6,7 @@ import peopleReducer from '../reducers/peopleReducer';
 import addPlantsReducer from '../reducers/addPlantsReducer'
 import planReducer from '../reducers/planReducer'
 import adminCilindesReducer from '../reducers/adminCylindersReducer';
+import abmDevicesReducer from '../reducers/abmDevices';
 import thunk from 'redux-thunk'
 
 const reducers = combineReducers({
@@ -15,7 +16,8 @@ const reducers = combineReducers({
     people: peopleReducer,
     addPlants: addPlantsReducer,
     plan: planReducer,
-    adminCylinders: adminCilindesReducer
+    adminCylinders: adminCilindesReducer,
+    abmDevices: abmDevicesReducer
 })
 
 const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;

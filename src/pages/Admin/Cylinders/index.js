@@ -40,7 +40,7 @@ export default function AdminCylinders() {
   }, [filterState, dispatch]);
 
   return (
-    <div>
+    <div className="adminOptionSelected">
       Administración de Garrafas
       <button title="Agregar Garrafa" onClick={() => setShowModal(true)}>
         Agregar Garrafa
