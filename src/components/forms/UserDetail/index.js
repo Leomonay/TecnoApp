@@ -1,14 +1,13 @@
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { addUser, updateUser } from '../../../actions/peopleActions'
-import { cloneJson } from '../../../utils/utils'
 import DropdownChoice from '../../dropdown/DropdownChoice'
 import './index.css'
 
 export default function UserDetail(props){
     //Create, View and Update
     const {user} = props
-    const [newUser,setNewUser] = useState(user==='new'?{}:cloneJson(user))
+    const [newUser,setNewUser] = useState(user==='new'?{}:{...user})
     const dispatch = useDispatch()
 
     function UserField(props){
@@ -18,7 +17,7 @@ export default function UserDetail(props){
             <input className="textInput"
                 id={`user${props.item}`}
                 placeholder={props.placeholder}
-                defaultValue={ user[props.item] || undefined}
+                defaultValue={ props.item==='password' ? undefined: (user[props.item] || undefined)}
                 onChange={(event)=>setNewUser({...newUser,[props.item]:event.target.value})}
                 readOnly={false}
                 />
@@ -43,7 +42,7 @@ export default function UserDetail(props){
 
             { UserField({label:'Nombre', placeholder:"Nombre y apellido", item:'name'})}
             { UserField({label:'Usuario', placeholder:"ingrese nombre de usuario", item:'username'})}
-            { user==='new' && UserField({label:'Contraseña', placeholder:"Contraseña temporal", item:'password'})}
+            { UserField({label:'Contraseña', placeholder:"Contraseña temporal", item:'password'})}
             { UserField({label:'N° ID', placeholder:"Ingrese DNI", item:'idNumber'})}
             { UserField({label:'Email', placeholder:"Ingrese correo electrónico", item:'email'})}
             { UserField({label:'Teléfono', placeholder:"Ingrese teléfono de contacto", item:'phone'})}	

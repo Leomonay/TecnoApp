@@ -88,8 +88,8 @@ export function getPlanDevices(conditions){
         if(plant) filter+='plant='+plant
         if(plant&&year)filter+='&'
         if(year)filter+='year='+year
-        return fetch(`${appConfig.url}/program/devices${filter}`
-        )
+        
+        return fetch(`${appConfig.url}/program/devices${filter}`)
         .then(response=>response.json())
         .then(json=>{
             dispatch({

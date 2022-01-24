@@ -5,7 +5,8 @@ export default function PeoplePicker(props){
     const title = `${props.name}`
     const [enableOptions, setEnableOptions]=useState(false)
     const [idList,setIDList]=useState(props.idList || [])
-    const {options, selectedWorkers} = props
+    const {options,selectedWorkers} = props
+    // const selectedWorkers = props.selectedWorkers || []
 
     function updateList(worker){
         const list = idList.find(element=>element.id===worker.id)?
@@ -23,7 +24,6 @@ export default function PeoplePicker(props){
                 worker.id===option.idNumber
             ).map(element=>element[addedKey])
         )
-        console.log('options', options)
     }
 
     return(
@@ -43,7 +43,7 @@ export default function PeoplePicker(props){
                         <div className={`notImage ${selectedWorkers&&'tiny'}`}>Foto Pendiente</div>
                         <div className='PeoplePickerName'><b>{option.name}</b></div>
                         <div className='PeoplePickerCharge'>{option.charge}</div>
-                        {selectedWorkers.caption && option[selectedWorkers.caption] &&
+                        {selectedWorkers && selectedWorkers.caption && option[selectedWorkers.caption] &&
                             <div className='selection'>
                                 <div className="selectionTitle">{selectedWorkers.caption}</div>
                                 {option[selectedWorkers.caption].map((element, index)=>
