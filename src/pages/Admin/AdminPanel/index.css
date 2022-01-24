@@ -5,8 +5,9 @@
     overflow-y: auto;
 }
 .adminOptionSelected{
-    width: calc(100% - 10rem);
+    width: calc(100% - 11rem);
     height: 100%;
+    overflow-y: auto;
 }
 @media(max-width:900px){
     .adminBackground{
@@ -14,6 +15,6 @@
     }
     .adminOptionSelected{
         width: 100%;
-        height: calc(100% - 3rem);
+        height: calc(100% - 4rem);
     }
 }

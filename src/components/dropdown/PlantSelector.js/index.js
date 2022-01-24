@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { getPlantList } from "../../../actions/dataActions"
+import './index.css'
 
 export function PlantSelector(props){
     const {locationTree} = useSelector(state=>state.data)
@@ -14,8 +15,10 @@ export function PlantSelector(props){
     <div className='formRow'>
         <label className='formLabel'>Planta:</label>
         {plantList[0] &&
-        <select onChange={(e)=>props.select(e.target.value)} defaultValue={props.defaultValue || undefined}>
-            <option value=''>Sin Seleccionar</option>
+        <select className="plantSelector"
+            onChange={(e)=>props.select(e.target.value)}
+            defaultValue={props.defaultValue || undefined}>
+            <option value=''>Seleccione...</option>
             {plantList.map( (plant,index)=>
             <option key={index} value={plant}>{plant}</option>)}
         </select>}

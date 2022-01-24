@@ -36,6 +36,8 @@ const appConfig={
     regDate: 'Fecha Alta',
     environment: 'Ambiente',
     servicePoints: 'Puntos de Servicio',
+    power:'Potencia',
+    age: 'Antigüedad',
 
     //AdminUsers
     charge: 'Cargo',
@@ -43,7 +45,12 @@ const appConfig={
     View: 'Vista',
     Client: 'Usuario',
     Worker: 'Técnico',
-    Internal: 'Interno'
+    Internal: 'Interno',
+
+    //Plan
+    program: 'Programa',
+    reclaims: 'Reclamos',
+    responsible: 'Responsable'
   },
   plantConfig:{
     code: 'SSN'

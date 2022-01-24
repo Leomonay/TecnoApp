@@ -2,7 +2,7 @@ const initialState = {
     deviceFullList:[],
     deviceFilters:[],
     partialList:[],
-    deviceOptions:[],
+    deviceOptions:'',
     selectedWODevice:'',
     deviceView:''
 }

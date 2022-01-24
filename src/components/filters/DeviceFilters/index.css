@@ -1,3 +1,72 @@
+.devFilterContainer{
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
+    margin: .5rem 0
+}
+.openFilters{
+    background-color: whitesmoke;
+    color: black;
+    font-size: unset;
+    padding: 0 .5rem;
+}
+.openFilters:hover{
+    background-color: silver;
+}
+.rangeField{
+    background-color: silver;
+    padding-left: .5rem;
+    border-radius: .2rem;
+    margin: .2rem
+}
 .shortDropdown{
     width: 6rem;
+    margin: 0 .3rem;
+}
+.numberInput{
+    width: 3.5rem;
+    height: 1.5rem;
+}
+.unitButton{
+    border-radius: .1rem;
+    background-color: silver;
+    color: black;
+    height: 2rem;
+    margin: 0;
+    margin-left: .2rem;
+}
+.filterList{
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
+    background-color: slategray;
+    font-size: 80%;
+}
+.selectedFilter{
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    background-color: silver;
+    border-radius: 1rem;
+    padding-left: .5rem;
+    margin: .2rem
+}
+.deleteFilter{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: grey;
+    color: black;
+    border: none;
+    height: 1rem;
+    min-width: 1rem;
+    width: 1rem;
+    margin: 0 .2rem
+}
+.deleteFilter:hover{
+    color: whitesmoke;
+    font-weight: bolder;
+    background-color: grey;
 }
