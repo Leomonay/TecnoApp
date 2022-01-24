@@ -16,7 +16,7 @@ export default function PeoplePicker(props){
         props.update(list)
     }
 
-    if(selectedWorkers){
+    if(selectedWorkers && selectedWorkers.array[0]){
     const addedKey = Object.keys(selectedWorkers.array[0])[1]
     options.filter(option=>
         selectedWorkers.array.map(e=>e.id).includes(option.idNumber)).map(option=>
