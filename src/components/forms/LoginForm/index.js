@@ -7,13 +7,11 @@ export default function LoginForm(){
     const dispatch = useDispatch()
     const {userData} = useSelector(state => state.people)
     const [enter, setEnter] = useState(false)
+    const [loginData, setLoginData] = useState({})
 
-    function login(){
-        const body = {
-          username: document.getElementById('usernameInput').value,
-          password: document.getElementById('passwordInput').value
-        }
-        dispatch(authentication(body))
+    function login(e){
+        e.preventDefault()
+        dispatch(authentication(loginData))
         setEnter(true)
       }
 
@@ -25,16 +23,19 @@ export default function LoginForm(){
     //enrutamiento
 
     return(
-        <form className="loginForm" onSubmit={()=>login()}>
+        <form className="loginForm" onSubmit={(e)=>login(e)}>
             <h1>Bienvenid@,</h1>
             <h2>Inicie sesión para comenzar</h2>
             <div className="loginInputContainer">
                 <label className="loginLabel">Usuario</label>
-                <input className="loginInput" id='usernameInput' type="text" />
+                <input className="loginInput" type="text" 
+                    onChange={(e)=>setLoginData({...loginData, username:e.target.value})}/>
             </div>
                 <div className="loginInputContainer">
                 <label className="loginLabel">Contraseña</label>
-            <input className="loginInput" type="password" id='passwordInput' />
+            <input className="loginInput" type="password"
+                onChange={(e)=>setLoginData({...loginData, password:e.target.value})}
+            />
             </div>
             <div className="loginButtons">
                 <button type='sumbit'>Iniciar Sesión</button>
