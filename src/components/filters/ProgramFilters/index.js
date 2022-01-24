@@ -10,7 +10,7 @@ export default function ProgramFilters(props){
         if(value===''){
             delete newFilters[item]
         }else{
-            newFilters[item]=value
+            newFilters[item]= Number(value) || value
         }
         setFilters(newFilters)
         props.select(newFilters)

@@ -112,7 +112,8 @@ export default function AddIntervention(props){
                     <b>Personal</b>
                     <PeoplePicker name='Intervinientes'
                         options={workersList}
-                        update={(idArray)=>setIntervention({...intervention, workers: idArray})}/>
+                        update={(idArray)=>setIntervention({...intervention, workers: idArray})}
+                        />
                     {( (!intervention.workers) || intervention.workers.length<2) &&
                         <div className='errorMessage'>Debe ingresar al menos 2 personas.</div>}
                 </div>
