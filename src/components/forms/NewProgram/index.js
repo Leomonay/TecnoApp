@@ -17,6 +17,7 @@ export default function NewProgram(props){
     const {selectedWorkers} = props
 
     useEffect(()=>console.log('program',program),[program])
+    console.log('selectedWorkers',selectedWorkers)
 
     function handleSubmit(e){
         e.preventDefault()
