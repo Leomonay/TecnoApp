@@ -10,18 +10,31 @@ export default function ProgramManagement(props){
     const {programList} = useSelector(state => state.plan)
     const dispatch = useDispatch()
 
-    useEffect(()=>dispatch(getPrograms(props.plant)),[dispatch,props.plant])
+    useEffect(()=>dispatch(getPrograms(props.plant, props.year)),[dispatch,props.plant, props.year])
+
+    let programmedWorkers = []
+    programList.map(program=>
+        program.people.map(worker=>
+            programmedWorkers.push({id:worker.id, program:program.name})
+        )
+    )
 
     return(
         <div className="allSpaceFrame">
             <button className="addButton" onClick={()=>setCreate(!create)}>Crear Programa</button>
-            {create && <NewProgram close={()=>setCreate(!create)} plant={props.plant}/>}
+            {create && <NewProgram
+                close={()=>setCreate(!create)}
+                plant={props.plant}
+                selectedWorkers = {programmedWorkers}
+                />}
             {programList && 
             <div>
                 <div className="title">Programas</div>
                 <div className='cardList'>
                     {programList.map((element, index)=>
-                        <ProgramCard key={index} program={element} />
+                        <ProgramCard key={index}
+                            program={element}
+                            selectedWorkers = {programmedWorkers}/>
                         )
                     }
                 </div>

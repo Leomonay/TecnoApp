@@ -125,6 +125,7 @@
     color: red;
     font-size: .6rem;
     font-weight: bold;
+    text-decoration: none;
 }
 @media(max-width: 900px){
     #deviceInput{

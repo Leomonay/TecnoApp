@@ -9,6 +9,7 @@
     align-items: center;
     max-height: 10rem;
     overflow-y: auto;
+    margin: .2rem 0
 }
 .formText{
     width: 15rem;

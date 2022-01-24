@@ -5,6 +5,7 @@ export default function PeoplePicker(props){
     const title = `${props.name}`
     const [enableOptions, setEnableOptions]=useState(false)
     const [idList,setIDList]=useState(props.idList || [])
+    const {options, selectedWorkers} = props
 
     function updateList(worker){
         const list = idList.find(element=>element.id===worker.id)?
@@ -12,6 +13,17 @@ export default function PeoplePicker(props){
             :[...idList, worker]
         setIDList(list)
         props.update(list)
+    }
+
+    if(selectedWorkers){
+    const addedKey = Object.keys(selectedWorkers.array[0])[1]
+    options.filter(option=>
+        selectedWorkers.array.map(e=>e.id).includes(option.idNumber)).map(option=>
+            option[selectedWorkers.caption] = selectedWorkers.array.filter(worker=>
+                worker.id===option.idNumber
+            ).map(element=>element[addedKey])
+        )
+        console.log('options', options)
     }
 
     return(
@@ -26,11 +38,19 @@ export default function PeoplePicker(props){
             {enableOptions&&<div className='peoplePickerListContainer'>
                 <button className='close' onClick={()=>setEnableOptions(!enableOptions)}>X</button>
                 <div className='peoplePickerList'>
-                {props.options.map((option, index)=>
+                {options.map((option, index)=>
                     <div className='peopleCard' key={index} onClick={()=>updateList({id: option.idNumber, name: option.name})}>
-                        <div className='notImage'>Foto Pendiente</div>
+                        <div className={`notImage ${selectedWorkers&&'tiny'}`}>Foto Pendiente</div>
                         <div className='PeoplePickerName'><b>{option.name}</b></div>
                         <div className='PeoplePickerCharge'>{option.charge}</div>
+                        {selectedWorkers.caption && option[selectedWorkers.caption] &&
+                            <div className='selection'>
+                                <div className="selectionTitle">{selectedWorkers.caption}</div>
+                                {option[selectedWorkers.caption].map((element, index)=>
+                                    <div key={index} className='selectionField'>{element}</div>
+                                )}
+                            </div>                        
+                        }
                     </div>)}
                 </div>
             </div>}

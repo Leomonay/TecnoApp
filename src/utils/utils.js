@@ -74,3 +74,10 @@ export function  filterByWorker (worker, cylinders) {
     let stateFiltered = cylinders.filter((element) => element.status === status)
      return stateFiltered;
   };
+
+  export function buildFilters(json, values = {}, ranges = {}){
+    let check = true
+    for (let key of Object.keys(values) ) if(json[key]!==values[key])check=false
+    for (let key of Object.keys(ranges) ) if(json[key]<ranges[key].min || json[key]>ranges[key].max ) check=false
+    return check
+}

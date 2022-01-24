@@ -1,7 +1,7 @@
 .programCard{
     display: flex;
     width: 15rem;
-    height: 10rem;
+    height: 13rem;
     flex-direction: column;
     justify-content: space-between;
     border-radius: 1rem;

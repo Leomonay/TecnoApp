@@ -5,7 +5,7 @@ import LoginForm from '../../components/forms/LoginForm'
 import RegisterForm from '../../components/forms/RegisterForm'
 import Carrousell from '../../components/Carrousell/index'
 
-export default function Equipos() {
+export default function Landing() {
   const [register, setRegister]=useState(false)
 
   return (

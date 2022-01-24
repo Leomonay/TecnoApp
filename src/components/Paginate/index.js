@@ -27,7 +27,7 @@ export default function Paginate(props){
     function EdgeButton(page, caption, pageTo){
         return (
         <button className={`pageButton ${current===page?'disabledButton':''}`}
-            title={page}
+            title={pageTo}
             onClick={(e)=>handleClick(e)}
             disabled={current===page}
             value={pageTo}>
@@ -54,6 +54,14 @@ export default function Paginate(props){
                 </button>
             )}
             {EdgeButton(last,'>>', pages)}
+            {props.size &&
+                <label>Items por Página: 
+                <input className='numberInput'
+                    type='number'
+                    min={props.min || 10}
+                    step={props.step || 10}
+                    defaultValue={props.min || 10}
+                    onChange={(e)=>props.size(e.target.value)}/></label>}
         </div>
     )
 }
