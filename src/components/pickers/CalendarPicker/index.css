@@ -1,0 +1,35 @@
+.monthGrid{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.monthLi{
+    display: flex;
+    width: 30%;
+    background: linear-gradient(45deg, silver, whitesmoke, silver);
+    border-radius: .5rem;
+    margin: 1%;
+    box-shadow: 0 0 .3rem grey;
+}
+
+.monthContent{
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+}
+
+.monthTitle{
+    display: flex;
+    align-items: center;
+    width: 2.5rem;
+    text-align: center;
+    font-weight: bold;
+}
+
+.monthWeek{
+    border: 2px inset grey;
+    margin: .1rem;
+    font-size: 85%;
+    width: 100%;
+    text-align: center;
+}

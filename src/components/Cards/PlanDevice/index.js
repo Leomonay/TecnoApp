@@ -30,7 +30,7 @@ export default function PlanDevice(props){
         device.program&&Object.keys(device.program).map(key=>
             key==='date'? startDetail.month=(new Date(device.program.date)).getMonth()
             :key==='responsible'? startDetail.responsible=device.program.responsible.id
-            :key==='name'? startDetail.program = programs.find(program=>program.name===device.program.name).name
+            :key==='name'? startDetail.program = device.program.name
             :startDetail[key]=device.program[key])
         setStartDevice(startDetail)
     },[device,programs])
