@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getPlanDevices, getPrograms } from "../../../actions/planActions.js";
 import ProgramFilters from "../../filters/ProgramFilters/index.js";
+import CalendarPicker from "../../pickers/CalendarPicker/index.js";
 import './index.css'
 
 export default function PlanCalendar(props){
@@ -37,30 +38,29 @@ export default function PlanCalendar(props){
     },[plant,year, dispatch])
 
     return(
-        <div>
-            <div className='section'>
+        <div className="calendarBody">
+            <div className='rowForm'>
                 <div className='title'>Filtros:</div>
                 {! (props.plant && props.year) && <label className='longLabel'>Debe seleccionar Planta y Año</label>}
                 { (props.plant && props.year) && <ProgramFilters
                     programList = {programList}
                     select={(json)=>setFilters(json)}/>}
             </div>
-            <div className='section'>
-                <div className='column'>
+            <div className='rowForm'>
+                <div className='menu column'>
                     <div className="title">Equipos</div>
                     {devicePlanList && devicePlanList.filter(device=>codeList.includes(device.code)).map(device=>
-                        <div className='calendarDevItem' key={device.code} draggable='true'>
+                        device.program && <div className='calendarDevItem' key={device.code} draggable='true'>
                             <div><b>{device.name}</b></div>
                             <div>{device.program.name}</div>
-                            <div>{device.program.date}</div>
+                            <div>{device.program.date&& (new Date (device.program.date) ).toLocaleDateString()}</div>
                             <div>{device.program.observations}</div>
                         </div>
                     )}
                 </div>
-                <div className='column'>
-                    Calendario
+                <div className='content column'>
                     <div className="calendar Grid">
-                        {<div></div>}
+                        {<CalendarPicker year={year}/>}
                     </div>
                 </div>
             </div>

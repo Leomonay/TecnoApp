@@ -5,7 +5,7 @@
     overflow-y: auto;
 }
 .adminOptionSelected{
-    width: calc(100% - 11rem);
+    width: 100%;
     height: 100%;
     overflow-y: auto;
 }
