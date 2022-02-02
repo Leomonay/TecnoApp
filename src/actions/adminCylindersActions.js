@@ -1,4 +1,4 @@
-import { appConfig } from "../config";
+import { appConfig } from "../apiConfig";
 
 export function getCylinderList() {
   return async function (dispatch) {

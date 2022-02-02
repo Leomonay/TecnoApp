@@ -4,7 +4,7 @@ import { Form } from 'reactstrap'
 import { getDeviceFromList, searchWODevice } from '../../../actions/deviceActions'
 import { getWOOptions, newWorkOrder, resetNewOrder, searchWO, updateOrder } from '../../../actions/workOrderActions'
 import DevicePicker from '../../DevicePicker'
-import { appConfig } from '../../../config'
+import {appConfig} from "../../../config"
 import AccordOption from '../../AccordOption'
 import './index.css'
 import { getWorkerList } from '../../../actions/peopleActions'

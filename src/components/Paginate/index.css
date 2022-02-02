@@ -1,6 +1,13 @@
+.pageFooter{
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
 .paginate{
     display: flex;
     max-width: 90vw;
+    height: fit-content;
 }
 .pageButton{
     display: flex;
@@ -21,8 +28,12 @@
     background-color: whitesmoke;
     color: darkslategray
 }
-@media(max-width=900px){
+@media(max-width: 900px){
     .pageButton{
-        width: 1.5rem;
+        min-width: 1rem;
+        margin: .1rem
+    }
+    .pageFooter{
+        align-items: center;
     }
 }

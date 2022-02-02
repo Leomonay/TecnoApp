@@ -85,3 +85,6 @@ button:hover, .button:hover{
 .editButton:hover{
   background-color: green;
 }
+.spaced{
+  justify-content: space-evenly;
+}

@@ -35,7 +35,6 @@ export default function DevicesList({
 
   const handleDeleteDevice = async (event) => {
     let response = await dispatch(deleteDevice({ id: event.target.value }));
-    console.log("response deleted", response);
     if (response.hasOwnProperty("message")) {
       alert(response.message);
     } else {

@@ -1,81 +1,40 @@
 import { useEffect } from 'react'
 import { useState } from 'react'
-import DeviceOptions from '../../dropdown/DeviceOptions'
-import MonthPicker from '../../pickers/MonthPicker'
+import { appConfig } from '../../../config'
 import './index.css'
+const {frequencies} = appConfig
 
 export default function PlanDevice(props){
-    const {onSave, programs} = props
-    const [device, setDevice] = useState({...props.device})
-    const power = device.power
-    const [responsible, setResponsible] = useState(
-        (device.program && device.program.responsible )?
-            device.program.responsible.id
-            :undefined)
-    const [program, setProgram]=useState(device.program?
+    const {onSave, programs, device} = props
+    const [startProgram, setStartProgram] = useState(device.program) // programa en el equipo
+    const [program, setProgram] = useState(device.program?
         programs.find(program=>program.name===device.program.name)
-        :undefined)
-    const [startDevice, setStartDevice] = useState({device:[device.code]})
-    const [save,setSave]=useState(false)
-    const [planDevice, setPlanDevice] = useState(startDevice)
+        :undefined) //programa elegido de la lista de programas
+    const [newProgram, setNewProgram] = useState(device.program) // programa nuevo
+    const [save, setSave]=useState(false)
 
-    useEffect(()=>{
-        const device = {...props.device}
-        setDevice(device)
-        },[props.device])
+    useEffect(()=>setSave( !( JSON.stringify(startProgram) === JSON.stringify(newProgram) ) )
+    ,[startProgram,newProgram])
     
-    useEffect(()=>{
-        const startDetail = {}
-        startDetail.device = [device.code]
-        device.program&&Object.keys(device.program).map(key=>
-            key==='date'? startDetail.month=(new Date(device.program.date)).getMonth()
-            :key==='responsible'? startDetail.responsible=device.program.responsible.id
-            :key==='name'? startDetail.program = device.program.name
-            :startDetail[key]=device.program[key])
-        setStartDevice(startDetail)
-    },[device,programs])
-    
-    useEffect(()=>setPlanDevice(startDevice),[startDevice])    
-
-    function handleResponsible(name){
-        let newProgram = {...planDevice}
-        if(name){
-            const id = program.people.find(worker=>worker.name===name).id
-            newProgram.responsible= id
-            setResponsible(id)
+    useEffect(()=>setStartProgram( device.program ),[device.program])
+   
+    function handleProperty(key, value){
+        let program = {...newProgram}
+        if (value === ''){
+            delete program[key]
         }else{
-            setResponsible('')
-            delete newProgram.responsible
+            if(!program) program = {}
+            program[key]=value
         }
-        setSave(JSON.stringify(newProgram)!==JSON.stringify(startDevice))
-        setPlanDevice(newProgram)
+        setNewProgram(program)
     }
-    
-    function handleProgram(program){
-        let newPlan = {...planDevice}
-        if(!program){
-            for (let field of ['program', 'year', 'plant'] ) delete (newPlan[field])
-        }
-        if(program){
-            for (let field of ['year', 'plant']) newPlan[field]=program[field]
-            newPlan.program=program.name
-        }
-        setResponsible('')
-        delete newPlan.responsible
-        setSave(JSON.stringify(newPlan)!==JSON.stringify(startDevice))
+
+    function handleProgram(value){
+        const program = programs.find(program=>program.name===value)
         setProgram(program)
-        setPlanDevice(newPlan)
-    }
-
-    function setNewProgram(item,value){
-        const newPlan = {...planDevice}
-        if(value === '') {
-            delete newPlan[item]
-        }else{
-            newPlan[item]=value
-        }
-        setSave(JSON.stringify(newPlan)!==JSON.stringify(startDevice))
-        setPlanDevice(newPlan)
+        setNewProgram(value==='' ?
+            undefined :
+            {name: value, year:program.year, plant:program.plant})
     }
 
     function DeviceItem(props){
@@ -89,10 +48,12 @@ export default function PlanDevice(props){
     }
 
     function handleSave (){
-        setStartDevice(planDevice)
-        setSave(false)
-        onSave(planDevice)
+        let program = {...newProgram}
+        if (!program.frequency) program.frequency=48
+        onSave({device: [device.code], program})
     }
+
+    // useEffect(()=>console.log('newProgram',newProgram),[newProgram])
 
     return(
         <div className='deviceListLI'>
@@ -106,9 +67,9 @@ export default function PlanDevice(props){
                 <div className='deviceCardColumn'>
                     <div className='wrap section'>
                         <b>{device.name}</b>
-                        {` (${device.type} ${power>7500?
-                            Math.floor(power/3000)+'TR'
-                            :power+'Frig'}
+                        {` (${device.type} ${device.power>7500?
+                            Math.floor(device.power/3000)+'TR'
+                            :device.power+'Frig'}
                             ${device.refrigerant})`}
                         
                     </div>
@@ -127,51 +88,77 @@ export default function PlanDevice(props){
                         <DeviceItem title='RECLAMOS' value={device.reclaims} color='salmon' font='90%'/>
                     </div>
                 </div>
-                <div className='deviceCardColumn'>
+                <div className='deviceCardColumn'
+                    key={newProgram && newProgram.name?
+                        newProgram.name.length+1
+                        : 1}>
                     <div className='section justifyCenter'>
                         <label className='formLabel'>Programa</label>
-                        <DeviceOptions
-                            className='midDropDown'
-                            item='Seleccionar'
-                            options={programs && programs.map(program=>program.name)}
-                            defaultValue={device.program && device.program.name}
-                            select={(program,event)=>
-                                handleProgram(programs.find(program=>
-                                    program.name===event.target.value))
-                            }/>
+                        <select className='midDropDown'
+                            defaultValue={newProgram && newProgram.name}
+                            onChange={(event)=>handleProgram(event.target.value)}>
+                            <option value=''>Sin Seleccionar</option>
+                            {programs && programs.map( (program, index)=>
+                                <option key={index} value={program.name}>{program.name}</option>
+                            )}
+                        </select> 
                     </div>
 
-                    <div className='section justifyCenter'>
+                    <div className='section justifyCenter'
+                        key={newProgram && newProgram.responsible?
+                            newProgram.responsible.id+2
+                            : 2}>
                         <label className='formLabel'>Responsable</label>
-                    <DeviceOptions
-                        className='midDropDown'
-                        item='SIN ASIGNAR'
-                        options={program? program.people.map(e=>e.name):[]}
-                        value={(program && responsible)? program.people.find(e=>e.id===responsible).name : ''}
-                        disabled={!!planDevice.program}
-                        select={(item,event)=>handleResponsible(event.target.value)}
-                    />
+                        <select className='midDropDown' 
+                            onChange={(event)=>handleProperty(
+                                'responsible', 
+                                program.people.find(worker=>worker.id === Number(event.target.value) )
+                                )}
+                            defaultValue={(newProgram && newProgram.responsible)?
+                                ''+newProgram.responsible.id
+                                :''}>
+                            <option value=''>Sin Asignar</option>
+                            {program && program.people.map(worker=>
+                                <option key={worker.id} value={worker.id}>{worker.name}</option>
+                            )}
+                        </select>
                     </div>
-                    <div className='section justifyCenter'>
+
+                    <div className='section justifyCenter'
+                        key={newProgram && newProgram.cost?
+                            newProgram.cost+3
+                            : 3}>
                         <label className='formLabel'>Costo(mU$S)</label>
                         <input type='number' className='midDropDown' min='0'
-                            defaultValue={planDevice.cost}
-                            onChange={(e)=>setNewProgram('cost', Number(e.target.value) )}/>
+                            value={newProgram && newProgram.cost}
+                            onChange={(e)=>handleProperty('cost', Number(e.target.value) )}/>
                     </div>
+
+                    <div 
+                        key={newProgram && newProgram.frequency?
+                            newProgram.frequency+4
+                            : 4}
+                            >
+                        <label className='formLabel'>Frecuencia</label>
+                        <select className='midDropDown'
+                            defaultValue={(newProgram && newProgram.frequency) || '48'}
+                            onChange={(event)=>handleProperty('frequency', Number(event.target.value))}
+                            >
+                            {frequencies.map((element, index)=>
+                            <option key={index} value={element.weeks}>{element.frequency}</option>)}
+                        </select>
+                    </div>
+
                 </div>
-                <div className='sideMonthPicker'>
-                    <label className='formLabel'>Calendario</label>
-                    <MonthPicker select={(value)=>setNewProgram('month', Number(value) )}
-                        selected={planDevice.month}/>
-                </div>
-                <div className='sideMonthPicker'>
+
+                <div className='devicePlanComments'>
                     <label className='formLabel'>Comentarios</label>
                     <textarea className='planComments'
-                        onChange={(e)=>setNewProgram('observations',e.target.value)}
-                        defaultValue={startDevice.observations}
+                        onChange={(e)=>handleProperty('observations',e.target.value)}
+                        defaultValue={newProgram && newProgram.observations}
                         />
                 </div>
-                {save&&<button className='saveButton' onClick={()=>handleSave(planDevice)}>GUARDAR</button>}
+                {save&&<button className='saveButton' onClick={()=>handleSave()}>GUARDAR</button>}
             </div>
         </div>
     )

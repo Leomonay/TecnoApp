@@ -1,9 +1,24 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import './index.css'
 
 export default function ProgramFilters(props){
     const {programList} = props
     const [filters, setFilters]=useState({})
+    const [workers, setWorkers]=useState([])
+
+    useEffect(()=>{
+        let workers = []
+        const list = filters.name?
+            programList.filter(program=>program.name===filters.name)
+            :programList
+        list.map(program=>program.people.map(worker=>{
+            const found = workers.find(element=>element.id === worker.id)
+            if(!found) workers.push(worker)
+        }))
+        workers.sort((a,b)=>a.name>b.name? 1 : -1)
+        setWorkers(workers)
+        console.log(workers)
+    },[filters, programList])
 
     function handleValue (item,value){
         const newFilters = {...filters}
@@ -15,19 +30,31 @@ export default function ProgramFilters(props){
         setFilters(newFilters)
         props.select(newFilters)
     }
+    function handleDates(boolean){
+        const newFilters = {...filters}
+        if (boolean) newFilters.planned=[]
+        if (!boolean) delete newFilters.planned
+        setFilters(newFilters)
+        props.select(newFilters)
+    }
 
     return(<div>
-        <select className='programOption' onChange={(e)=>handleValue('program', e.target.value)} disabled={!programList}>
+        <select className='programOption' onChange={(e)=>handleValue('name',e.target.value)} disabled={!programList}>
             <option value = ''>{programList?'todos los programas':'Seleccione Planta y año'}</option>
             {programList && programList.map(element=>element.name).map(name=>
                 <option key={name} value={name}>{name}</option>
             )}
         </select>
-        <select onChange={(e)=>handleValue('responsible', e.target.value)} disabled={!filters.program}>
-            <option value = ''>{filters.program?'todos los responsables':'Seleccione Programa'}</option>
-            {filters.program && programList.find(program=>program.name===filters.program).people.map(worker=>
+        <select onChange={(e)=>handleValue('responsible', e.target.value)} disabled={!programList}>
+            <option value = ''>Todos los responsables</option>
+            {workers.map(worker=>
                 <option key={worker.id} value={worker.id}>{worker.name}</option>
             )}
         </select>
+
+        <button className="openFilters" onClick={()=>handleDates(!filters.planned)}>
+            {filters.planned?'Mostrar todos los equipos':'Mostrar equipos sin fecha'}
+        </button>
+
     </div>)
 }

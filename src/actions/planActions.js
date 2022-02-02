@@ -1,4 +1,4 @@
-import { appConfig } from "../config"
+import { appConfig } from "../apiConfig"
 
 export function createProgram(object){
     return async function (dispatch){
@@ -39,6 +39,30 @@ export function updateProgram(programId,update){
         })
     }
 }
+
+export function createPlan(planDevices){
+    return async function (dispatch){
+        return fetch(`${appConfig.url}/program/devices`,{
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(planDevices)
+        })
+        .then(response=>response.json())
+        .then(json=>{
+            const {errors, created} = json
+            if(errors.length>0)alert(`Error${errors.length>1&&'es'}:` + errors.map(item=>`${item.code}: ${item.detail}`))
+            if(created.device.length>0)
+            dispatch({
+                type: 'UPDATE_DEVICE_PLAN',
+                payload: created
+            })
+        })
+    }
+}
+
 export function updatePlan(update){
     return async function (dispatch){
         return fetch(`${appConfig.url}/program/devices`,{
@@ -51,10 +75,11 @@ export function updatePlan(update){
         })
         .then(response=>response.json())
         .then(json=>{
-            if(json.errors.length>0)alert(`Error${json.error.length>1&&'es'}:` + json.error.map(item=>`${item.code}: ${item.detail}`))
-            if(json.updated.device.length>0)dispatch({
+            const{errors, updated} = json
+            if ( errors.length > 0 ) alert(`Error${errors.length>1&&'es'}:` + errors.map(item=>`${item.code}: ${item.detail}`))
+            if( updated.device.length>0)dispatch({
                     type: 'UPDATE_DEVICE_PLAN',
-                    payload: json.updated
+                    payload: updated
                 })
         })
     }
@@ -85,7 +110,7 @@ export function getPlanDevices(conditions){
     return async function (dispatch){
         const {plant, year} = conditions
         let filter = (plant||year) ? '?' : ''
-        if(plant) filter+='plant='+plant
+        if(plant) filter+='plantName='+plant
         if(plant&&year)filter+='&'
         if(year)filter+='year='+year
         
@@ -100,24 +125,3 @@ export function getPlanDevices(conditions){
     }
 }
 
-export function createPlan(planDevices){
-    return async function (dispatch){
-        return fetch(`${appConfig.url}/program/devices`,{
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(planDevices)
-        })
-        .then(response=>response.json())
-        .then(json=>{
-            if(json.errors.length>0)alert(`Error${json.error.length>1&&'es'}:` + json.error.map(item=>`${item.code}: ${item.detail}`))
-            if(json.created.device.length>0)
-            dispatch({
-                type: 'UPDATE_DEVICE_PLAN',
-                payload: json.created
-            })
-        })
-    }
-}

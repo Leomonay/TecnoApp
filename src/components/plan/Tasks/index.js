@@ -11,8 +11,8 @@ import { getRefrigerants } from "../../../actions/adminCylindersActions";
 import ProgramForm from "../../forms/ProgramForm";
 
 export default function PlanTask(props){
-    const [plant] = useState(props.plant)
-    const [year] = useState(props.year)
+    const [plant, setPlant] = useState(props.plant)
+    const [year, setYear] = useState(props.year)
 
     const [filters, setFilters]=useState({ valueFilters:{}, rangeFilters:{}, includeFilters: {} })
 
@@ -29,9 +29,11 @@ export default function PlanTask(props){
         dispatch(getDeviceOptions())
         dispatch(getPrograms({plant, year}))
         dispatch(getRefrigerants())
+        dispatch(getPlanDevices({plant,year}))
     },[dispatch, plant, year])
 
-
+    useEffect(()=>setPlant(props.plant),[props.plant])
+    useEffect(()=>setYear(props.year),[props.year])
 
     async function handleSave(json){
         let create = []
@@ -98,7 +100,6 @@ export default function PlanTask(props){
         for (let code of codeList.map(e=>e.code)) document.getElementById(code).checked=!check
     }
 
-    useEffect(()=> dispatch(getPlanDevices({plant,year})) , [plant, year, dispatch])
 
     return(
         <div className="pageContent">
@@ -126,7 +127,7 @@ export default function PlanTask(props){
                 </div>}
             </div>
             <div className="taskDeviceList" >
-                    {filteredList && filteredList.slice(page.first, page.first+page.size).map((device, index)=>{
+                    {filteredList[0] && filteredList.slice(page.first, page.first+page.size).map((device, index)=>{
                         const key = device.code + (device.program?
                             Object.keys(device.program).map(key=>JSON.stringify(device.program[key])[1]).join('')
                             :'')
@@ -142,21 +143,21 @@ export default function PlanTask(props){
                             onSave={(json)=>handleSave(json)}
                             />
                     })}
+                    {!filteredList[0] && <div className='errorMessage'>
+                        No hay elementos para mostrar para esa planta y año 
+                    </div>}
             </div>
 
-            <div className="paginate">
-                <Paginate pages={Math.ceil(filteredList.length / page.size)}
-                    length='10'
-                    min='10'
-                    step='10'
-                    select={(value)=>setPage({...page,first: (Number(value) -1) * page.size })} 
-                    size={(value)=>setPage({...page, size: Number(value)})}
-                    />
-            </div>
+            <Paginate pages={Math.ceil(filteredList.length / page.size)}
+                length='10'
+                min='10'
+                step='10'
+                select={(value)=>setPage({...page,first: (Number(value) -1) * page.size })} 
+                size={(value)=>setPage({...page, size: Number(value)})}
+                />
 
             {programForm&&selection&& <ProgramForm 
                 selection={selection}
-                programList={programList}
                 year={year}
                 plant={plant}
                 save={(json)=>handleSave(json)}

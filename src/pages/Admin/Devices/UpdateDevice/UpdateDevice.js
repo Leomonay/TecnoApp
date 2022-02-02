@@ -95,7 +95,6 @@ const UpdateDevice = ({
   const handleSubmitUpdateDevice = async (event) => {
     event.preventDefault();
     let response = await dispatch(updateDevice(updateDeviceData));
-    console.log("response", response);
     if (response.deviceUpdated.acknowledged) {
       alert("Cambios Realizados");
     } else {
@@ -168,7 +167,7 @@ const UpdateDevice = ({
                 type="text"
                 name="newname"
                 autoComplete="off"
-                value={updateDeviceData.newname}
+                defaultValue={updateDeviceData.newname}
                 onChange={(e) => handleUpdateDevice(e)}
                 placeholder="Ingrese el nombre..."
               />
@@ -176,14 +175,16 @@ const UpdateDevice = ({
 
             <div>
               <label>Tipo: </label>
-              <select onChange={(e) => handleUpdateDevice(e)} name="newtype">
+              <select onChange={(e) => handleUpdateDevice(e)} name="newtype"
+              defaultValue={updateDeviceData.newtype}
+              >
                 {options.types &&
-                  options.types.map((elem) => {
+                  options.types.map((elem, index) => {
                     return (
                       <option
-                        key={"selectType" + elem}
+                        key={index}
                         value={elem}
-                        selected={updateDeviceData.newtype === elem}
+                        // selected={updateDeviceData.newtype === elem}
                       >
                         {elem}
                       </option>
@@ -194,14 +195,16 @@ const UpdateDevice = ({
 
             <div>
               <label>Servicio: </label>
-              <select onChange={(e) => handleUpdateDevice(e)} name="newservice">
+              <select onChange={(e) => handleUpdateDevice(e)} name="newservice"
+              defaultValue={updateDeviceData.newservice}
+              >
                 {options.service &&
                   options.service.map((elem) => {
                     return (
                       <option
                         key={"selectService" + elem}
                         value={elem}
-                        selected={updateDeviceData.newservice === elem}
+                        // selected={updateDeviceData.newservice === elem}
                       >
                         {elem}
                       </option>
@@ -212,14 +215,16 @@ const UpdateDevice = ({
 
             <div>
               <label>Status: </label>
-              <select onChange={(e) => handleUpdateDevice(e)} name="newstatus">
+              <select onChange={(e) => handleUpdateDevice(e)} name="newstatus"
+              defaultValue={updateDeviceData.newstatus}
+              >
                 {options.status &&
                   options.status.map((elem) => {
                     return (
                       <option
                         key={"selectStatus" + elem}
                         value={elem}
-                        selected={updateDeviceData.newstatus === elem}
+                        // selected={updateDeviceData.newstatus === elem}
                       >
                         {elem}
                       </option>
@@ -233,6 +238,7 @@ const UpdateDevice = ({
               <select
                 onChange={(e) => handleUpdateDevice(e)}
                 name="newcategory"
+                defaultValue={updateDeviceData.newcategory}
               >
                 {options.category &&
                   options.category.map((elem) => {
@@ -240,7 +246,7 @@ const UpdateDevice = ({
                       <option
                         key={"selectCategory" + elem}
                         value={elem}
-                        selected={updateDeviceData.newcategory === elem}
+                        // selected={updateDeviceData.newcategory === elem}
                       >
                         {elem}
                       </option>
@@ -254,6 +260,7 @@ const UpdateDevice = ({
               <select
                 onChange={(e) => handleUpdateDevice(e)}
                 name="newenvironment"
+                defaultValue={updateDeviceData.newenvironment}
               >
                 {options.environment &&
                   options.environment.map((elem) => {
@@ -261,7 +268,7 @@ const UpdateDevice = ({
                       <option
                         key={"selectenvironment" + elem}
                         value={elem}
-                        selected={updateDeviceData.newenvironment === elem}
+                        // selected={updateDeviceData.newenvironment === elem}
                       >
                         {elem}
                       </option>
@@ -272,18 +279,20 @@ const UpdateDevice = ({
 
             <div>
               <label>Activo: </label>
-              <select onChange={(e) => handleUpdateDevice(e)} name="newactive">
+              <select onChange={(e) => handleUpdateDevice(e)} name="newactive"
+              defaultValue={updateDeviceData.newactive}
+              >
                 <option
                   key={"selectActiveSi"}
                   value="true"
-                  selected={updateDeviceData.newactive === "true"}
+                  // selected={updateDeviceData.newactive === "true"}
                 >
                   Si
                 </option>
                 <option
                   key={"selectActiveNo"}
                   value="false"
-                  selected={updateDeviceData.newactive === "false"}
+                  // selected={updateDeviceData.newactive === "false"}
                 >
                   No
                 </option>
@@ -295,8 +304,8 @@ const UpdateDevice = ({
               <select
                 name="newrefrigerant"
                 onChange={(e) => handleUpdateDevice(e)}
-                defaultValue={0}
-                value={updateDeviceData.refrigerant}
+                // defaultValue={0}
+                defaultValue={updateDeviceData.refrigerant}
               >
                 {refrigerants.length !== 0 &&
                   refrigerants.map((element) => {
@@ -304,10 +313,10 @@ const UpdateDevice = ({
                       <option
                         key={element.id}
                         value={element.id}
-                        selected={
-                          updateDeviceData.newrefrigerant ===
-                          element.refrigerant
-                        }
+                        // selected={
+                        //   updateDeviceData.newrefrigerant ===
+                        //   element.refrigerant
+                        // }
                       >
                         {element.refrigerante}
                       </option>
@@ -322,7 +331,8 @@ const UpdateDevice = ({
                 type="text"
                 name="newextraDetails"
                 autoComplete="off"
-                value={updateDeviceData.newextraDetails}
+                // value={updateDeviceData.newextraDetails}
+                defaultValue={updateDeviceData.newextraDetails}
                 onChange={(e) => handleUpdateDevice(e)}
                 placeholder="Ingrese detalles..."
               />

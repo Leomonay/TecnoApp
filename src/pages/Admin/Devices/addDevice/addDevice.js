@@ -175,7 +175,7 @@ const AddDevice = ({
             </div>
 
             <div>
-              <label>Calorias: </label>
+              <label>Potencia: </label>
               <input
                 type="text"
                 name="magnitude"
@@ -208,9 +208,9 @@ const AddDevice = ({
                   Seleccione Tipo
                 </option>
                 {options.types &&
-                  options.types.map((elem) => {
+                  options.types.map((elem, index) => {
                     return (
-                      <option key={"selectType" + elem} value={elem}>
+                      <option key={index} value={elem}>
                         {elem}
                       </option>
                     );
@@ -374,8 +374,9 @@ const AddDevice = ({
               <select
                 name="refrigerant"
                 onChange={(e) => handleChange(e)}
-                defaultValue={0}
-                value={inputDevice.refrigerant}
+                // defaultValue={0}
+                // value={inputDevice.refrigerant}
+                defaultValue={inputDevice.refrigerant}
               >
                 <option value="">Seleccionar Refrigerante</option>
                 {refrigerants.length !== 0 &&

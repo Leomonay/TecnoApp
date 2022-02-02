@@ -1,4 +1,4 @@
-import { appConfig } from '../../config'
+import {appConfig} from "../../config"
 import './index.css'
 
 export default function JsonViewer(props){

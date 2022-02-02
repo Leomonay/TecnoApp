@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import {appConfig} from '../../../config.js'
+import {appConfig} from "../../../config"
 const {headersRef}=appConfig
 
 export default function DeviceOptions(props){

@@ -1,6 +1,6 @@
 import { useState } from "react"
 import DeviceOptions from "../../dropdown/DeviceOptions"
-import {appConfig} from '../../../config.js'
+import {appConfig} from "../../../config"
 import './index.css'
 const {headersRef} = appConfig
 

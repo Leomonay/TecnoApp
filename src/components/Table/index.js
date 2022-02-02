@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import './index.css'
-import { appConfig } from '../../config'
+import {appConfig} from "../../config"
 import {capitalize} from '../../utils/utils'
 
 export default function Table(props){

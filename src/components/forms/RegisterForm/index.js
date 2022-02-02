@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useDispatch} from "react-redux"
 import { addUser } from "../../../actions/peopleActions"
-import { appConfig } from "../../../config"
+import {appConfig} from "../../../config"
 import { cloneJson } from "../../../utils/utils"
 import GetLocationTree from '../../dropdown/locationTree'
 const {headersRef}=appConfig

@@ -78,10 +78,11 @@ const UpdateCylinder = ({
                 <select
                   name="newAssignedTo"
                   onChange={(e) => handleUpdateCylinder(e)}
+                  defaultValue=""
                 >
                   <option
                     value=""
-                    selected={updateCylinderData.oldAssignedTo === ""}
+                    // selected={updateCylinderData.oldAssignedTo === ""}
                   >
                     Stock
                   </option>

@@ -33,7 +33,6 @@ const AddCylinder = ({ setShowModal, showModal }) => {
       ...inputCylinder,
       [event.target.name]: event.target.value,
     };
-    console.log(newCylinder)
     setInputCylinder(newCylinder);
     if (
       newCylinder.code !== "" &&

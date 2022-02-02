@@ -6,13 +6,13 @@
 .deviceCard{
     display: flex;
     flex-wrap:wrap;
-    justify-content: space-between;
+    justify-content: space-evenly;
     width: calc(100% - 3rem);
     background: linear-gradient(45deg, lightyellow, whitesmoke, lightyellow);
     border: 1px solid whitesmoke;
     box-shadow: 0 0 .3rem grey;
     border-radius: .5rem;
-    padding: .2rem;
+    /* padding: .2rem; */
     margin: .3rem  .2rem;
 }
 .deviceCardColumn{
@@ -84,7 +84,13 @@
     width: 100%;
     height: 5rem;
     max-width: 100%;
-    margin: .5rem
+    margin: .5rem 0
+}
+.devicePlanComments{
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+    padding: .5rem;
 }
 .saveButton{
     display: flex;
@@ -116,5 +122,8 @@
     .iconFrame{
         transform: scale(.9);
         margin: -.2rem
+    }
+    .devicePlanComments{
+        width: 100%;
     }
 }

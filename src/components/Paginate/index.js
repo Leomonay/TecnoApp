@@ -42,26 +42,28 @@ export default function Paginate(props){
     }
 
     return(
-        <div className='paginate'>
-            {EdgeButton(1,'<<', 1)}
-            {indexes.map((index,key)=>
-                <button key={key} 
-                    className={`pageButton ${index===current?'currentPage':'otherPage'}`}
-                    disabled={index===current}
-                    onClick={(e)=>handleClick(e)}
-                    value={index}>
-                        {index}
-                </button>
-            )}
-            {EdgeButton(last,'>>', pages)}
+        <div className='pageFooter'>
+            <div className='paginate'>
+                {EdgeButton(1,'<<', 1)}
+                {indexes.map((index,key)=>
+                    <button key={key} 
+                        className={`pageButton ${index===current?'currentPage':'otherPage'}`}
+                        disabled={index===current}
+                        onClick={(e)=>handleClick(e)}
+                        value={index}>
+                            {index}
+                    </button>
+                )}
+                {EdgeButton(last,'>>', pages)}
+            </div>
             {props.size &&
-                <label>Items por Página: 
-                <input className='numberInput'
-                    type='number'
-                    min={props.min || 10}
-                    step={props.step || 10}
-                    defaultValue={props.min || 10}
-                    onChange={(e)=>props.size(e.target.value)}/></label>}
+                    <label>Items por Página: 
+                    <input className='numberInput'
+                        type='number'
+                        min={props.min || 10}
+                        step={props.step || 10}
+                        defaultValue={props.defaultValue || 10}
+                        onChange={(e)=>props.size(e.target.value)}/></label>}
         </div>
     )
 }

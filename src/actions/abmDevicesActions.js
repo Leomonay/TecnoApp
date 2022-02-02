@@ -1,4 +1,4 @@
-import { appConfig } from "../config";
+import { appConfig } from "../apiConfig";
 
 export function getDevicesList(selectedData) {
   return async function (dispatch) {

@@ -1,4 +1,4 @@
-import { appConfig } from "../config"
+import { appConfig } from "../apiConfig"
 // const plantCode=appConfig.plantConfig.code
 
 export function getWorkerList(){

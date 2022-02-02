@@ -1,4 +1,4 @@
-import { appConfig } from "../config"
+import { appConfig } from "../apiConfig"
 
 export function selectWorkOrder(ot){
     return{

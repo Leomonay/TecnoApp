@@ -44,7 +44,7 @@ export default function planReducer (state = initialState,action){
                 devicePlanList: state.devicePlanList.map(element=>{
                     if(!element.program)element.program={}
                     if( device.includes(element.code) ){
-                        Object.keys(program).map(key=> element.program[key] = program[key])
+                        Object.keys(program).map(key=>element.program[key] = program[key])
                     }
                     return element
                 })
