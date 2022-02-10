@@ -109,6 +109,9 @@
     padding: 0 .2rem;
     margin: 0 .2rem;
 }
+.selectedCard{
+    border: .5rem solid green;
+}
 @media(max-width:900px){
     .peoplePickerListContainer{
         width: 100vw;

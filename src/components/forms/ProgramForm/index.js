@@ -3,7 +3,7 @@ import { PlantSelector } from '../../dropdown/PlantSelector.js'
 import './index.css'
 import { appConfig } from '../../../config'
 import { useDispatch, useSelector } from 'react-redux'
-import { getPrograms } from '../../../actions/planActions'
+import { getStrategies } from '../../../actions/planActions'
 const {frequencies} = appConfig
 
 export default function ProgramForm(props){
@@ -38,7 +38,7 @@ export default function ProgramForm(props){
         const newProgram = {...planProgram}
         newProgram.plant = value
         newProgram.device = selection.filter(dev=>dev.plant === value).map(dev=>dev.code)
-        dispatch(getPrograms({plant:value, year:year}))
+        dispatch(getStrategies({plant:value, year:year}))
         setPlanProgram(newProgram)
     }
 

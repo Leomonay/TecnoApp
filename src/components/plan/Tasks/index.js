@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { createPlan, getPlanDevices, getPrograms, updatePlan } from "../../../actions/planActions";
+import { setDeviceStrategy, getPlanDevices, getStrategies, 
+    // updatePlan
+ } from "../../../actions/planActions";
 import DeviceFilters from "../../filters/DeviceFilters";
 import LocationFilter from "../../filters/LocationFilter";
 import Paginate from "../../Paginate";
@@ -27,7 +29,7 @@ export default function PlanTask(props){
 
     useEffect(()=>{
         dispatch(getDeviceOptions())
-        dispatch(getPrograms({plant, year}))
+        dispatch(getStrategies({plant, year}))
         dispatch(getRefrigerants())
         dispatch(getPlanDevices({plant,year}))
     },[dispatch, plant, year])
@@ -36,15 +38,9 @@ export default function PlanTask(props){
     useEffect(()=>setYear(props.year),[props.year])
 
     async function handleSave(json){
-        let create = []
-        let update = []
-        for (let code of json.device){
-            devicePlanList.find(dev=>dev.code===code).program?
-                update.push(code):create.push(code)
-        }
-        if (update[0]) dispatch(updatePlan({...json,device:update}))
-        if (create[0]) dispatch(createPlan({...json,device:create}))
+        dispatch(setDeviceStrategy(json))
     }
+
 
     function handleCheck(e){
         let check = e.target.checked
@@ -128,8 +124,8 @@ export default function PlanTask(props){
             </div>
             <div className="taskDeviceList" >
                     {filteredList[0] && filteredList.slice(page.first, page.first+page.size).map((device, index)=>{
-                        const key = device.code + (device.program?
-                            Object.keys(device.program).map(key=>JSON.stringify(device.program[key])[1]).join('')
+                        const key = device.code + (device.strategy?
+                            Object.keys(device.strategy).map(key=>JSON.stringify(device.strategy[key])[1]).join('')
                             :'')
 
                         return <PlanDevice

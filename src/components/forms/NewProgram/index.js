@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { getUsersList } from "../../../actions/peopleActions"
-import { createProgram, getPrograms, updateProgram } from "../../../actions/planActions"
+import { createStrategy, updateStrategy } from "../../../actions/planActions"
 import { PlantSelector } from "../../dropdown/PlantSelector.js"
 import PeoplePicker from "../../pickers/PeoplePicker"
 import './index.css'
@@ -32,11 +32,15 @@ export default function NewProgram(props){
         if (!cloneprogram.name){errors.push('NOMBRE')}
         if (!cloneprogram.plant){errors.push('PLANTA')}
         if(errors.length===0){
-            dispatch(program?
-                updateProgram(program._id, cloneprogram)
-                :createProgram(cloneprogram)
+            dispatch(
+                program?
+                updateStrategy({
+                    previous:{
+                        plant: plant, year:thisYear, name:program.name
+                    }, 
+                    update: cloneprogram})
+                :createStrategy(cloneprogram)
             )
-            dispatch(getPrograms(props.plant, cloneprogram.year))
             props.close()
         }else{
             alert(`${errors.length===1?"Se requiere el campo":"Se requieren los campos"} ${errors}`)
@@ -95,7 +99,7 @@ export default function NewProgram(props){
                 <PeoplePicker name='Seleccionar..'
                     options={userList.filter(e=>e.access==='Worker')}
                     update={(idArray)=>setNewProgram({...newProgram, people: idArray.map(e=>e.id)})}
-                    idList={program?program.people.map(e=>({id: e.idNumber, name: e.name})):undefined}
+                    idList={program?program.people:undefined}
                     selectedWorkers={{caption:'Programa(s)', array:selectedWorkers}}
                     />
                 </div>

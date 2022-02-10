@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import './index.css'
 
 export default function PeoplePicker(props){
@@ -6,7 +6,6 @@ export default function PeoplePicker(props){
     const [enableOptions, setEnableOptions]=useState(false)
     const [idList,setIDList]=useState(props.idList || [])
     const {options,selectedWorkers} = props
-    // const selectedWorkers = props.selectedWorkers || []
 
     function updateList(worker){
         const list = idList.find(element=>element.id===worker.id)?
@@ -39,7 +38,7 @@ export default function PeoplePicker(props){
                 <button className='close' onClick={()=>setEnableOptions(!enableOptions)}>X</button>
                 <div className='peoplePickerList'>
                 {options.map((option, index)=>
-                    <div className='peopleCard' key={index} onClick={()=>updateList({id: option.idNumber, name: option.name})}>
+                    <div className={`peopleCard${idList.map(e=>e.id).includes(option.idNumber)?' selectedCard':''}`} key={index} onClick={()=>updateList({id: option.idNumber, name: option.name})}>
                         <div className={`notImage ${selectedWorkers&&'tiny'}`}>Foto Pendiente</div>
                         <div className='PeoplePickerName'><b>{option.name}</b></div>
                         <div className='PeoplePickerCharge'>{option.charge}</div>

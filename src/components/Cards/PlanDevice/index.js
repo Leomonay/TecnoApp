@@ -6,17 +6,17 @@ const {frequencies} = appConfig
 
 export default function PlanDevice(props){
     const {onSave, programs, device} = props
-    const [startProgram, setStartProgram] = useState(device.program) // programa en el equipo
-    const [program, setProgram] = useState(device.program?
-        programs.find(program=>program.name===device.program.name)
+    const [startProgram, setStartProgram] = useState(device.strategy) // programa en el equipo
+    const [program, setProgram] = useState(device.strategy?
+        programs.find(program=>program.name===device.strategy.name)
         :undefined) //programa elegido de la lista de programas
-    const [newProgram, setNewProgram] = useState(device.program) // programa nuevo
+    const [newProgram, setNewProgram] = useState(device.strategy) // programa nuevo
     const [save, setSave]=useState(false)
 
     useEffect(()=>setSave( !( JSON.stringify(startProgram) === JSON.stringify(newProgram) ) )
     ,[startProgram,newProgram])
     
-    useEffect(()=>setStartProgram( device.program ),[device.program])
+    useEffect(()=>setStartProgram( device.strategy ),[device.strategy])
    
     function handleProperty(key, value){
         let program = {...newProgram}
@@ -51,9 +51,8 @@ export default function PlanDevice(props){
         let program = {...newProgram}
         if (!program.frequency) program.frequency=48
         onSave({device: [device.code], program})
+        setStartProgram(program)
     }
-
-    // useEffect(()=>console.log('newProgram',newProgram),[newProgram])
 
     return(
         <div className='deviceListLI'>
@@ -124,13 +123,10 @@ export default function PlanDevice(props){
                         </select>
                     </div>
 
-                    <div className='section justifyCenter'
-                        key={newProgram && newProgram.cost?
-                            newProgram.cost+3
-                            : 3}>
+                    <div className='section justifyCenter'>
                         <label className='formLabel'>Costo(mU$S)</label>
                         <input type='number' className='midDropDown' min='0'
-                            value={newProgram && newProgram.cost}
+                            value={( newProgram && newProgram.cost) || 0}
                             onChange={(e)=>handleProperty('cost', Number(e.target.value) )}/>
                     </div>
 

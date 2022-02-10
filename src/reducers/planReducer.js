@@ -1,8 +1,9 @@
 const initialState = {
-    // newProgram:'',
     programList:[],
     devicePlanList:[],
-    planResult:''
+    planResult:'',
+    calendar: undefined,
+    plan:[]
 }
 
 export default function planReducer (state = initialState,action){
@@ -16,11 +17,18 @@ export default function planReducer (state = initialState,action){
                 programList: list.sort( (a,b)=>a.name>b.name?1:-1 )
             };
         case 'UPDATE_PROGRAM':
-            list = state.programList.filter(element=>element._id!==action.payload._id)
+            list = state.programList.filter(element=>
+                element.name!==action.payload.name
+                )
             list.push(action.payload)
             return{
                 ...state,
                 programList: list.sort( (a,b)=>a.name > b.name ? 1:-1 )
+            }
+        case 'DATES':
+            return{
+                ...state,
+                calendar: action.payload
             }
         case 'ALL_PROGRAMS':
             return{
@@ -38,16 +46,21 @@ export default function planReducer (state = initialState,action){
                 planResult: action.payload
             }
         case 'UPDATE_DEVICE_PLAN':
-            const {device, program} = action.payload
+            const {device, strategy} = action.payload
             return{
                 ...state,
                 devicePlanList: state.devicePlanList.map(element=>{
-                    if(!element.program)element.program={}
                     if( device.includes(element.code) ){
-                        Object.keys(program).map(key=>element.program[key] = program[key])
+                        if(!element.program)element.program={}
+                        Object.keys(strategy).map(key=>element.program[key] = strategy[key])
                     }
                     return element
                 })
+            }
+            case 'GET_PLAN':
+            return{
+                ...state,
+                plan: action.payload
             }
 
         default: return state;

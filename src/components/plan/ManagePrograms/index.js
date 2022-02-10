@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { getPrograms } from "../../../actions/planActions"
+import { getStrategies } from "../../../actions/planActions"
 import ProgramCard from "../../Cards/ProgramCards"
 import NewProgram from '../../forms/NewProgram'
 import './index.css'
@@ -10,7 +10,7 @@ export default function ProgramManagement(props){
     const {programList} = useSelector(state => state.plan)
     const dispatch = useDispatch()
 
-    useEffect(()=>dispatch(getPrograms(props.plant, props.year)),[dispatch,props.plant, props.year])
+    useEffect(()=>dispatch(getStrategies(props.plant, props.year)),[dispatch,props.plant, props.year])
 
     let programmedWorkers = []
     programList.map(program=>

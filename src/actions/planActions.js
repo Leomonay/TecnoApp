@@ -1,8 +1,8 @@
 import { appConfig } from "../apiConfig"
 
-export function createProgram(object){
+export function createStrategy(object){
     return async function (dispatch){
-        return fetch(`${appConfig.url}/program`,{
+        return fetch(`${appConfig.url}/strategies`,{
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -20,15 +20,15 @@ export function createProgram(object){
     }
 }
 
-export function updateProgram(programId,update){
+export function updateStrategy(data){
     return async function (dispatch){
-        return fetch(`${appConfig.url}/program/`,{
+        return fetch(`${appConfig.url}/strategies`,{
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({id: programId, update})
+            body: JSON.stringify(data)
         })
         .then(response=>response.json())
         .then(json=>{
@@ -40,9 +40,10 @@ export function updateProgram(programId,update){
     }
 }
 
-export function createPlan(planDevices){
+//createPlan
+export function setDeviceStrategy(planDevices){
     return async function (dispatch){
-        return fetch(`${appConfig.url}/program/devices`,{
+        return fetch(`${appConfig.url}/tasks`,{
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -63,38 +64,18 @@ export function createPlan(planDevices){
     }
 }
 
-export function updatePlan(update){
-    return async function (dispatch){
-        return fetch(`${appConfig.url}/program/devices`,{
-            method: 'PUT',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(update)
-        })
-        .then(response=>response.json())
-        .then(json=>{
-            const{errors, updated} = json
-            if ( errors.length > 0 ) alert(`Error${errors.length>1&&'es'}:` + errors.map(item=>`${item.code}: ${item.detail}`))
-            if( updated.device.length>0)dispatch({
-                    type: 'UPDATE_DEVICE_PLAN',
-                    payload: updated
-                })
-        })
-    }
-}
 
-export function getPrograms(conditions){
+
+export function getStrategies(conditions){
     return async function (dispatch){
         
         const {plant, year} = conditions
         let filter = (plant||year) ? '?' : ''
-        if(plant) filter+='plantName='+plant
+        if(plant) filter+='plant='+plant
         if(plant&&year)filter+='&'
         if(year)filter+='year='+year
 
-        return fetch(`${appConfig.url}/program${filter}`)
+        return fetch(`${appConfig.url}/strategies${filter}`)
         .then(response=>response.json())
         .then(json=>{
             dispatch({
@@ -114,7 +95,7 @@ export function getPlanDevices(conditions){
         if(plant&&year)filter+='&'
         if(year)filter+='year='+year
         
-        return fetch(`${appConfig.url}/program/devices${filter}`)
+        return fetch(`${appConfig.url}/tasks${filter}`)
         .then(response=>response.json())
         .then(json=>{
             dispatch({
@@ -124,4 +105,65 @@ export function getPlanDevices(conditions){
         })
     }
 }
+
+export function getDates(conditions){
+    return async function (dispatch){
+        
+        const {plant, year} = conditions
+        let filter = (plant||year) ? '?' : ''
+        if(plant) filter+='plant='+plant
+        if(plant&&year)filter+='&'
+        if(year)filter+='year='+year
+
+        return fetch(`${appConfig.url}/dates${filter}`)
+        .then(response=>response.json())
+        .then(json=>{
+            dispatch({
+                type: 'DATES',
+                payload: json
+            })
+        })
+    }
+}
+
+export function setDates(dates){
+    return async function (dispatch){
+        return fetch(`${appConfig.url}/dates`,{
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(dates)
+        })
+        .then(response=>response.json())
+        .then(json=>{
+            dispatch({
+                type: 'ADD_DATE',
+                payload: json
+            })
+        })
+    }
+}
+
+export function getPlan(conditions){
+    return async function (dispatch){
+        
+        const {plant, year} = conditions
+        let filter = (plant||year) ? '?' : ''
+        if(plant) filter+='plant='+plant
+        if(plant&&year)filter+='&'
+        if(year)filter+='year='+year
+
+        return fetch(`${appConfig.url}/dates/plan${filter}`)
+        .then(response=>response.json())
+        .then(json=>{
+            dispatch({
+                type: 'GET_PLAN',
+                payload: json
+            })
+        })
+    }
+}
+
 

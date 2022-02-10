@@ -11,13 +11,13 @@ export default function ProgramFilters(props){
         const list = filters.name?
             programList.filter(program=>program.name===filters.name)
             :programList
-        list.map(program=>program.people.map(worker=>{
-            const found = workers.find(element=>element.id === worker.id)
-            if(!found) workers.push(worker)
-        }))
+        for (let program of list){
+            for (let worker of program.people){
+                const found = workers.find(element=>element.id === worker.id)
+                if(!found) workers.push(worker)
+        }}
         workers.sort((a,b)=>a.name>b.name? 1 : -1)
         setWorkers(workers)
-        console.log(workers)
     },[filters, programList])
 
     function handleValue (item,value){
@@ -39,7 +39,7 @@ export default function ProgramFilters(props){
     }
 
     return(<div>
-        <select className='programOption' onChange={(e)=>handleValue('name',e.target.value)} disabled={!programList}>
+        <select className='programOption' onChange={(e)=>handleValue('strategy',e.target.value)} disabled={!programList}>
             <option value = ''>{programList?'todos los programas':'Seleccione Planta y año'}</option>
             {programList && programList.map(element=>element.name).map(name=>
                 <option key={name} value={name}>{name}</option>
@@ -52,7 +52,7 @@ export default function ProgramFilters(props){
             )}
         </select>
 
-        <button className="openFilters" onClick={()=>handleDates(!filters.planned)}>
+        <button className="openFilters" onClick={()=>handleDates(!filters.dates[0])}>
             {filters.planned?'Mostrar todos los equipos':'Mostrar equipos sin fecha'}
         </button>
 

@@ -1,50 +1,49 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getPlanDevices, getPrograms } from "../../../actions/planActions.js";
+import { getDates, getPlanDevices, getStrategies } from "../../../actions/planActions.js";
 import ProgramFilters from "../../filters/ProgramFilters/index.js";
 import Paginate from "../../Paginate/index.js";
 import CalendarPicker from "../../pickers/CalendarPicker/index.js";
 import './index.css'
 
 export default function PlanCalendar(props){
-    const {devicePlanList,programList} = useSelector(state=>state.plan)
+    const {programList, calendar} = useSelector(state=>state.plan)
     const [plant, setPlant] = useState(props.plant)
     const [year, setYear] = useState(props.year)
     const [page, setPage]=useState({first: 0, size:10})
-    const [filteredList, setFilteredList] = useState(devicePlanList.filter(device=>!!device.program))
+    const [filteredList, setFilteredList] = useState([])
     const dispatch = useDispatch()
 
     //trabajar directamente con la lista de equipos
     useEffect(()=>setPlant(props.plant),[props.plant])
     useEffect(()=>setYear(props.year),[props.year])
+    useEffect(()=>(year&&plant)&&dispatch(getDates({year,plant})),[year,plant,dispatch])
+    // useEffect(()=>setFilteredList('calendar',calendar),[calendar])
+    useEffect(()=>calendar && setFilteredList(calendar),[calendar])
 
+
+    
     function applyFilters(filters){
-        const list = devicePlanList.filter(device=>!!device.program)
-        setFilteredList(list.filter(device=>{
+        console.log('filters',filters)
+        setFilteredList(calendar.filter(task=>{
             let check = true
             for (let key of Object.keys(filters)){
                 switch (key){
                     case 'responsible':
-                        if (device.program[key].id!==filters[key])check=false;
+                        if (task[key].id!==filters[key])check=false;
                         break
-                    case 'planned':
-                        if (device.program[key].length!==filters[key].length)check=false;
+                    case 'dates':
+                        if (task[key].length!==filters[key].length)check=false;
                         break
-                    default: if(device.program[key]!==filters[key])check=false;
+                    default: if(task[key]!==filters[key])check=false;
                 }
-
-                // if (key === 'responsible'){
-                //     if (device.program[key].id!==filters[key])check=false
-                // }else{
-                //     if(device.program[key]!==filters[key])check=false
-                // }
             }
             return check
         }))
     }
 
     useEffect(()=>{
-        dispatch( getPrograms({plant,year}) )
+        dispatch( getStrategies({plant,year}) )
         dispatch(getPlanDevices({plant,year}))    
     },[plant,year, dispatch])
 
@@ -64,11 +63,13 @@ export default function PlanCalendar(props){
                 <div className='calendarColumn title'>Calendario {year}</div>
             </div>
             {filteredList[0]?
-                filteredList.slice(page.first, page.first+page.size).map((device, index)=>
-                    <CalendarPicker key={index} 
+                filteredList.slice(page.first, page.first+page.size).map((task, index)=>
+                    <CalendarPicker key={task.code+index}
+                        plant={plant}
                         year={year}
                         titles={index===0}
-                        device={device}/>)
+                        task={task}
+                        />)
                 :<div className="errorMessage">No hay equipos que coincidan con la búsqueda</div>}
             </div>
 
