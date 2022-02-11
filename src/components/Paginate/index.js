@@ -1,12 +1,11 @@
 import { useState } from 'react'
 import './index.css'
 
-
-
 export default function Paginate(props){
+    const {length, select, size, min, step, defaultValue} = props
     const [current, setCurrent] = useState(1)
-    const pages = parseInt(props.pages)
-    const delta = Math.floor(props.length/2)
+    const pages = parseInt(props.pages) //not destructured in order to use same variable name
+    const delta = Math.floor(length/2)
     let indexes = []
 
     let first
@@ -38,7 +37,7 @@ export default function Paginate(props){
     function handleClick(e){
         e.preventDefault()
         setCurrent(parseInt(e.target.value))
-        props.select(e.target.value)
+        select(e.target.value)
     }
 
     return(
@@ -56,14 +55,14 @@ export default function Paginate(props){
                 )}
                 {EdgeButton(last,'>>', pages)}
             </div>
-            {props.size &&
+            {size &&
                     <label>Items por Página: 
                     <input className='numberInput'
                         type='number'
-                        min={props.min || 10}
-                        step={props.step || 10}
-                        defaultValue={props.defaultValue || 10}
-                        onChange={(e)=>props.size(e.target.value)}/></label>}
+                        min={min || 10}
+                        step={step || 10}
+                        defaultValue={defaultValue || 10}
+                        onChange={(e)=>size(e.target.value)}/></label>}
         </div>
     )
 }

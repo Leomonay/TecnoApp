@@ -59,9 +59,9 @@ const appConfig={
     reclaims: 'Reclamos',
     responsible: 'Responsable'
   },
-  // plantConfig:{
-  //   code: 'SSN'
-  // }
+  values:{
+    startingYear: 2015
+  }
 }
 
 export{

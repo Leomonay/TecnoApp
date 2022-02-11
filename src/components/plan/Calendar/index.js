@@ -33,7 +33,7 @@ export default function PlanCalendar(props){
                         if (task[key].id!==filters[key])check=false;
                         break
                     case 'dates':
-                        if (task[key].length!==filters[key].length)check=false;
+                        if (task[key] && task[key].length!==filters[key].length)check=false;
                         break
                     default: if(task[key]!==filters[key])check=false;
                 }
@@ -46,6 +46,8 @@ export default function PlanCalendar(props){
         dispatch( getStrategies({plant,year}) )
         dispatch(getPlanDevices({plant,year}))    
     },[plant,year, dispatch])
+
+    useEffect(()=>console.log('filteredList', filteredList),[filteredList])
 
     return(
         <div className="calendarBody">

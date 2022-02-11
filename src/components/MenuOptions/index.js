@@ -15,7 +15,7 @@ export default function MenuOptions(props) {
 
   return (
     <div className='menuOptionsBackground'>
-    {options&&options.map(buildOption)}
+      {options&&options.map(buildOption)}
     </div>
   );
 }

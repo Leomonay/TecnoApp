@@ -148,12 +148,11 @@ export function setDates(dates){
 
 export function getPlan(conditions){
     return async function (dispatch){
-        
-        const {plant, year} = conditions
-        let filter = (plant||year) ? '?' : ''
-        if(plant) filter+='plant='+plant
-        if(plant&&year)filter+='&'
-        if(year)filter+='year='+year
+        console.log('conditions',conditions)
+        const {plant, year,user} = conditions
+        let filter = `?year=${year}`
+        if(plant) filter+='&plant='+plant
+        if(user) filter+='&user='+plant
 
         return fetch(`${appConfig.url}/dates/plan${filter}`)
         .then(response=>response.json())

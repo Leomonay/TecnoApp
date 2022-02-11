@@ -3,6 +3,10 @@
     flex-direction: column;
     width: 100%;
     align-items: center;
+    height: 100%;
+}
+.planBackground{
+    height: calc(100% - 9rem);
 }
 .pendantTask{
     border: 2px solid red
@@ -31,16 +35,19 @@
 }
 .planDate{
     display: flex;
+    align-items: center;
     background: linear-gradient(45deg, black, grey, black);
     color: white;
     font-weight: bold;
     font-size: 90%;
     border-radius: .5rem;
     padding: .2rem;
-    margin: 0 .2rem;
-    height: 100%;
+    margin: -.1rem .2rem -.1rem -.1rem;
+    height: calc(100% + .2rem);
     width: 5rem;
     justify-content: center;
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
 }
 .planDeviceCard{
     width: 20rem;
@@ -53,6 +60,7 @@
 }
 .percentTask{
     text-align: center;
+    padding: 0 .2rem;
 }
 /* .planTable{
     text-align: center;
@@ -105,5 +113,12 @@
     .bgdoneTask{
         background-color: green;
         color: whitesmoke;
+    }
+    .planBackground{
+        height: calc(100% - 9rem);
+    }
+    .planContainer{
+        height: calc(100% - 4rem);
+        overflow-y: auto;
     }
 }

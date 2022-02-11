@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { getPlan } from '../../actions/planActions';
+import Paginate from '../../components/Paginate'
+import PlanFilters from '../../components/filters/PlanFilters';
 import './index.css'
 
 export default function Plan(){
@@ -9,9 +11,10 @@ export default function Plan(){
   const {userData} = useSelector(state=>state.people)
   const [year, setYear] = useState((new Date()).getFullYear());
   const [plant, setPlant] = useState(userData.plant || undefined);
+  const [filteredList, setFilteredList] = useState(plan)
+  const [filters, setFilters] = useState({})
+  const [page, setPage] = useState({first:0, size:10})
   const dispatch = useDispatch()
-
-  useEffect(()=>console.log('userData', userData),[userData])
 
   function classCompleted(percent){
     const value = Number(percent)
@@ -21,14 +24,53 @@ export default function Plan(){
     if(value === 100)return('completedTask')
   }
 
-  useEffect(()=>console.log('plan', plan),[plan])
-  useEffect(()=>(year&&plant)&&dispatch(getPlan({year,plant})),[year,plant,dispatch])
+  useEffect(()=>(year&&plant)&&dispatch(getPlan({year,plant,user:userData.user})),[year,plant,userData,dispatch])
+
+  useEffect(()=>{
+    setFilteredList(plan.filter(date=>{
+      let check = true
+      for (let key of Object.keys(filters)){
+        switch (key){
+          case 'year':
+            if( (new Date (date.date) ).getFullYear()!==Number(filters[key]))check=false
+            break
+          case 'month':
+            if( (new Date (date.date) ).getMonth()!==Number(filters[key]-1))check=false
+            break
+          case 'date':
+            if( (new Date (date.date) ).getDate()!==Number(filters[key]))check=false
+            break
+          case 'deviceCodes':
+            if(!filters[key].includes(date.code))check=false
+            break
+          case 'minComplete':
+            if(date.completed<filters[key])check=false
+            break  
+          case 'maxComplete':
+            if(date.completed>filters[key])check=false
+            break
+          case 'complete':
+            if(date.completed!==Number(filters[key]))check=false
+            break  
+          case 'responsible':
+            // console.log('comparison',date.responsible.id, Number(filters[key]),date.responsible.id === Number(filters[key]) )
+            if(date.responsible.id!==Number(filters[key]))check=false
+            break  
+            default: if (date[key]!==filters[key]) check=false
+        }
+      }
+      return check
+    }))
+  },[plan, filters])
 
   return (
-    <div className='PanelBackground'>
+    <div className='planBackground'>
+      <PlanFilters year={year} userData={userData} select={(json)=>setFilters(json)}/>
+
+      <div className='title'>{`PLAN DE MANTENIMIENTO ${year}`}</div>
       <div className='planContainer'>
-        {plan.map(date=>
-        <div className={`planRow ${classCompleted(date.completed)}`}>
+        {filteredList[0] ? filteredList.slice(page.first, page.first+page.size).map((date,index)=>
+        <div key={index} className={`planRow ${classCompleted(date.completed)}`}>
           <div className='planDate'>
             {(new Date (date.date)).toLocaleDateString().split(' ')[0]}
           </div>
@@ -50,37 +92,16 @@ export default function Plan(){
           <div className={`planCard percentTask bg${classCompleted(date.completed)}`}>
             <b>{'Avance '}</b>{`${date.completed}%`}
           </div>
-        </div>)}
+        </div>):'No hay elementos que coincidan con ese criterio de búsqueda'}
       </div>
 
-      {/* <table className='planTable'>
-        <thead>
-          <th>PLANTA</th>
-          <th>AREA</th>
-          <th>LINEA</th>
-          <th>CODIGO</th>
-          <th>EQUIPO</th>
-
-          <th>FECHA</th>
-          <th>RESPONSABLE</th>
-          <th>SUPERVISOR</th>
-          <th>OBSERVACIONES</th>        
-          <th>%</th>
-        </thead>        
-        <tbody className='planTableBody'>
-          {plan.map(date=><tr>
-            <td>{date.plant}</td>
-            <td>{date.area}</td>
-            <td>{date.line}</td>
-            <td>{date.code}</td>
-            <td>{date.device}</td>
-            <td>{(new Date (date.date)).toLocaleDateString().split(' ')[0]}</td>
-            <td>{date.responsible ? date.responsible.name : '-'}</td>
-            <td>{date.supervisor ? date.supervisor.name : '-'}</td>
-            <td>{date.observaciones}</td>
-          </tr>)}
-        </tbody>
-      </table> */}
-     </div>
+      <Paginate pages={Math.ceil( filteredList.length / page.size)}
+                length='10'
+                min='5'
+                step='5'
+                defaultValue={page.size}
+                select={(value)=>setPage({...page,first: (Number(value) -1) * page.size })} 
+                size={(value)=>setPage({...page, size: Number(value)})}
+                />     </div>
   );
 }

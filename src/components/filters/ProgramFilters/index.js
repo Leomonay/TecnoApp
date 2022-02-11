@@ -32,11 +32,13 @@ export default function ProgramFilters(props){
     }
     function handleDates(boolean){
         const newFilters = {...filters}
-        if (boolean) newFilters.planned=[]
-        if (!boolean) delete newFilters.planned
+        if (boolean) newFilters.dates=[]
+        if (!boolean) delete newFilters.dates
         setFilters(newFilters)
         props.select(newFilters)
     }
+
+    useEffect(()=>console.log('filters', filters),[filters])
 
     return(<div>
         <select className='programOption' onChange={(e)=>handleValue('strategy',e.target.value)} disabled={!programList}>
@@ -52,8 +54,8 @@ export default function ProgramFilters(props){
             )}
         </select>
 
-        <button className="openFilters" onClick={()=>handleDates(!filters.dates[0])}>
-            {filters.planned?'Mostrar todos los equipos':'Mostrar equipos sin fecha'}
+        <button className="openFilters" onClick={()=>handleDates(!filters.dates)}>
+            {filters.dates?'Mostrar todos los equipos':'Mostrar equipos sin fecha'}
         </button>
 
     </div>)

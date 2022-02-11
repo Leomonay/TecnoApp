@@ -14,7 +14,7 @@ export function getDeviceList(plantCode){
         .then(response => response.json())
         .then(json=>dispatch({
             type: 'FULL_DEVICE_LIST',
-            payload: json.lista
+            payload: json.list
         })
     )}
 }
@@ -81,7 +81,6 @@ export function searchWODevice(devCode){
     )}
 }
 export function deviceListByLine(lineName){
-
     return async function(dispatch){
         return fetch(`${appConfig.url}/devices/byLine/${lineName}`)
             .then(response => response.json())
