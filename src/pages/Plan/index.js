@@ -53,7 +53,6 @@ export default function Plan(){
             if(date.completed!==Number(filters[key]))check=false
             break  
           case 'responsible':
-            // console.log('comparison',date.responsible.id, Number(filters[key]),date.responsible.id === Number(filters[key]) )
             if(date.responsible.id!==Number(filters[key]))check=false
             break  
             default: if (date[key]!==filters[key]) check=false
@@ -65,8 +64,7 @@ export default function Plan(){
 
   return (
     <div className='planBackground'>
-      <PlanFilters year={year} userData={userData} select={(json)=>setFilters(json)}/>
-
+      <PlanFilters year={year} userData={userData} select={(json)=>setFilters(json)} data={plan} key={plan.length}/>
       <div className='title'>{`PLAN DE MANTENIMIENTO ${year}`}</div>
       <div className='planContainer'>
         {filteredList[0] ? filteredList.slice(page.first, page.first+page.size).map((date,index)=>
@@ -83,7 +81,7 @@ export default function Plan(){
             </div>
           </div>
           <div className='planCard planPeopleCard'>
-            {date.responsible && <div><b>{`Responsable: `}</b>{date.responsible.name}</div>}
+            {userData.access!=='Worker'&& date.responsible && <div><b>{`Responsable: `}</b>{date.responsible.name}</div>}
             <div><b>{`Supervisor: `}</b>{date.supervisor.name}</div>
           </div>        
           <div className='planCard planTaskCard'>

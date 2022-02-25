@@ -12,6 +12,7 @@ export default function PlanCalendar(props){
     const [year, setYear] = useState(props.year)
     const [page, setPage]=useState({first: 0, size:10})
     const [filteredList, setFilteredList] = useState([])
+    const [dates, setDates] = useState([])
     const dispatch = useDispatch()
 
     //trabajar directamente con la lista de equipos
@@ -21,10 +22,25 @@ export default function PlanCalendar(props){
     // useEffect(()=>setFilteredList('calendar',calendar),[calendar])
     useEffect(()=>calendar && setFilteredList(calendar),[calendar])
 
+    //getAllWeeks
+    useEffect(()=>{
+        let newMonday = undefined
+        let number = 1
+        while (newMonday===undefined){
+          const date = new Date(`${year}/01/${number}`)
+          if (date.getDay()===1) newMonday = date
+          number++
+        }
+        let mondays = []
+        while (newMonday.getFullYear()===year){
+            mondays.push( new Date( newMonday ) )
+            newMonday.setDate(newMonday.getDate()+7)
+        }
+        setDates(mondays)
+    },[year])
 
-    
+   
     function applyFilters(filters){
-        console.log('filters',filters)
         setFilteredList(calendar.filter(task=>{
             let check = true
             for (let key of Object.keys(filters)){
@@ -46,8 +62,6 @@ export default function PlanCalendar(props){
         dispatch( getStrategies({plant,year}) )
         dispatch(getPlanDevices({plant,year}))    
     },[plant,year, dispatch])
-
-    useEffect(()=>console.log('filteredList', filteredList),[filteredList])
 
     return(
         <div className="calendarBody">
@@ -71,6 +85,7 @@ export default function PlanCalendar(props){
                         year={year}
                         titles={index===0}
                         task={task}
+                        yearDates={dates}
                         />)
                 :<div className="errorMessage">No hay equipos que coincidan con la búsqueda</div>}
             </div>

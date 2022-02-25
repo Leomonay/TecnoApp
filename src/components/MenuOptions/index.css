@@ -1,6 +1,4 @@
-.panelBackground{
-    height: 100vh;
-}
+
 .menuOptionsBackground{
     display: flex;
     flex-direction: column;

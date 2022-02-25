@@ -156,7 +156,7 @@ export default function DeviceFilters(props){
                     actualJson={filters.rangeFilters}
                     /> }
 
-                {view&&<DeviceOptions item='program'
+                {programList[0]&&view&&<DeviceOptions item='program'
                     options={['SIN ASIGNAR',...programList.map(e=>e.name)]}
                     select={
                         (item,event)=>inputValue(item, event.target.value)//

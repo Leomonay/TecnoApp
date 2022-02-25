@@ -10,6 +10,7 @@ import { cloneJson } from '../../utils/utils'
 import './index.css'
 import Paginate from '../../components/Paginate'
 import WorkOrderListItem from '../../components/workOrders/WorkOrderListItem'
+import { selectTask } from '../../actions/planActions'
 
 //Método para editar intervención
 //Asignar garrafas a personal
@@ -22,11 +23,12 @@ export default function WorkOrders(){
   const today = new Date()
   const [code, setCode]=useState('')
   const [filterList, setFilterList]=useState(false)
+  const [page, setPage] = useState({first:0, size: 10})
   const [conditions, setConditions]=useState({
     // from: new Date((new Date()).setMonth((new Date()).getMonth()-1)),
     // to: new Date(),
-    from: new Date((new Date()).setMonth((new Date()).getMonth()-7)),
-    to: new Date((new Date()).setMonth((new Date()).getMonth()-6)),
+    from: new Date((new Date()).setMonth((new Date()).getMonth()-10)),
+    to: new Date((new Date()).setMonth((new Date()).getMonth()-9)),
     plantName: userData.plant || ''
   })
   const [device, setDevice]=useState({})
@@ -34,7 +36,7 @@ export default function WorkOrders(){
   const isAdmin = userData.access === 'Admin'
 
   function setLocations(obj){
-    let cond = cloneJson(conditions)
+    let cond = {...conditions}
     for (let item of ['plantName', 'area', 'line']){
       !obj[item] && delete cond[item]
     }
@@ -63,7 +65,19 @@ export default function WorkOrders(){
     const element = document.getElementById('dateTo') 
     if(element) element.value=conditions.to.toISOString().split('T')[0]
   },[conditions.to])
-  useEffect(()=>dispatch(getWOList(conditions)),[dispatch, conditions])
+
+  useEffect(()=>{
+    if (!conditions || !userData || !dispatch) return
+    const {user} = userData
+    dispatch(getWOList({...conditions, user}))
+  },[dispatch, conditions, userData])
+
+  function resetOrderData(){
+    console.log('resetDetail1')
+    dispatch(resetDetail())
+    dispatch(selectTask(undefined))
+    console.log('resetDetail2')
+  }
 
   return(
     <div className='wOView'>
@@ -84,11 +98,12 @@ export default function WorkOrders(){
               <button type='submit'>BUSCAR OT</button>
             </form>
         </div>}
+        
         <Link
           to='/ots/new'
           className='button createButton'
           style={{fontSize:'1.5rem'}}
-          onClick={()=>dispatch(resetDetail())}>
+          onClick={()=>resetOrderData()}>
           <b>+</b> Crear nueva OT
         </Link>
       </div>
@@ -194,11 +209,16 @@ export default function WorkOrders(){
           </div>
       </div>}
 
-      {workOrderList.list?<div className='wOList'>
+      {workOrderList?<div className='wOList'>
         <div className='title'>Listado de OT</div>
-        <Paginate length={Math.min(7,workOrderList.pages)} pages={workOrderList.pages} select={(pg)=>setConditions({...conditions,page:pg})}/>
-          {workOrderList.list.map((order, index)=>
-          <WorkOrderListItem key={index} order={order} index={index} isAdmin={isAdmin}/>)}
+        <Paginate length={Math.min(7,workOrderList.length)} 
+          pages={workOrderList.length/page.size}
+          select={(pg)=>{setPage({...page, first: page.size*pg})}}
+          size={(value)=>setPage({...page, size: value})}
+          />
+          {workOrderList.slice(page.first, page.first+page.size).map((order, index)=>
+            <WorkOrderListItem key={index} order={order} index={index} isAdmin={isAdmin}/>)}
+
           </div>
           :<div className='waiting'/>}
     </div>

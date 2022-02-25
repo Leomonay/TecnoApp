@@ -148,11 +148,10 @@ export function setDates(dates){
 
 export function getPlan(conditions){
     return async function (dispatch){
-        console.log('conditions',conditions)
         const {plant, year,user} = conditions
         let filter = `?year=${year}`
         if(plant) filter+='&plant='+plant
-        if(user) filter+='&user='+plant
+        if(user) filter+='&user='+user
 
         return fetch(`${appConfig.url}/dates/plan${filter}`)
         .then(response=>response.json())
@@ -165,4 +164,29 @@ export function getPlan(conditions){
     }
 }
 
+export function addOrdertoDate(order,date){
+    return async function (dispatch){
+        return fetch(`${appConfig.url}/tasks/order`,{
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({order,date})
+        })
+        .then(response=>response.json())
+        .then(json=>{
+            dispatch({
+                type: 'UPDATE_DATE',
+                payload: json
+            })
+        })
+    }
+}
 
+export function selectTask(task){
+    return{
+        type: 'SELECT_TASK',
+        payload: task
+    }
+}

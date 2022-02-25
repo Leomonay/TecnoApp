@@ -5,7 +5,7 @@ import {capitalize} from '../../utils/utils'
 
 export default function Table(props){
     const [activeRow, setActiveRow]=useState('')
-    const {array, headers, clickFunction, onHover, attrib} = props
+    const {array, headers, clickFunction, firstIndex, onHover, attrib} = props
 
     function handleClick(index, code){
         setActiveRow(index)
@@ -39,7 +39,7 @@ export default function Table(props){
                     <tr className={`tableBodyRow ${activeRow===index?'activeRow':''}`} key={index} 
                          onMouseOver={()=>onHover && onHover(element[attrib])}
                          onClick={()=>handleClick(index,element[attrib])}>
-                        <td className={`tableValue tableIndex`}><b>{index+1}</b></td>
+                        <td className={`tableValue tableIndex`}><b>{firstIndex+index+1}</b></td>
                         {headers.map((header,index)=>
                            <td className={`tableValue${checkColumnWidth(header)}`} key={index}>{element[header]}</td>
                         )}

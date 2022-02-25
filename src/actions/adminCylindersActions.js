@@ -1,8 +1,8 @@
 import { appConfig } from "../apiConfig";
 
-export function getCylinderList() {
+export function getCylinderList(array) {
   return async function (dispatch) {
-    return fetch(`${appConfig.url}/cylinders/list`)
+    return fetch(`${appConfig.url}/cylinders${array?`?ids=[${array}]`:``}`)
       .then((response) => response.json())
       .then((json) => {
         dispatch({

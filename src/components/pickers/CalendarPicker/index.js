@@ -5,7 +5,7 @@ import { setDates } from '../../../actions/planActions'
 import './index.css'
 
 export default function CalendarPicker(props){
-    const {year, titles, task} = props
+    const {year, titles, task, yearDates} = props
     const {dates, frequency} = task
     const [taskDates, setTaskDates]=useState([])
     const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
@@ -14,49 +14,34 @@ export default function CalendarPicker(props){
         : [])
     const dispatch = useDispatch()
 
-    // useEffect(()=>console.log('taskDates', taskDates),[taskDates])
-    // useEffect(()=>console.log('stringDates', stringDates),[stringDates])
-
-    function weekIndex() {
-        let weeks = []
-        for (let i=1; i<=48;i++){
-            const month = Math.floor((i-1)/4)+1
-            weeks.push({
-                index: i,
-                month, 
-                week: (i-1)%4+1,
-                date: `${year}/${month}/${(i-1)%4*7+1}`
-            })
-        }
-        return weeks
-    }
-    const [weeks]=useState(weekIndex())
     useEffect(()=>setTaskDates(dates.map(date=>new Date(date))),[dates])
     useEffect(()=>setStringDates(taskDates.map(date=>
         date.toLocaleDateString().split(' ')[0])),[taskDates])
 
     async function setAllDates(event){
         event.preventDefault()
-        let value = Number(event.target.value)
-        let indexes = []
+        let index = Number(event.target.value)
         let datesInput = []
-        let week = weeks.find(week=>week.index===value)
-
-        if(!taskDates[0]
-            || taskDates[0].toLocaleDateString() !== (new Date (week.date)).toLocaleDateString()){
-            while (value<=48){
-                indexes.push(value)
-                value += frequency
+        let date = new Date (yearDates[index])
+        while (date && date.getMonth()){
+            datesInput.push( new Date(date) )
+            index+=frequency
+            let newDate = new Date(yearDates[index])
+            if(newDate && frequency%4===0){
+                if (newDate.getMonth()-date.getMonth() < frequency/4){
+                    let monthDates = yearDates.filter(e=>( new Date(e) ).getMonth()===newDate.getMonth()+1)
+                    if (monthDates[0]) newDate = new Date ( monthDates[0] ) 
+                }
             }
-            datesInput=weeks.filter(week=>indexes.includes(week.index)).map(week=>new Date(week.date))
+            date = newDate
         }
- 
+
         setTaskDates(datesInput)
         setStringDates(datesInput.map(date=>date.toLocaleDateString().split(' ')[0]))
 
         dispatch(setDates({
             year,
-            strategy:task.strategy,
+            strategy: task.strategy,
             device: task.code, 
             dates: datesInput
         }))
@@ -86,21 +71,27 @@ export default function CalendarPicker(props){
                             />
                     </div>
             </div>
+
             <div className='calendarColumn'>
                 <div className='calendarRow'>
                     {months.map((month, index)=>
-                    <div key={index} className='monthSection'>
-                        {titles && <div className='tinyTitle'>{month}</div>}
-                        <div className='spaced section'>
-                            {Array.from(Array(4).keys()).map((element,subIndex)=>{
-                                const week = weeks.find(week=>week.month===index+1 && week.week===subIndex+1)
-                                const date = (new Date(week.date)).toLocaleDateString()
-                                return <button key={taskDates[0] ? taskDates[0].getDate()+subIndex : subIndex}
-                                    className={`weekButton${stringDates.includes(date)? ' selectedWeek':''}`}
-                                    value={week.index}
-                                    onClick={(e)=>setAllDates(e)}
-                                    />})}
+                        <div key={index} className='monthSection'>
+                            {titles && <div className='tinyTitle'>{month}</div>}
+                            <div className='spaced section'>
+                                {yearDates.filter(date=>(new Date(date)).getMonth() === index).map((element)=>{
+                                    const date = ( new Date(element) ).toLocaleDateString()
+                                    const weekIndex = yearDates.findIndex(e=>
+                                        (new Date ( e )).toLocaleDateString() === date)
+                                    
+                                    return <button key={weekIndex}
+                                        className={`weekButton${stringDates.includes(date)? ' selectedWeek':''}`}
+                                        value={weekIndex}
+                                        onClick={(e)=>setAllDates(e)}
+                                        title={date.split('/').splice(0,2).join('/')}
+                                    />
+                                })}
                         </div>
+
                     </div>)}
                 </div>
             </div>

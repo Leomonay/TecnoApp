@@ -6,6 +6,7 @@
 }
 @media(max-width:900px) {
     .main-content{
+        height: calc( 100% - 3rem );
         padding:0
     }    
 }

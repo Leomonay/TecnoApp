@@ -93,7 +93,7 @@ export function searchWO(code){
 export function resetDetail(){
     return{
         type: 'ORDER_DETAIL',
-        payload: ''
+        payload: {}
     } 
 }
 

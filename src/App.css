@@ -88,3 +88,9 @@ button:hover, .button:hover{
 .spaced{
   justify-content: space-evenly;
 }
+.errorMessage{
+  color: red;
+  font-size: .6rem;
+  font-weight: bold;
+  text-decoration: none;
+}

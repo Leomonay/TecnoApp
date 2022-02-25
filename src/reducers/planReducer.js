@@ -3,6 +3,7 @@ const initialState = {
     devicePlanList:[],
     planResult:'',
     calendar: undefined,
+    selectedTask: undefined,
     plan:[]
 }
 
@@ -57,10 +58,24 @@ export default function planReducer (state = initialState,action){
                     return element
                 })
             }
-            case 'GET_PLAN':
+        case 'UPDATE_DATE':
+            const detail = action.payload
+            const index = state.devicePlanList.findIndex(e=>e.date===detail.date && e.code===detail.code)
+
+            return{
+                ...state={
+                devicePlanList: [...state.devicePlanList][index]=detail
+                }
+            }
+        case 'GET_PLAN':
             return{
                 ...state,
                 plan: action.payload
+            }
+        case 'SELECT_TASK':
+            return{
+                ...state,
+                selectedTask: action.payload
             }
 
         default: return state;

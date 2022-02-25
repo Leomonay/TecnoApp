@@ -81,3 +81,17 @@ export function  filterByWorker (worker, cylinders) {
     for (let key of Object.keys(ranges) ) if(json[key]<ranges[key].min || json[key]>ranges[key].max ) check=false
     return check
 }
+
+export function colorByPercent(completed){
+    let zero = [139,0,0]
+    let half = [255, 255, 0]
+    let full = [0,128,0]
+    let color = []
+    let percent = completed>=50? completed-50 : completed
+    for ( let i=0; i<=2 ; i++ ){
+        let start = completed>=50? [...half] : [...zero]
+        let end = completed>=50? [...full] : [...half]
+        color[i]= Math.floor(start[i]+(end[i]-start[i])/50*percent)
+    }
+    return `rgb(${color[0]}, ${color[1]}, ${color[2]})`
+}

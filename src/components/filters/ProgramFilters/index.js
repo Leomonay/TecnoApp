@@ -38,7 +38,6 @@ export default function ProgramFilters(props){
         props.select(newFilters)
     }
 
-    useEffect(()=>console.log('filters', filters),[filters])
 
     return(<div>
         <select className='programOption' onChange={(e)=>handleValue('strategy',e.target.value)} disabled={!programList}>

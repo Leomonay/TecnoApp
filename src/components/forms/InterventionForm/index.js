@@ -1,61 +1,146 @@
 import { useEffect, useState } from "react"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
+import { getWorkerList } from "../../../actions/peopleActions"
 import { cloneJson } from "../../../utils/utils"
 import PeoplePicker from "../../pickers/PeoplePicker"
+import { appConfig } from "../../../config"
 import './index.css'
+import { getCylinderList } from "../../../actions/adminCylindersActions"
+
+const {headersRef} = appConfig
+
+function KGinput(props){
+    const {object, disabled, readOnly, defaultValue, select, min, max, step}=props
+    const [errors, setErrors] = useState(!object.init)
+
+    function validation(value){
+        return !!value && value>Number(min) && value<=Number(max)
+    }
+
+    function setValue(event){
+        const value = Number(event.target.value)
+        const check = validation(value)
+        setErrors(!check)
+        select( (check && value) || undefined)
+    }
+
+    return(
+    <div className='gasLabel'>
+        <input type="number"
+            className='aIKGInput'
+            onChange={(event)=>setValue(event)}
+            defaultValue={defaultValue}
+            disabled={disabled}
+            readOnly={readOnly}
+            min={min} max={max} step={step}/>
+        {!disabled && errors && <div className='errorMessage'>entre {min} y {max}</div>}
+    </div>
+    )
+}
 
 export default function AddIntervention(props){
-    const {workersList} = useSelector(state=>state.people)
-    const [intervention, setIntervention]=useState({})
+    const {userData,workersList} = useSelector(state=>state.people)
+    const {allCylinders} = useSelector(state=>state.adminCylinders)
+    const [intervention, setIntervention] = useState({})
     const [freon, setFreon]=useState(false)
     const [errors, setErrors] = useState(false)
+    const [newCyl, setNewCyl] = useState(false)
+    const [user, setUser] = useState(undefined)
+    const [max, setMax] = useState(undefined)
+    const dispatch=useDispatch()
 
     useEffect(()=>{
-        function checkIntervention(){
-            let check = false
-            check = !!(intervention.date && intervention.time && intervention.workers && intervention.workers.length>1 && intervention.task)
-            if (intervention.refrigerant && intervention.refrigerant[0].cylinder){
-                intervention.refrigerant.map(cyl=>(!cyl.cylinder || !cyl.init || !cyl.final)? check=false:'')
-            }
-            setErrors(check)
+        if (!userData || !workersList[0]) return
+        if(userData.access === 'Worker'){
+            setUser({
+                id: userData.id,
+                name: workersList.find(e=>e.idNumber === userData.id).name
+            })
         }
-        checkIntervention()
-    },[intervention])
+    },[userData, workersList])
 
-    function refrigerant(data){
-        let gas = cloneJson(intervention.refrigerant || [])
-        const {cylinder, init, final}=data
-        if (cylinder) gas[data.index].cylinder = cylinder
-        if (init) gas[data.index].init = init
-        if (final) gas[data.index].final = final
-        if (gas[data.index].init &&  gas[data.index].final){
-            gas[data.index].total = gas[data.index].init - gas[data.index].final
-            document.getElementById(`addIntTotalRefTotal${data.index}`).value= gas[data.index].total
+    useEffect(()=>console.log('intervention', intervention),[intervention])
+
+    function getErrors(){
+        let errors = []
+        let missingFields = []
+        for (let key of ['date', 'time', 'workers', 'task']) if (!intervention[key]) missingFields.push(headersRef[key])
+        missingFields[0] && errors.push(`Debe completar ${missingFields.join(', ')}. `)
+        const {workers, refrigerant} = intervention
+        if (workers && workers.length === 0) errors.push(` Los trabajadores deben ser 2 o más. `)
+        if (refrigerant){
+            for (let code of refrigerant){
+                const missingKeys=[]
+                for (let key of ['init', 'final', 'total']){
+                    if (!code[key]) missingKeys.push(key)
+                }
+                missingKeys[0] && errors.push(` Garrafa n° ${code.cylinder} no posee campo${missingKeys[0]&&'s'} ${missingKeys.join(', ')}.`)
+            }
+        }
+        setErrors( errors ? `Errores: ${errors.join('')}` : false )
+        return !errors[0]
+    }
+
+    function refrigerant(index, field, value){
+        let gas = [...intervention.refrigerant] || []
+        gas[index][field]=value
+        gas[index].total = gas[index].init - gas[index].final || undefined
+
+        const consTotal = gas.filter(item => item.cylinder === gas[index].cylinder ).map(item=>item.total).reduce((prev, curr) => prev + curr, 0)
+        if (consTotal>16){alert(`El consumo total (${consTotal}) no puede ser mayor que la carga inicial (${16})`)
+            gas[index].total = undefined
+            gas[index].final = undefined
         }
         setIntervention({...intervention, refrigerant: gas})
+        checkAddButton(gas)
+    }
+
+    function checkAddButton(gas){
+        const totals = gas.filter(cylinder=>cylinder.total).length
+        setNewCyl (totals>=1 && totals === gas.length)
     }
 
     function addCylinder(){
-        let gas = cloneJson(intervention.refrigerant)
+        let gas = [...intervention.refrigerant]
         gas.push({})
         setIntervention({...intervention, refrigerant: gas})
+        setNewCyl(false)
     }
+
     function removeCylinder(index){
-        let gas = cloneJson(intervention.refrigerant)
+        let gas = [...intervention.refrigerant]
         gas = gas.filter((e,ind)=>ind!==index)
-        gas.map((item,index)=>{
-            document.getElementById(`addIntCylinder${index}`).value=item.cylinder
-            document.getElementById(`addIntRefInit${index}`).value=item.init
-            document.getElementById(`addIntRefFinal${index}`).value=item.final
-            document.getElementById(`addIntTotalRefTotal${index}`).value=item.total
-            return''
-        })
+        checkAddButton(gas)
+        if (!gas[0]){
+            setFreon(false)
+            gas = [{}]
+        }
         setIntervention({...intervention, refrigerant: gas})
     }
 
     function saveIntervention(){
         props.select(intervention)
         props.close()
+    }
+
+    function setCylinder(index,code){
+        let gas = [...intervention.refrigerant]
+        if(!code){
+            gas[index] = {cylinder: '', init: '', final:''}
+        }else{
+            const usages = intervention.refrigerant.filter(e=>{ 
+                return e.cylinder === code})
+            const consumptions = usages ? usages.map(e=>e.final) : undefined
+            const startStock = allCylinders.find(e=>e.code === code).currentStock
+
+
+            const max = consumptions[0] ? Math.min(...consumptions) :  startStock    
+            gas[index] = {cylinder: code, init: max, final:''}
+            setMax(max)
+        }
+        console.log(gas)    
+        setIntervention({...intervention, refrigerant: gas })
+        
     }
 
     function refrigerantCharges(){
@@ -68,126 +153,153 @@ export default function AddIntervention(props){
         setFreon(!freon)
     }
 
+    function handlePeople(idArray){
+        setIntervention({...intervention, workers: idArray})
+        dispatch(getCylinderList(idArray.map(e=>e.id)))
+    }
+
+    useEffect(()=>{if(!workersList[0])dispatch(getWorkerList())},[workersList, dispatch])
+
     return(
-        <div className='addInterventionForm'>
-            <div className='formTitle'>
-                <b>AGREGAR INTERVENCIÓN</b>
-                <div className='button formCloseButton'
-                    onClick={()=>props.close()}>X</div>
+        <div className='addInterventionModal'>
+
+            <div className='addInterventionForm'>
+            <div className='section'>
+                <div className='formTitle aIFtitle'>AGREGAR INTERVENCIÓN</div>
+                <div className='button closeButton' onClick={()=>props.close()}>X</div>
+            </div>
+
+
+                <div className='addInterventionSection'>
+
+                    <div className='addInterventionField'>
+                        <b>Fecha</b>
+                        <input className='formInterventionItemDate'
+                            type='date'
+                            max={new Date().toISOString().split("T")[0]}
+                            onChange={(e)=>setIntervention({...intervention, date:e.target.value})}
+                        />
+                        {(!intervention.date) && <div className='errorMessage'>Debe ingresarse una fecha menor o igual que hoy.</div>}
+                    </div>
+
+                    <div className='addInterventionField'>
+                        <b>Hora</b>
+                        <input className='formInterventionItemHour'
+                        type='time'
+                        disabled={!intervention.date}
+                        min='00:00'
+                        max={intervention.date===(new Date().toISOString().split("T")[0])?
+                            Date().toString().split(' ')[4].substring(0,5)
+                            :'23:59'}
+                        onChange={(e)=>setIntervention({...intervention, time:e.target.value})}
+                        />
+                        {(intervention.time)?
+                            ( (intervention.date===(new Date().toISOString().split("T")[0]) && 
+                                intervention.time > Date().toString().split(' ')[4].substring(0,5))?
+                                <div className='errorMessage'>No puede indicar un horario futuro.</div>:
+                                ''
+                            )
+                            :<div className='errorMessage'>Debe ingresar la hora.</div>
+                            }
+                    </div>
             </div>
 
             <div className='addInterventionSection'>
-
-                <div className='addInterventionField'>
-                    <b>Fecha</b>
-                    <input className='formInterventionItemDate'
-                        type='date'
-                        max={new Date().toISOString().split("T")[0]}
-                        onChange={(e)=>setIntervention({...intervention, date:e.target.value})}
-                    />
-                    {(!intervention.date) && <div className='errorMessage'>Debe ingresarse una fecha menor o igual que hoy.</div>}
+                    <div className='addInterventionField'>
+                        <b>Personal</b>
+                        <PeoplePicker name='Intervinientes'
+                            key={user?user.id:1}
+                            defaultValue = {userData.access==="Worker" ? user : undefined}
+                            options={workersList}
+                            disabled={!intervention.time}
+                            update={(idArray)=>handlePeople(idArray)}
+                            />
+                        {( (!intervention.workers) || intervention.workers.length<2) &&
+                            <div className='errorMessage'>Debe ingresar al menos 2 personas.</div>}
+                    </div>
                 </div>
 
-                <div className='addInterventionField'>
-                    <b>Hora</b>
-                    <input className='formInterventionItemHour'
-                    type='time'
-                    min='00:00'
-                    max={intervention.date===(new Date().toISOString().split("T")[0])?
-                        Date().toString().split(' ')[4].substring(0,5)
-                        :'23:59'}
-                    onChange={(e)=>setIntervention({...intervention, time:e.target.value})}
-                    />
-                    {(intervention.time)?
-                        ( (intervention.date===(new Date().toISOString().split("T")[0]) && 
-                            intervention.time > Date().toString().split(' ')[4].substring(0,5))?
-                            <div className='errorMessage'>No puede indicar un horario futuro.</div>:
-                            ''
-                        )
-                        :<div className='errorMessage'>Debe ingresar la hora.</div>
-                        }
-                </div>
-
-                <div className='addInterventionField'>
-                    <b>Personal</b>
-                    <PeoplePicker name='Intervinientes'
-                        options={workersList}
-                        update={(idArray)=>setIntervention({...intervention, workers: idArray})}
-                        />
-                    {( (!intervention.workers) || intervention.workers.length<2) &&
-                        <div className='errorMessage'>Debe ingresar al menos 2 personas.</div>}
-                </div>
-                
+            <div className='addInterventionSection'>
                 <div className='addInterventionField'>
                     <b>Tarea Realizada</b>
                     <textarea className='longTextInput'
                         id='addInterventionTask'
+                        disabled={!intervention.workers || !intervention.workers[0]}
                         onChange={(e)=>setIntervention({...intervention, task:e.target.value})}
                         />
                     {(!intervention.task) &&
                         <div className='errorMessage'>Este campo no puede quedar vacío.</div>}
                 </div>
-
             </div>
-
-            <div className='formTitle'>
-                <div className={`formOpenSection ${freon?'closeSection':'openSection'}`}
-                onClick={()=>refrigerantCharges()}
-                >
-                Gas</div>
-            </div>
-            
-            {(freon && intervention.refrigerant) && intervention.refrigerant.map((refri,index)=>
-            <div className='addInterventionSection' key={index}>
-                <label>N° Garrafa:
-                    <input
-                        id={`addIntCylinder${index}`}
-                        className='formInterventionRefrigerant'
-                        onChange={(event)=>refrigerant({index: index, cylinder: event.target.value || 0})}/>
-                </label>
-                
-                <label>Peso Inicial:
-                    <input  className='formInterventionRefrigerant'
-                        id={`addIntRefInit${index}`}
-                        placeholder='gas (kg.)'
-                        onChange={(event)=>refrigerant({index: index, init: Number(event.target.value) || 0})}
-                        />
-                        {(intervention.refrigerant && intervention.refrigerant[index].cylinder && !intervention.refrigerant[index].init) &&
-                            <div className='errorMessage'>Ingrese cantidad en kg.</div>}
-                    </label>
-                
-                <label>Peso Final:
-                    <input  className='formInterventionRefrigerant'
-                        id={`addIntRefFinal${index}`}
-                        placeholder='gas (kg.)'
-                        onChange={(event)=>refrigerant({index: index, final: Number(event.target.value) 
-                            || (intervention.refrigerant && intervention.refrigerant.init)
-                            || 0})}/>
-                        {(intervention.refrigerant && intervention.refrigerant[index].cylinder && !intervention.refrigerant[index].final) &&
-                            <div className='errorMessage'>Ingrese cantidad en kg.</div>}
-                        </label>
-                
-                <label>Consumo: 
-                    <input  className='formInterventionRefrigerant'
-                        id={`addIntTotalRefTotal${index}`}
-                        placeholder='gas (kg.)'/>
-                                        {(intervention.refrigerant && intervention.refrigerant[index].cylinder && !intervention.refrigerant[index].total) &&
-                        <div className='errorMessage'>Este campo se calcula solo</div>}
-                </label>
-
-
-                <button className='button addButton' onClick={()=>addCylinder()}><b>+</b></button>
-                <button className='button removeButton' onClick={()=>removeCylinder(index)}/>
-            </div>)}
 
             <div className='addInterventionSection'>
-                {errors?
-                    <button className='button'
-                    onClick={()=>saveIntervention()}>
-                        <b>AGREGAR INTERVENCIÓN</b></button>
-                    :<button className='disabledButton'>
-                        <b>AGREGAR INTERVENCIÓN</b></button>
-                        }
+                <div className="addInterventionField">
+                    <button className={`formOpenSection ${freon?'closeSection':'openSection'}`}
+                        disabled = {!intervention.task}
+                        onClick={()=>refrigerantCharges()}>
+                        Gas
+                    </button>
+                    {(freon && intervention.refrigerant)&& 
+                    <div className="addInterventionField">
+                        <div className='gasAISection'>
+                            {['N° Garrafa (responsable)', 'Peso Inicial', 'Peso Final', 'Total', 'Quitar'].map((label, index)=>
+                                    <label key={index} className='gasLabelTitle'>{label}</label>)}
+                        </div>
+                        
+                        {intervention.refrigerant.map((refri,index)=>{
+                            const cylinder = intervention.refrigerant[index]
+                            const notLast = index  !== intervention.refrigerant.length-1
+
+                            return<div className='gasAISection' key={index}>
+                                <select className='aIKGInput' key={index} defaultValue={cylinder.cylinder}
+                                    onChange={(event)=>setCylinder(index, event.target.value)}
+                                    readOnly={notLast}>
+                                    <option value=''>Elegir garrafa</option>
+                                    {allCylinders.map(cylinder=>{
+                                        const owner = workersList.find(worker=>worker.id === cylinder.user).name
+                                        return<option key={cylinder.code} value={cylinder.code}>
+                                            {`${cylinder.code} (${owner})`}
+                                        </option>})}
+                                </select>
+                                <KGinput select={(value)=>refrigerant(index,'init', value)}
+                                    key = {intervention.refrigerant[index].init || 2}
+                                    object={cylinder}
+                                    defaultValue={cylinder.init || max}
+                                    disabled={!cylinder.cylinder}
+                                    readOnly={notLast}
+                                    max={max}
+                                    min='2'
+                                    step='0.1'/>
+                                <KGinput select={(value)=>refrigerant(index,'final', value)}
+                                    key = {intervention.refrigerant[index].final || 3}
+                                    object={cylinder}
+                                    disabled={!cylinder.init}
+                                    defaultValue={cylinder.final}
+                                    readOnly={notLast}
+                                    max='16'
+                                    min='2'
+                                    step='0.1'/>
+                                <input  className='aIKGInput'
+                                    key = {intervention.refrigerant[index].total || 4}
+                                    readOnly={true}
+                                    defaultValue={cylinder.total}
+                                    placeholder='gas (kg.)'/>
+                                <div className='aIKGInput'>
+                                    <button className='button removeButton delCylinder' onClick={()=>removeCylinder(index)}/>
+                                </div>
+                            </div>})}
+                        {newCyl&&<button className='button addButton' onClick={()=>addCylinder()}><b>Agregar Garrafa</b></button>}    
+                    </div>}
+
+                <div className="addInterventionField">
+                    {errors  && <div className="alert alert-warning" role="alert">{errors}</div>}
+                        <button className='button'
+                            onClick={()=>getErrors() && saveIntervention()}>
+                        AGREGAR INTERVENCIÓN
+                        </button>
+                    </div>
+                </div>
+            </div>
             </div>
         </div>
     )

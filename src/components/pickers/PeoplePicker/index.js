@@ -1,13 +1,15 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import './index.css'
 
 export default function PeoplePicker(props){
+    const {options,selectedWorkers, disabled, defaultValue} = props
     const title = `${props.name}`
     const [enableOptions, setEnableOptions]=useState(false)
-    const [idList,setIDList]=useState(props.idList || [])
-    const {options,selectedWorkers} = props
+    const [idList,setIDList]=useState(props.idList || defaultValue? [defaultValue] : [])
+    const [notClick] = useState(defaultValue ? defaultValue.id : undefined)
 
     function updateList(worker){
+        console.log('INTENTÓ')
         const list = idList.find(element=>element.id===worker.id)?
             idList.filter(element=>element.id!==worker.id)
             :[...idList, worker]
@@ -15,30 +17,38 @@ export default function PeoplePicker(props){
         props.update(list)
     }
 
+    useEffect(()=>console.log('OPTIONS ', options[0]),[options])
+
     if(selectedWorkers && selectedWorkers.array[0]){
     const addedKey = Object.keys(selectedWorkers.array[0])[1]
+
     options.filter(option=>
-        selectedWorkers.array.map(e=>e.id).includes(option.idNumber)).map(option=>
+        selectedWorkers.array.map(e=>e.id).includes(option.id)).map(option=>
             option[selectedWorkers.caption] = selectedWorkers.array.filter(worker=>
-                worker.id===option.idNumber
+                worker.id===option.id
             ).map(element=>element[addedKey])
         )
+    
     }
 
     return(
         <div className='peoplePicker'>
-            <div className='peoplePickerSelected'
+            <button className='peoplePickerSelected'
                 id='OptionPickerVisibleOption'
+                disabled={disabled}
                 onClick={()=>setEnableOptions(!enableOptions)}>{
-                    idList.length>=1?
-                    idList.map((worker, index)=><div key={index} className='selectedWorker'>{worker.name}</div>)
-                    :title
-                    }</div>
+                        idList.length>=1?
+                        idList.map((worker, index)=><div key={index} className='selectedWorker'>{worker.name}</div>)
+                        :title
+                    }</button>
             {enableOptions&&<div className='peoplePickerListContainer'>
                 <button className='close' onClick={()=>setEnableOptions(!enableOptions)}>X</button>
                 <div className='peoplePickerList'>
                 {options.map((option, index)=>
-                    <div className={`peopleCard${idList.map(e=>e.id).includes(option.idNumber)?' selectedCard':''}`} key={index} onClick={()=>updateList({id: option.idNumber, name: option.name})}>
+                    <div className={`peopleCard${idList.map(e=>e.id).includes(option.id)?' selectedCard':''}`}
+                        key={index}
+                        onClick={()=>(option.id !== notClick) && updateList({id: option.id, name: option.name})}>
+
                         <div className={`notImage ${selectedWorkers&&'tiny'}`}>Foto Pendiente</div>
                         <div className='PeoplePickerName'><b>{option.name}</b></div>
                         <div className='PeoplePickerCharge'>{option.charge}</div>

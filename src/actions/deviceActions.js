@@ -71,7 +71,7 @@ export function searchWODevice(devCode){
             'Accept': 'application/json',
             'Content-Type': 'application/json',
         },
-        body:JSON.stringify({plant: plantCode, filters:{code:devCode}})
+        body:JSON.stringify({filters:{code:devCode}})
     })
         .then(response => response.json())
         .then(json=>dispatch({

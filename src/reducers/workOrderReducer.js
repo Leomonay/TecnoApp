@@ -37,6 +37,7 @@ export default function workOrderReducer (state = initialState,action){
                 workOrderList: action.payload
             };
         case 'ORDER_DETAIL':
+            console.log('orderDetail', action.payload)
             return{
                 ...state,
                 orderDetail: action.payload

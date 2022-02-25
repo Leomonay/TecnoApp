@@ -3,7 +3,7 @@ import { appConfig } from "../apiConfig"
 
 export function getWorkerList(){
     return async function(dispatch){
-        return fetch(`${appConfig.url}/users/workers`)
+        return fetch(`${appConfig.url}/users?access=Worker`)
         .then(response => response.json())
         .then(json=>dispatch({
             type: 'WORKERS_LIST',
@@ -14,7 +14,7 @@ export function getWorkerList(){
 }
 export function getSupervisors(){
     return async function(dispatch){
-        return fetch(`${appConfig.url}/users/supervisors`)
+        return fetch(`${appConfig.url}/users?access=Supervisors`)
         .then(response => response.json())
         .then(json=>dispatch({
             type: 'SUPERVISORS',

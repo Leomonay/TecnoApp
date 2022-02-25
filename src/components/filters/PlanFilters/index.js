@@ -11,6 +11,7 @@ const {startingYear} = appConfig.values
 
 export default function PlanFilters(props){
     const {year,userData, select} = props
+    const [data,setData]=useState([])
     const {programList} = useSelector(state=>state.plan)
     const {locationTree} = useSelector(state=>state.data)
     const {partialList, deviceFullList} = useSelector(state=>state.devices)
@@ -30,6 +31,28 @@ export default function PlanFilters(props){
     const dispatch = useDispatch()
 
     const months = Array.from({ length: 12 }, (_, index) => index+1)
+
+    useEffect(()=>setData(props.data),[props.data])
+
+    function completeDevices(event){
+        const input = event.target.value
+        let devices = []
+        if(!input){
+            setDeviceList([])
+            let newFilter = deleteFilterFields(['code','deviceCodes'])
+            setFilters(newFilter)
+            select(newFilter)
+        }else{
+            data.map(date=>!devices.map(e=>e.code).includes(date.code) && devices.push({code: date.code, name: date.device}))
+            setDeviceList(devices.filter(device=>device.code.includes(input) || device.name.includes(input)))
+        }
+    }
+
+    // useEffect(()=>{
+    //     let aux = []
+    //     data.map(date=>!aux.map(e=>e.code).includes(date.code) && aux.push({code: date.code, name: date.device}))
+    //     setDeviceList(aux)
+    // },[data])
 
     useEffect(()=>(filters.plant || userData.plant)
         && dispatch(getStrategies({year,plant: filters.plant || userData.plant}))
@@ -79,22 +102,20 @@ export default function PlanFilters(props){
         for (let field of fieldArray){
             delete newFilter[field]
         }
-        setFilters(newFilter)
-        select&&select(newFilter)
         return newFilter
     }
     
-    function deviceFilterByWord(event){
-        event.preventDefault()
-        const {value} = event.target
+    // function deviceFilterByWord(event){
+    //     event.preventDefault()
+    //     const {value} = event.target
 
-        if(!value)setDeviceList([])
-        if(value && deviceFullList[0]) setDeviceList(deviceFullList.filter(device=>
-            (device.code.toLowerCase().includes(value.toLowerCase())
-            ||device.name.toLowerCase().includes(value.toLowerCase())
-            )
-        ))
-    }
+    //     if(!value)setDeviceList([])
+    //     if(value && deviceFullList[0]) setDeviceList(deviceFullList.filter(device=>
+    //         (device.code.toLowerCase().includes(value.toLowerCase())
+    //         ||device.name.toLowerCase().includes(value.toLowerCase())
+    //         )
+    //     ))
+    // }
 
     function deviceSelect(value){
         const newFilter = {...filters}
@@ -103,7 +124,7 @@ export default function PlanFilters(props){
             newFilter.deviceCodes=deviceList.map(dev=>dev.code)
         }else{
             delete newFilter.deviceCodes
-            value? newFilter.device=value : delete newFilter.code 
+            value? newFilter.code=value : delete newFilter.code 
         }
         setFilters(newFilter)
         select&&select(newFilter)
@@ -114,23 +135,23 @@ export default function PlanFilters(props){
     function handleComplete(type,event){
         event.preventDefault()
         const {value} = event.target
-        let newFilter = {...filters}
+        // let newFilter = {...filters}
+        let newFilter = {}
+        
         if (type==='value'){
-            deleteFilterFields(['minComplete', 'maxComplete'])
+            // deleteFilterFields(['minComplete', 'maxComplete'])
+            newFilter = deleteFilterFields(['minComplete', 'maxComplete'])
             value? newFilter.complete=value : delete newFilter.complete
         }else{
-            delete newFilter.complete
+            // delete newFilter.complete
+            newFilter = deleteFilterFields(['complete'])
             value? newFilter[`${type}Complete`]=value : delete newFilter[`${type}Complete`]
         }
         setFilters(newFilter)
         select&&select(newFilter)
     }
     function deleteComplete(){
-        // let newFilter = {...filters}
         setFilters( deleteFilterFields(['minComplete', 'maxComplete', 'complete']) )
-        // console.log('newFilter',newFilter)
-        // setFilters(newFilter)
-        // select&&select(newFilter)
     }
 
     function daysOfMonth(year,month){
@@ -162,7 +183,6 @@ export default function PlanFilters(props){
             let newFilter = {...filters}
             value? newFilter[item]=value : delete newFilter[item]
             setFilters(newFilter)
-            console.log('newFilter',newFilter)
             select(newFilter)
             if(props.extraAction)extraAction(value)
         }
@@ -210,7 +230,7 @@ export default function PlanFilters(props){
                         defaultValue={filters.area || ''}
                         className='wordWidth' 
                         extraAction={(value=>{
-                            if(!value)deleteFilterFields(['line'])
+                            if(!value) setFilters( deleteFilterFields(['line']) )
                             setLineList(value&&(filters.plant || userData.plant)?
                                 locationTree[filters.plant || userData.plant][value]
                                 :[])
@@ -227,9 +247,9 @@ export default function PlanFilters(props){
                     {filters.line?
                         <PlanItemFilter className='wordWidth' item='Equipo' filterKey='code' options={deviceList} value={'code'} caption={'name'}
                             defaultValue={filters.code}/>
-                        :<div><input className='deviceSearcher' onChange={(e)=>{deviceFilterByWord(e)}} placeholder='nombre o código de equipo'/>
+                        :<div><input className='deviceSearcher' onChange={(e)=>{completeDevices(e)}} placeholder='nombre o código de equipo'/>
                             {deviceList[0]&&<ul className='autoComplete'>
-                                    <li onClick={()=>deviceSelect('all')}>Toda la lista</li>
+                                    {deviceList[1]&&<li onClick={()=>deviceSelect('all')}>Toda la lista</li>}
                                 {deviceList.map((device, index)=>
                                     <li onClick={()=>deviceSelect(device.code)} key={index}>{`[${device.code}] ${device.name}`}</li>)}
                             </ul>}
@@ -243,8 +263,8 @@ export default function PlanFilters(props){
                 <div className="filterSectionRow">
                     <PlanItemFilter className='wordWidth' item='Programa' filterKey='strategy' options={strategies}
                             defaultValue={filters.strategy}/>
-                    <PlanItemFilter className='wordWidth' item='Responsable' filterKey='responsible' options={workers} value={'id'} caption={'name'}
-                            defaultValue={filters.responsible}/>
+                    {access!=='Worker'&& <PlanItemFilter className='wordWidth' item='Responsable' filterKey='responsible' options={workers} value={'id'} caption={'name'}
+                            defaultValue={filters.responsible}/>}
                     <PlanItemFilter className='wordWidth' item='Supervisor' filterKey='supervisor' options={supervisors} value={'id'} caption={'name'}
                             defaultValue={filters.supervisor}/>
                     </div>

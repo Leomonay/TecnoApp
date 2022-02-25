@@ -1,0 +1,188 @@
+.WOBackground{
+    display: flex;
+    flex-direction: column;
+    /* justify-content: space-between; */
+    /* font-size: 70%; */
+    width: calc(100% - .5rem);
+    height: 100%;
+    margin: 0
+}
+.WOupperSection{
+    display: flex;
+    width: 100%;
+}
+.WOHeader{
+    display: flex;
+    max-width: 100%;
+    align-items: center;
+    margin: .1rem .25rem;
+    justify-content: flex-start;
+}
+
+.WOformField{
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    width: 100%;
+    padding: 0 .2rem;
+}
+.WOformLabel{
+    display: flex;
+    height: 100%;
+    min-width: 6rem;
+    align-items: center;
+    background-color: grey;
+    border-bottom-left-radius: .5rem;
+    border-top-left-radius: .5rem;
+    padding: 0 .2rem;
+    color: whitesmoke;
+    font-weight: bold;
+    justify-content: center;
+}
+.WOformInput{
+    display: flex;
+    height: 100%;
+    width: 100%;
+    margin-bottom: 0.5rem;
+    border: none;
+    border-bottom-right-radius: .5rem;
+    border-top-right-radius: .5rem;
+}
+
+.formLabel{
+    display: flex;
+    align-items: center;
+    /* margin: 0; */
+}
+
+
+.WOsearchButton{
+    min-width: fit-content;
+    margin: 0 .2rem;
+    padding: 0 .2rem;
+}
+.formTitle{
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    background-color: whitesmoke;
+    font-weight: bold;
+    font-size: 120%;
+    border-radius: .5rem;
+    margin-bottom: .5rem;
+}
+.interventionSection{
+    height: 100%;
+}
+.woInterventionField{
+    height: calc(100% - 2rem);
+    min-height: 3rem;
+}
+.WOrow{
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+}
+.WOcheck{
+    transform: scale(1.5);
+    margin: 0 .5rem .5rem .5rem;
+}
+.WOformImportant{
+    padding-top: .5rem;
+    color: whitesmoke;
+    font-weight: bold;
+    margin: .2rem 0
+}
+.bg-darkRed{
+    background-color: darkred;
+}
+.bg-grey{
+    background-color: grey;
+}
+.WOsection{
+    width: 100%;
+    border-bottom: 1px inset grey;
+    padding: .2rem 0;
+}
+.WOcolumn{
+    display: flex;
+    align-items: space-evenly;
+    margin: 0 .5rem;
+    width: 100%;
+    margin-bottom: .5rem;
+    height: 100%;
+}
+.WODescriptionSection{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: 100%
+}
+.WODescription{
+    display: flex;
+    width: 95%;
+    margin: 0 .2rem;
+    overflow-y: auto;
+    height: 100%;
+}
+
+/* DECRIPTION FORM STYLES */
+.addTextForm{
+    height: 10rem;
+    width: 90%;
+    background-color: silver;
+    border:2px outset grey;
+    box-shadow: 0 0 .5rem black;
+    align-content: center;
+}
+.addTextInput{
+    width: 90%;
+    height: 50%;
+    margin: .2rem 5%
+}
+.wOProgress{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-evenly;
+}
+.longWord{
+    padding: .5rem
+}
+
+@media(max-width:900px){
+    .WOBackground{
+        font-size: 70%;
+    }
+    .WOupperSection{
+        display: block;
+    }
+    .interventionSection{
+        height: 100%;
+        max-height: 50vh;
+    }
+    .WOformLabel{
+        min-width: 4rem;
+    }
+    .formTitle{
+        font-size: 120%;
+    }
+    .WOcolumn{
+        margin: 0;
+        height: fit-content
+    }
+
+    .WODescription{
+        height: 5rem;
+    }
+    .longWord{
+        padding: .2rem;
+        justify-content: center;
+        width: 5rem;
+    }
+    .wOProgress{
+        display: block;
+    }
+
+}

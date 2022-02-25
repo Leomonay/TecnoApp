@@ -1,62 +1,75 @@
 import React, { useEffect, useState } from 'react'
-import {Link} from 'react-router-dom'
 import './index.css'
 import { useDispatch, useSelector } from 'react-redux';
 import { callMostRecent } from '../../actions/workOrderActions'
+import { getPlan, selectTask } from '../../actions/planActions';
+import TaskList from '../../components/lists/taskList';
+import { getDeviceFromList } from '../../actions/deviceActions';
 
 export default function Panel(){
   const dispatch = useDispatch()
   const {mostRecent} = useSelector((state) => state.workOrder);
-  const [selectedWO, selectWO]=useState(null)
+  const {userData}=useSelector((state=>state.people))
+  const {plan} = useSelector((state=>state.plan))
+  const today = new Date()
+  const [conditions, setConditions]=useState(null)
   const [filters, setFilters] = useState(null)
+  const [pendant, setPendant] = useState([])
+  const [current, setCurrent] = useState([])
+  const [next, setNext] = useState([])
 
   useEffect(()=>setFilters( { conditions: { class : 'Reclamo'}, limit: 10 } ) , [] )
   useEffect(()=>filters&&dispatch(callMostRecent(filters)),[filters, dispatch])
-  
+  useEffect(()=>{
+    if(userData && userData.user){
+      const {plant, user, access} = userData
+      const year = (new Date()).getFullYear()
+      plant && access !== 'admin' ? setConditions({year,plant,user}) : setConditions({year})
+    }
+  }, [userData])
+
+  useEffect(()=>{dispatch(selectTask(undefined))
+    dispatch(getDeviceFromList({}))},[dispatch])
+
+  useEffect(()=>{conditions&&dispatch(getPlan(conditions))},[conditions,dispatch])
+
+  useEffect(()=>{plan&&console.log('plan',plan)
+    //current week monday    
+    const today = new Date()
+    const lastMonday = today.getDay() === 1?
+      today 
+      :new Date ( today.setDate( today.getDate() - ( today.getDay() - 1 ) ) )
+    let nextMonday = new Date (lastMonday)
+    nextMonday.setDate( lastMonday.getDate() + 7)
+    
+    console.log('current', lastMonday, 'next', nextMonday)
+    //set pendants, currents and netx tasks
+    setPendant(plan.filter(element=> new Date(element.date) < new Date() && element.completed < 100 ))
+    setCurrent(plan.filter(element=> new Date(element.date).toLocaleDateString() === lastMonday.toLocaleDateString()))
+    setNext(plan.filter(element=> new Date(element.date).toLocaleDateString() === nextMonday.toLocaleDateString()))
+
+  },[plan])
+
   return (
     <div className='PanelBackground'>
-        <div className='panelContainer'>
-            <div className='panelWoResume'>
-              <div className='title'>10 reclamos más recientes</div>
- 
-                <div className='wOData'>
-                  <div className='wOList'>
-                    {mostRecent[0]&&mostRecent.map((ot, index)=>
-                      <div className='liContainer' key={index}>
-                        <div className={`workOrderLi ${ot.status.toLowerCase()}`} onClick={()=>selectWO(ot)}>
-                          <div className='liHeader'>
-                            <div><b>OT {ot.code}</b> - {ot.status}</div>
-                            <div><b>Problema: </b>{ot.initIssue}</div>
-                            {ot.cause && <div><b>Causa: </b>{ot.cause}</div>}
-                          </div>
-                          <div className='workOrderRow'>
-                            <div><b>Línea: </b>{ot.area} - {ot.line}</div>
-                            <div><b>Equipo: </b>{ot.device}</div>
-                            </div>
-                          <div className='workOrderRow'>
-                            <div><b>Solicita: </b>{`${ot.solicitor.name} (${ot.solicitor.phone})`}</div>
-                            <div><b>Fecha: </b>{ot.registration.split("T")[0]}</div>
-                            {ot.closed&&<div><b>Cierre: </b>{ot.closed.split("T")[0]}</div>}
-                          </div>
-                        </div>
-                        {(selectedWO && ot && selectedWO.code === ot.code) &&<div className='liDetail'>
-                          <div><b>Descripción: </b>
-                          {ot.description}</div>
-                          <Link to={`/ots/detail/${ot.code}`}>ver detalle</Link>
-                        </div>}
-                      </div>
-                    )}
-                  </div>
-                  {/* <div className='tableViewer'>
-                    {selectedWO&&<JsonViewer
-                      json={selectedWO}
-                      title={`Detalle OT ${selectedWO.code}`}
-                    />}
-                  </div> */}
-                </div>
+        <TaskList pendant={pendant} current={current} next={next} access={userData.access}/>
 
+
+
+            {/* <div className='panelSquare'>
+              <div className='title'>10 reclamos más recientes</div>
+                <WOList mostRecent={mostRecent}/>
             </div>
-        </div>
+            <div className='panelSquare'>
+              <div className='title'>Pendientes del plan</div>
+
+              <div className="wOList">
+                {pendants[0]?
+                  pendants.map((date,index)=><DateCard key={index} date={date} access={userData.access}/>)
+                  :<div className="successMessage">¡Excelente! ¡No hay pendientes del plan a la fecha!</div>}
+              </div>
+            </div> */}
+
     </div>
   );
 }

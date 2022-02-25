@@ -29,6 +29,12 @@ const appConfig={
     idNumber: 'DNI',
     phone: 'Teléfono',
 
+    //forms
+    date: 'Fecha',
+    time: 'Hora',
+    workers: 'Personal',
+    task: 'Tarea',
+
     //Devices
     plant: 'Planta',
     plantName: 'Planta',

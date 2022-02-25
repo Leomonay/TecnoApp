@@ -1,11 +1,20 @@
-.addInterventionForm{
+.addInterventionModal{
     position: absolute;
-    top: 10rem;
+    top:0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0,0,0,0.2);
+}
+.addInterventionForm{
     bottom: 0;
     left: 0;
     right: 0;
     margin: 0 auto;
-    width: 80%;
+    width: fit-content;
     height: fit-content;
     background: silver;
     padding: .5rem;
@@ -16,6 +25,9 @@
     width: 100%;
     text-align: center;
 }
+.aIFtitle{
+    margin-top: .5rem;
+}
 .formCloseButton{
     float: right;
     margin: 0
@@ -23,8 +35,8 @@
 .addInterventionSection{
     display: flex;
     justify-content: space-evenly;
-    flex-wrap: wrap;
-    align-items: center;
+    /* flex-wrap: wrap; */
+    align-items: flex-start;
     width: 100%;
     margin: .5rem 0
 }
@@ -52,12 +64,12 @@
 .formOpenSection{
     background: linear-gradient(45deg, grey, whitesmoke, grey);
     width: fit-content;
-    margin: auto;
+    margin: .5rem;
     padding: 0 1rem;
     font-weight: bold;
     border-radius: 1rem;
+    color: black;
     box-shadow: 0 0 .2rem black;
-    cursor: pointer;
 }
 .openSection:hover{
     box-shadow: 0 0 .4rem green;
@@ -92,13 +104,52 @@
     cursor: pointer
 }
 
+
+.aIKGInput{
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+    height: 100%;
+    height: 1.8rem;
+    border-radius: .3rem;
+}
+.delCylinder{
+    max-height: 100%;
+    align-self: center;
+    margin: 0;
+}
+.gasAISection{
+    display: grid;
+    grid-template-columns: 3fr 1fr 1fr 1fr 1fr;
+    width: 30rem;
+}
+.gasLabelTitle{
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 90%;
+    font-weight: bold;
+    height: 2rem;
+    background: radial-gradient(silver, whitesmoke);
+}
+
 @media(max-width: 900px){
     #addInterventionTask{
         width: 80vw;
         min-width: 0;
     }
-    .removeButton{
-        transform: scaleX(.7);
-        margin:-.2rem
+    .addInterventionForm{
+        width: 90%;
     }
+    .aIKGInput{
+        height: 1.3rem;
+    }
+    .gasAISection{
+        width: 95%;
+    }    
 }
