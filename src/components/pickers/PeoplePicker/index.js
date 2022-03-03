@@ -9,15 +9,12 @@ export default function PeoplePicker(props){
     const [notClick] = useState(defaultValue ? defaultValue.id : undefined)
 
     function updateList(worker){
-        console.log('INTENTÓ')
         const list = idList.find(element=>element.id===worker.id)?
             idList.filter(element=>element.id!==worker.id)
             :[...idList, worker]
         setIDList(list)
         props.update(list)
     }
-
-    useEffect(()=>console.log('OPTIONS ', options[0]),[options])
 
     if(selectedWorkers && selectedWorkers.array[0]){
     const addedKey = Object.keys(selectedWorkers.array[0])[1]
@@ -31,12 +28,17 @@ export default function PeoplePicker(props){
     
     }
 
+    function handleOptions(e){
+        e.preventDefault()
+        setEnableOptions(!enableOptions)
+    }
+
     return(
         <div className='peoplePicker'>
             <button className='peoplePickerSelected'
                 id='OptionPickerVisibleOption'
                 disabled={disabled}
-                onClick={()=>setEnableOptions(!enableOptions)}>{
+                onClick={(e)=>handleOptions(e)}>{
                         idList.length>=1?
                         idList.map((worker, index)=><div key={index} className='selectedWorker'>{worker.name}</div>)
                         :title

@@ -6,6 +6,7 @@ import PeoplePicker from "../../pickers/PeoplePicker"
 import { appConfig } from "../../../config"
 import './index.css'
 import { getCylinderList } from "../../../actions/adminCylindersActions"
+import AddCylinder from "../AddCylinder"
 
 const {headersRef} = appConfig
 
@@ -47,6 +48,8 @@ export default function AddIntervention(props){
     const [newCyl, setNewCyl] = useState(false)
     const [user, setUser] = useState(undefined)
     const [max, setMax] = useState(undefined)
+    const [cylinderList, setCylinderList] = useState([])
+    const [gasUsages, setGasUsages] = useState([])
     const dispatch=useDispatch()
 
     useEffect(()=>{
@@ -59,7 +62,15 @@ export default function AddIntervention(props){
         }
     },[userData, workersList])
 
+    useEffect(()=>{
+        const cylinders = [...allCylinders]
+        for (let cylinder of cylinders) cylinder.owner = workersList.find(worker=>worker.id === cylinder.user).name
+        console.log('cylinders',cylinders)
+        setCylinderList(cylinders)
+    },[allCylinders, workersList])
+
     useEffect(()=>console.log('intervention', intervention),[intervention])
+    useEffect(()=>console.log('gasUsages', gasUsages),[gasUsages])
 
     function getErrors(){
         let errors = []
@@ -231,6 +242,18 @@ export default function AddIntervention(props){
                         <div className='errorMessage'>Este campo no puede quedar vacío.</div>}
                 </div>
             </div>
+            <b>GAS</b>
+                <AddCylinder cylinderList={cylinderList} disabled={false} create={(cylinder)=>setGasUsages([...gasUsages,cylinder])}/>
+            {gasUsages.map((cylinder, index)=>
+            <div className='formListItem fr211' key={index}>
+                <div className='listField'>{`${cylinder.code} (${cylinder.owner})`}</div>
+                <div className='listField'>{`${cylinder.total} kg.`}</div>
+                <div className='listField'>
+                    <button className="removeButton delCylinder" onClick={()=>setGasUsages(gasUsages.split(index,1))}/>
+                </div>
+            </div>)}
+
+
 
             <div className='addInterventionSection'>
                 <div className="addInterventionField">

@@ -105,27 +105,27 @@
 }
 
 
-.aIKGInput{
-    display: flex;
-    height: 100%;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    justify-content: space-between;
-    height: 100%;
-    height: 1.8rem;
-    border-radius: .3rem;
+
+.formListItem{
+    border-top: 1px dashed black;
+    border-bottom: 1px dashed black;
 }
-.delCylinder{
-    max-height: 100%;
-    align-self: center;
-    margin: 0;
-}
-.gasAISection{
+.fr211{
     display: grid;
-    grid-template-columns: 3fr 1fr 1fr 1fr 1fr;
-    width: 30rem;
+    width: 100%;
+    grid-template-columns: 2fr 1fr 1fr;
 }
+.listField{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: whitesmoke;
+    width: 100%;
+    height: 1.5rem;
+}
+
+
+
 .gasLabelTitle{
     display: flex;
     width: 100%;

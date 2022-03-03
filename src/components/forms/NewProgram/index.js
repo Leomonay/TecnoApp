@@ -97,7 +97,7 @@ export default function NewProgram(props){
 
                 <div className="formRow"><label className="formLabel">Personal</label>
                 <PeoplePicker name='Seleccionar..'
-                    options={userList.filter(e=>e.access==='Worker')}
+                    options={userList.filter(e=>e.access==='Worker').map(user=>({id:user.idNumber, name:user.name}))}
                     update={(idArray)=>setNewProgram({...newProgram, people: idArray.map(e=>e.id)})}
                     idList={program?program.people:undefined}
                     selectedWorkers={{caption:'Programa(s)', array:selectedWorkers}}
