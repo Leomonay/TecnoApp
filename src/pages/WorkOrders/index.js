@@ -24,10 +24,10 @@ export default function WorkOrders(){
   const [filterList, setFilterList]=useState(false)
   const [page, setPage] = useState({first:0, size: 10})
   const [conditions, setConditions]=useState({
-    // from: new Date((new Date()).setMonth((new Date()).getMonth()-1)),
-    // to: new Date(),
-    from: new Date((new Date()).setMonth((new Date()).getMonth()-10)),
-    to: new Date((new Date()).setMonth((new Date()).getMonth()-9)),
+    from: new Date(`1/1/${(new Date()).getFullYear()}`),
+    to: new Date(),
+    // from: new Date((new Date()).setMonth((new Date()).getMonth()-10)),
+    // to: new Date((new Date()).setMonth((new Date()).getMonth()-9)),
     plantName: userData.plant || ''
   })
   const [device, setDevice]=useState({})

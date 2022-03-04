@@ -12,6 +12,7 @@ import UpdateCylinder from "../UpdateCylinder/UpdateCylinder";
 import styles from "./CylinderList.module.css";
 
 const assignedTo = (workers, id) => {
+  console.log('id',id)
   let worker = workers.filter((e) => e.id === id);
   if (worker.length !== 0) return worker[0].name;
   else return "En Stock";
@@ -80,14 +81,16 @@ export default function CylindersList({ cylinders, workers, refrigerants }) {
             cylinders.map((element) => {
               return (
                 <div key={element._id} className={styles.tabla}>
-                  <label>{element.code}</label>
-                  <label>{assignedTo(workers, element.assignedTo)}</label>
+                <label>{element.code}</label>
+                {/* <label>{element.user}</label> */}
+                  <label>{assignedTo(workers, element.user)}</label>
                   <label>{element.status}</label>
                   <label>{element.initialStock}</label>
-                  <label>{element.actualStock}</label>
-                  <label>
+                  <label>{element.currentStock}</label>
+                  <label>{element.refrigerant}</label>
+                  {/* <label>
                     {refrigerantContain(refrigerants, element.refrigerant)}
-                  </label>
+                  </label> */}
                   <button
                     key={"delete" + element}
                     className={styles.removeButton}

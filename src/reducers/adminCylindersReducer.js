@@ -28,7 +28,7 @@ export default function adminCilindesReducer(state = initialState, action) {
             element.active
         )
         .map((element) => {
-          return { id: element._id, name: element.name };
+          return { id: element.id, name: element.name };
         });
       return {
         ...state,
