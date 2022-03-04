@@ -6,7 +6,6 @@ import { deviceByName, deviceListByLine } from '../../actions/deviceActions'
 import { getSupervisors } from '../../actions/peopleActions'
 import { getWOList, resetDetail } from '../../actions/workOrderActions'
 import GetLocationTree from '../../components/dropdown/locationTree'
-import { cloneJson } from '../../utils/utils'
 import './index.css'
 import Paginate from '../../components/Paginate'
 import WorkOrderListItem from '../../components/workOrders/WorkOrderListItem'
@@ -73,10 +72,8 @@ export default function WorkOrders(){
   },[dispatch, conditions, userData])
 
   function resetOrderData(){
-    console.log('resetDetail1')
     dispatch(resetDetail())
     dispatch(selectTask(undefined))
-    console.log('resetDetail2')
   }
 
   return(

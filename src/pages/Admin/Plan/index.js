@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { setPlantName, setYear } from '../../../actions/dataActions.js'
 import { PlantSelector } from '../../../components/dropdown/PlantSelector.js'
+import { FormSelector } from '../../../components/forms/FormInput/index.js'
 import PlanCalendar from '../../../components/plan/Calendar'
 import ProgramManagement from '../../../components/plan/ManagePrograms'
 import PlanTask from '../../../components/plan/Tasks'
@@ -7,11 +10,12 @@ import './index.css'
 
 export default function AdminPlan(){
     const steps = ['Acciones', 'Calendario', 'Programas']
-    const [plant, setPlant] = useState('')
+    const {plant, year} = useSelector(state=>state.data)
+    
     const [step, setStep] = useState(steps[0])
     const thisYear = (new Date()).getFullYear()
     const [years, setYears] = useState([])
-    const [year, setYear] = useState(thisYear)
+    const dispatch = useDispatch()
 
     useEffect(()=>{
         const thisYear = (new Date()).getFullYear()
@@ -24,14 +28,9 @@ export default function AdminPlan(){
     
     return(
         <div className='adminOptionSelected'>
-            <div className='section'>
-                <PlantSelector select={(value)=>setPlant(value)}/>
-                <label  className='formLabel short'>Año</label>
-                {years[0] && <select defaultValue={thisYear} onChange={(event)=>setYear(event.target.value)}>
-                    {years.map( (year, index)=>
-                        <option key={index} value={year}>{year}</option>
-                    )}
-                </select>}
+            <div className='section width50'>
+                <PlantSelector select={(value)=>dispatch(setPlantName(value))}/>
+                <FormSelector label={'Año'} options={years} defaultValue={year} onSelect={(e)=>dispatch(setYear(e.target.value))}/>
             </div>
 
             <div className="navButtons">
@@ -41,7 +40,7 @@ export default function AdminPlan(){
                         onClick={()=>setStep(option)}
                         value='actions'>{option}</button>)}
             </div>
-            {step===steps[0]&&<PlanTask plant={plant} year={year}/>}
+            {step===steps[0]&&<PlanTask year={year}/>}
             {step===steps[1]&&<PlanCalendar plant={plant} year={year} key={plant+year}/>}
             {step===steps[2]&&<ProgramManagement plant={plant}/>}
         </div>

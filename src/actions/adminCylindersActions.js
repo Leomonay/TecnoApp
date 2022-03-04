@@ -103,3 +103,9 @@ export function deleteCylinder(cylinder) {
      });
  };
 }
+export function resetCylinderList(){
+  return {
+    type: "GET_CYLINDERS",
+    payload: [],
+  };
+}

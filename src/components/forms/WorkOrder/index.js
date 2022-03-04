@@ -3,74 +3,22 @@ import { useDispatch, useSelector } from "react-redux"
 import { useParams } from "react-router-dom/cjs/react-router-dom.min"
 import { getDeviceFromList, searchWODevice } from "../../../actions/deviceActions"
 import { addOrdertoDate } from "../../../actions/planActions"
-import { getWOOptions, newWorkOrder, searchWO, updateOrder } from "../../../actions/workOrderActions"
+import { getWOOptions, newIntervention, newWorkOrder, searchWO, updateOrder } from "../../../actions/workOrderActions"
 
-import {appConfig} from "../../../config"
 import InterventionList from "../../lists/InterventionList"
 import DevicePicker from "../../pickers/DevicePicker"
 import WOProgress from "../../progress/WOProgresBar"
+import AddTextForm from "../AddText"
+import {FormInput, FormSelector} from "../FormInput"
 import AddIntervention from "../InterventionForm"
 import './index.css'
-const {headersRef} = appConfig
-
-function WOFormField(props){
-    const {label, defaultValue, changeInput, readOnly}=props
-    return(
-        <div className='WOformField'>
-            <label className="WOformLabel">{label}</label>
-            <input className="WOformInput" defaultValue={defaultValue} readOnly={readOnly}
-                onChange={(e)=>changeInput&&changeInput(e)}/>
-        </div>
-    )
-}
-
-function WOFormSelector(props){
-    const {label, defaultValue, valueField, captionField, options, onSelect, readOnly, disabled}=props
-    return(
-        <div className='WOformField'>
-            <label className="WOformLabel">{headersRef[label] || label}</label>
-            <select className="WOformInput" defaultValue={defaultValue} readOnly={readOnly}
-                disabled={disabled}
-                onChange={(e)=>onSelect&&onSelect(e)}>
-                <option value=''>Seleccionar</option>
-                    {options && options.map((element,index)=>
-                        <option value={valueField ? element[valueField]  : element} key={index}>
-                            {captionField ? element[captionField] : element}
-                        </option>)}
-                </select>
-        </div>
-    )
-}
-
-function AddTextForm(props){
-    const {user, select, close} = props
-    const [text, setText]=useState('')
-    const today = new Date()
-
-    function handleAddText(e){
-        e.preventDefault()
-        select(text)
-        close()
-    }
-
-    return(
-        <div className="addInterventionModal">
-            <form className="addTextForm">
-                <button className="closeButton" onClick={()=>close()}>X</button>
-                <div className="title">Modificar Descripción</div>
-                <textarea className='addTextInput' onChange={(e)=>setText(`${ today.toLocaleDateString() } - ${user}: ${e.target.value}`)}/>
-                <button className="addButton" onClick={(e)=>handleAddText(e)}>Agregar</button>
-            </form>
-        </div>
-    )
-}
 
 export default function WorkOrder(){
     const {otCode} = useParams()
     const {userData} = useSelector(state=>state.people)
     const {selectedWODevice} = useSelector(state=>state.devices)
     const {plan, selectedTask} = useSelector((state=>state.plan))
-    const {workOrderOptions,newOrderId, orderDetail, updateResult} = useSelector(state=>state.workOrder)
+    const {workOrderOptions, orderDetail} = useSelector(state=>state.workOrder)
     const dispatch = useDispatch()
     const [planDates, setPlanDates] = useState([])
     const [selectDate, setSelectDate] = useState(false)
@@ -85,8 +33,9 @@ export default function WorkOrder(){
     const [editDesc, setEditDesc] = useState(false)
 
     const [update, setUpdate] = useState({})
-
     const [task, setTask] = useState({})
+
+    const [permissions, setPermissions]=useState({woData:false,woDescription:false,editInterventions:true})
 
     useEffect(()=> setPlanDates(
         plan.filter(task=>{
@@ -95,7 +44,27 @@ export default function WorkOrder(){
         }).map(task=> (new Date (task.date)))
     ) , [plan, device ])
 
-    useEffect(()=>console.log('planDates', planDates),[planDates])
+    useEffect(()=>{
+    if(!order.code)return    
+    console.log('!order.code',!order.code)
+    console.log("userData.access==='Admin'",userData.access==='Admin')
+    
+    setPermissions({
+        woData: !!order.code && userData.access!=='Admin',
+        woDescription: order.code&&!order.closed&&(userData.id===order.userId || order.supervisor===userData.id || userData.access==='Admin'),
+        editInterventions: 
+            !order.code
+            || userData.access==='Admin'
+            || (!order.closed && (order.supervisor===userData.id || order.userId===userData.id) )
+    })},[order,userData])
+
+    useEffect(()=>console.log('order',order),[order])
+
+
+    useEffect(()=>{
+        setSelectDate(!!selectedTask)
+        setTask(selectedTask)
+    },[selectedTask])
 
     useEffect(()=>otCode && dispatch(searchWO(otCode)),[otCode, dispatch])
     
@@ -151,17 +120,19 @@ export default function WorkOrder(){
     }
 
     function handleSave(){
-        const sendOrder = {...order, user:userData.user, interventions, device:deviceCode}
-        otCode?
+        if(otCode){
             dispatch(updateOrder(otCode,update))
-            :dispatch(newWorkOrder(sendOrder))
-        if(task.date) dispatch(addOrdertoDate(otCode, task.date))
+            if(task.date) dispatch(addOrdertoDate(otCode, task.date))
+        }else{
+            const sendOrder = {...order, user:userData.user, interventions, device:deviceCode}
+            if(task.date) sendOrder.task = task
+            dispatch(newWorkOrder(sendOrder))
+        }
     }
 
     function selectTaskDate(date){
         const planDate = planDates.find(planDate=>{ 
             return(new Date (planDate)).toLocaleDateString() === date})
-        console.log('planDate', planDate)
 
         !date ? setTask({})
         :setTask({
@@ -169,6 +140,19 @@ export default function WorkOrder(){
             date : planDate,
             plant:device.plant,
             strategy:plan.find(task=>task.code===device.code).strategy})
+    }
+
+    function createIntervention(data){
+        if(otCode){
+            dispatch(newIntervention(otCode,data))
+        }else{
+            setInterventions([...interventions,data])
+        }
+    }
+
+    function getDate(date){
+        const newDate = new Date(date)
+        return `${newDate.toLocaleDateString()} ${newDate.getHours()}:${newDate.getMinutes()}`
     }
 
     return(
@@ -181,8 +165,8 @@ export default function WorkOrder(){
 
                     {(otCode || planDates[0]) && <section>
                         {otCode && <div className="WOrow">
-                            <WOFormField label='N° OT' defaultValue={otCode} readOnly={true}/>
-                            <WOFormField label='Estado' defaultValue={orderDetail.status} readOnly={true}/>
+                            <FormInput label='N° OT' defaultValue={otCode} readOnly={true}/>
+                            <FormInput label='Estado' defaultValue={orderDetail.status} readOnly={true}/>
                         </div>}
                         {planDates[0]&&<div className={`WOformField WOformImportant ${selectDate?'bg-darkRed':'bg-grey'}`}>
                             <div className="WOformField">
@@ -191,7 +175,10 @@ export default function WorkOrder(){
                                 <label>{`${selectDate?'TAREA DE PLAN':'¿TAREA DE PLAN?'}`}</label>
                             </div>
                             {selectDate?
-                                <WOFormSelector label='Fecha Plan' options={planDates.map(e=>e.toLocaleDateString())} onSelect={(e)=>{selectTaskDate(e.target.value)}}/>
+                                <FormSelector label='Fecha Plan'
+                                    defaultValue={(new Date (task.date)).toLocaleDateString()}
+                                    options={planDates.map(e=>e.toLocaleDateString())}
+                                    onSelect={(e)=>{selectTaskDate(e.target.value)}}/>
                                 :<label className='WOformInput'/>}
                         </div>}
                     </section>}
@@ -203,21 +190,25 @@ export default function WorkOrder(){
 
                         <div className='formTitle'>Datos del equipo</div>
                         <div className="WOrow">
-                            <WOFormField label='Cod.Eq.' defaultValue={deviceCode} readOnly={!!otCode} changeInput={(e)=>handleDevCode(e)}/>
-                            {!selectedWODevice && <button className='WOsearchButton' onClick={(e)=>searchCode(e)}>BUSCAR</button>}
+                            <FormInput label='Cod.Eq.' defaultValue={deviceCode} placeholder={'Ingrese equipo'} readOnly={!!otCode} changeInput={(e)=>handleDevCode(e)}/>
+                            {!selectedWODevice && <button className='WOsearchButton' onClick={(e)=>searchCode(e)}> BUSCAR </button>}
                             {!selectedWODevice && <button className='WOsearchButton' onClick={()=>setPickDevice(true)}>BÚSQUEDA AVANZADA</button>}
-                            {selectedWODevice &&  <button className='WOsearchButton' onClick={(e)=>handleDevCode(e)} value=''><i className="fas fa-backspace"></i></button>}
+                            {selectedWODevice &&  <button className='WOsearchButton'
+                                disabled={permissions.woData} 
+                                onClick={(e)=>handleDevCode(e)} value=''>
+                                <i className="fas fa-backspace"/>
+                            </button>}
                         </div>
-                            <WOFormField label='Equipo' defaultValue={device.name} readOnly={true}/>
+                            <FormInput label='Equipo' defaultValue={device.name} readOnly={true}/>
                         <div className="section">
-                            <WOFormField label='Planta' defaultValue={device.plant} readOnly={true}/>
-                            <WOFormField label='Area' defaultValue={device.area} readOnly={true}/>
+                            <FormInput label='Planta' defaultValue={device.plant} readOnly={true}/>
+                            <FormInput label='Area' defaultValue={device.area} readOnly={true}/>
                         </div>
-                            <WOFormField label='Linea' defaultValue={device.line} readOnly={true}/>
-                            <WOFormField label='Tipo' defaultValue={power} readOnly={true}/>
+                            <FormInput label='Linea' defaultValue={device.line} readOnly={true}/>
+                            <FormInput label='Tipo' defaultValue={power} readOnly={true}/>
                         <div className="section">
-                            <WOFormField label='Categoría' defaultValue={device.category} readOnly={true}/>
-                            <WOFormField label='Servicio' defaultValue={device.service} readOnly={true}/>
+                            <FormInput label='Categoría' defaultValue={device.category} readOnly={true}/>
+                            <FormInput label='Servicio' defaultValue={device.service} readOnly={true}/>
                         </div>
                     </section>
                 </div>
@@ -227,35 +218,46 @@ export default function WorkOrder(){
                         <div className='formTitle'>Detalle de la orden de trabajo</div>
                         <div className="WOrow">
                             {workOrderOptions.supervisor&&
-                            <WOFormSelector key={order.supervisor} label='Supervisor' 
+                            <FormSelector key={order.supervisor} label='Supervisor' 
                                 defaultValue={order.supervisor}
                                 options={workOrderOptions.supervisor}
                                 valueField='id'
                                 captionField='name'
                                 onSelect={(e)=>handleValue(e,'supervisor')}
-                                readOnly={false}/>
+                                disabled={permissions.woData || !deviceCode}/>
                             }
-                            <WOFormField label='OT Cliente' defaultValue={order.clientWO} changeInput={(e)=>handleValue(e,'clientWO')}/>
+                            <FormInput label='OT Cliente' defaultValue={order.clientWO}
+                                readOnly={permissions.woData}
+                                changeInput={(e)=>handleValue(e,'clientWO')}/>
                         </div>
                         {workOrderOptions&& Object.keys(workOrderOptions).map( (option,index)=>
                             (option!=='supervisor' &&
-                                <WOFormSelector key={order[option]} label={option} 
-                                    defaultValue={option==='status'? (order.status || 'Abierta') : order[option]}
-                                    options={ ( option!=='status' || userData.access==='admin') ? workOrderOptions[option]:['Abierta']}
+                                <FormSelector key={order[option] || index} label={option} 
+                                    defaultValue={order[option]}
+                                    options={workOrderOptions[option].sort((a,b)=>a>b?1:-1)}
                                     onSelect={(e)=>handleValue(e,option)}
-                                    readOnly={false}/>))}
+                                    disabled={permissions.woData || !order.supervisor}/>))}
                         <div className="section">
-                            <WOFormField label='Solicitó' defaultValue={order.solicitor} changeInput={(e)=>handleValue(e,'solicitor')}/>
-                            <WOFormField label='Teléfono' defaultValue={order.phone} changeInput={(e)=>handleValue(e,'phone')}/>
+                            <FormInput label='Solicitó' defaultValue={order.solicitor}
+                                readOnly={permissions.woData || !order.cause || !order.issue || !order.class}
+                                changeInput={(e)=>handleValue(e,'solicitor')}/>
+                            <FormInput label='Teléfono' defaultValue={order.phone}
+                                readOnly={permissions.woData || !order.cause || !order.issue || !order.class}
+                                changeInput={(e)=>handleValue(e,'phone')}/>
                         </div>
-                        <WOFormSelector key={device.servicePoints} label='L. Servicio' 
+                        {!!otCode&&<FormInput label='Creación' key={order.user}
+                            defaultValue={`${ getDate(order.regDate) } por ${order.user}`}
+                            readOnly={permissions.woData}
+                            />}
+
+                        <FormSelector key={device.servicePoints} label='L. Servicio' 
                             defaultValue={order.servicePoint ? order.servicePoint
                                 :(device.servicePoints && device.servicePoints.length===1?
                                     device.servicePoints[0]
                                     :undefined)}
                             options={device.servicePoints}
                             onSelect={(e)=>handleValue(e,'servicePoint')}
-                            readOnly={!!otCode}/>
+                            disabled={permissions.woData}/>
                     </section>
                 </div>
 
@@ -265,13 +267,14 @@ export default function WorkOrder(){
                             <div className='formTitle'>Observaciones</div>
                             <textarea className="WODescription" 
                                 onChange={(e)=>handleValue(e,'description')}
-                                readOnly={!!otCode && userData.access!=='admin'}
+                                readOnly={(!!otCode && userData.access!=='Admin')|| !order.solicitor}
                                 defaultValue={order.description}/>
-                            {otCode&&<button className='addButton' onClick={()=>setEditDesc(true)}>Agregar comentario</button>}
+                            {permissions.woDescription&&<button className='addButton' onClick={()=>setEditDesc(true)}>Agregar comentario</button>}
                             {editDesc&&<AddTextForm user={userData.user} 
                                 select={(text)=>setOrder({...order,description: order.description+' || '+text})}
                                 close={()=>setEditDesc(false)}
                                 />}
+                            {/* bloquear para OT Cerradas */}
                         </div>
                     </section>
                 </div>
@@ -281,24 +284,33 @@ export default function WorkOrder(){
             <section className='WOsection interventionSection'>
                 <div className='formTitle'>Intervenciones</div>
                 <div className='WOformField woInterventionField' >
-                    <InterventionList interventions={interventions}
-                        openEdit={()=>{}}
+                    
+                    <InterventionList
+                        key={interventions.length}
+                        interventions={ update.interventions?[...interventions,...update.interventions]:interventions }
+                        permission={permissions.editInterventions && order.description}
                         onDelete={()=>{}}
                         openAdd={()=>setIntForm(true)}/>
+                    
                     {intForm&& <AddIntervention
-                        select={(data)=>setInterventions([...interventions,data])}
+                        select={(data)=>createIntervention(data)}
                         close={()=>setIntForm(false)}/>}
+
                 </div>
-            </section>                                
+            </section>
+
             <section  className="WOsection wOProgress">
                 <label className="formLabel longWord">Avance OT</label>
                 <WOProgress key={`${orderDetail.completed}`||1}
                     errorCond = {order.interventions && order.interventions.length>0}
                     defaultValue={`${orderDetail.completed || 0}`}
+                    disabled={permissions.woData}
                     select={(e)=>handleValue(e,'completed')}/>
             </section>
+
             <section  className="WOsection">
-                <button onClick={handleSave}>Guardar</button>
+                <button onClick={handleSave}>Guardar Cambios</button>
+                {otCode&&<button onClick={()=>{}}>Solicitar Cierre</button>}                
             </section>
 
         </div>

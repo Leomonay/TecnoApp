@@ -10,6 +10,9 @@ const initialState = {
 }
 
 export default function workOrderReducer (state = initialState,action){
+    let detail = {...state.orderDetail}
+    let index = 0
+    let array = []
     switch (action.type){
         case 'MOST_RECENT':
             return{
@@ -37,7 +40,6 @@ export default function workOrderReducer (state = initialState,action){
                 workOrderList: action.payload
             };
         case 'ORDER_DETAIL':
-            console.log('orderDetail', action.payload)
             return{
                 ...state,
                 orderDetail: action.payload
@@ -46,7 +48,42 @@ export default function workOrderReducer (state = initialState,action){
             return{
                 ...state,
                 updateResult: action.payload
-            }                
+            }
+        case 'ADD_INTERVENTION':
+            detail.interventions.push(action.payload)
+            return{
+                ...state,
+                orderDetail: detail
+            }
+        case 'UPDATE_INTERVENTION':
+            index = detail.interventions.findIndex(e=>e.id === action.payload.id)
+            for (let key of Object.keys(action.payload)) detail.interventions[index][key] = action.payload[key]
+            return{
+                ...state,
+                orderDetail: detail
+            }
+        case 'ADD_USAGE':
+            index = detail.interventions.findIndex(e=>e.id === action.payload.intervention)
+            for (let use of action.payload.refrigerant.filter(use=>!!use.code)){
+                detail.interventions[index].refrigerant.push(use)
+                detail.interventions[index].refrigerant[0].total+=use.total
+            }
+            return{
+                ...state,
+                orderDetail: detail
+            }
+        case 'DEL_USAGE':
+            index = detail.interventions.findIndex(e=>e.id === action.payload.intervention)
+            array = detail.interventions[index].refrigerant.filter(usage=>!action.payload.ids.includes(usage.id))
+            detail.interventions[index].refrigerant = array
+            detail.interventions[index].refrigerant[0].total = array.filter(e=>!!e.code).map(e=>e.total).reduce((a,b)=>a+b,0)
+            detail.interventions[index].task = action.payload.task
+            return{
+                ...state,
+                orderDetail: detail
+            }
+            
+
         default: return state;
     }
 }

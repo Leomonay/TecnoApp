@@ -3,19 +3,21 @@ import './index.css'
 
 export default function AddCylinder(props){
     const {cylinderList, disabled, create} = props
+    const [stored, setStored]=useState([])
     const [cylinder, setCylinder]=useState({})
     const [max,setMax]=useState(0)
     const [min]=useState(2.2)
     const [errors, setErrors] = useState(undefined)
 
-    useEffect(() => console.log('FORM cylinderList', cylinderList), [cylinderList])
-    
+    useEffect(()=>setStored(props.stored),[props.stored])
 
     function setCode(code){
-        const cylinder = cylinderList.find(element=>element.code === code)
+        const cylinder = {...cylinderList.find(element=>element.code === code)}
+        const consumptions = stored.filter(cylinder => cylinder.code === code).map(e=>e.total).reduce((a,b)=>a+b,0)
+        cylinder.currentStock-=consumptions
+        cylinder.init = cylinder.currentStock
         setCylinder(code?cylinder:{})
-        console.log('max', cylinder.currentStock)
-        setMax(cylinder.currentStock)
+        setMax(cylinder? cylinder.currentStock : 0)
     }
 
     function setInit(value){
@@ -47,9 +49,8 @@ export default function AddCylinder(props){
             setErrors(`El peso final no puede ser menor a ${min} kg.`)
         }else{
             setErrors(undefined)
-            console.log('amount', amount, 'init', newCylinder.init)
             newCylinder.final = amount
-            newCylinder.total = (newCylinder.init - amount).toFixed(1)
+            newCylinder.total = Number((newCylinder.init - amount).toFixed(1))
         }
         setCylinder(newCylinder)
     }
@@ -57,15 +58,22 @@ export default function AddCylinder(props){
     function handleClick(e){
         e.preventDefault()
         create && create(cylinder)
-        setCylinder({})
+        setCylinder({code:''})
     }
 
     return(
         <div className="formContainer">
-            <form className="gasAISection">
+            <div className="gasAISection">
+                <div className="gasLabelTitle">Código (responsable)</div>
+                <div className="gasLabelTitle">Peso inicial</div>
+                <div className="gasLabelTitle">Peso final</div>
+                <div className="gasLabelTitle">Total Kg</div>
+            </div>
+            <form className="gasAISection" key={(JSON.stringify(cylinder)+'1')[0]}>
                 <select className='aIKGInput'
                     onChange={(event)=>setCode(event.target.value)}
                     disabled={disabled}
+                    defaultValue={cylinder.code}
                     >
                     <option value=''>Elegir garrafa</option>
                     {cylinderList.map(cylinder=>{
@@ -77,7 +85,8 @@ export default function AddCylinder(props){
                 <input type="number"
                     className='aIKGInput'
                     onChange={(event)=>setInit(event.target.value)}
-                    defaultValue={cylinder.stock}
+                    defaultValue={cylinder.currentStock}
+                    key={cylinder? cylinder.currentStock : 2}
                     disabled={!cylinder.code}
                     placeholder='kg'
                     min={min}
@@ -87,7 +96,8 @@ export default function AddCylinder(props){
                 <input type="number"
                     className='aIKGInput'
                     onChange={(event)=>setFinal(event.target.value)}
-                    defaultValue={cylinder.final}
+                    defaultValue={cylinder.final || 0}
+                    key={cylinder? cylinder.code : 3}
                     disabled={!cylinder.init}
                     placeholder='kg'
                     min={min}

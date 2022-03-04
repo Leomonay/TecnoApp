@@ -3,7 +3,7 @@ import { colorByPercent } from '../../../utils/utils'
 import './index.css'
 
 export default function WOProgress(props){
-    const {defaultValue,select, errorCond}=props
+    const {defaultValue,select, errorCond, disabled}=props
     const [value, setValue] = useState(props.defaultValue||'0')
     const [style,setStyle] = useState({})
     const [error,setError] = useState(false)
@@ -11,8 +11,7 @@ export default function WOProgress(props){
     useEffect(()=>setStyle({'--main-bg-color': colorByPercent(Number(value))}),[value])
     useEffect(()=>setValue(`${props.defaultValue}`),[props.defaultValue])
 
-    useEffect(()=>console.log('value',value),[value])
-    
+   
     function handleChange(e){
         const value = `${Math.max(Number(e.target.value), defaultValue)}`
         const obj = {target:{value: value},preventDefault:()=>{}}
@@ -29,6 +28,7 @@ export default function WOProgress(props){
                     type='range'
                     defaultValue={defaultValue || '0'}
                     onChange={(e)=>handleChange(e)}
+                    disabled={disabled}
                     style={style}
                     />
                 <label className='WOProgressValue'>{value}%</label>

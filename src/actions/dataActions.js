@@ -58,6 +58,20 @@ export function getPlantList(){
     }
 }
 
+export function setPlantName(plant){
+    return{
+        type: 'PLANT_NAME',
+        payload: plant
+    }
+}
+
+export function setYear(year){
+    return{
+        type: 'SET_YEAR',
+        payload: Number(year)
+    }
+} 
+
 export function getPlantLocationTree(plantName){
     return async function(dispatch){
         return fetch(`${appConfig.url}/plants/locations/${plantName}`)

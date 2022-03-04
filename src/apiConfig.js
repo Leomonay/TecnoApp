@@ -7,4 +7,5 @@ const appConfig={
 }
 
 export{
-  appConfig}
+  appConfig
+}

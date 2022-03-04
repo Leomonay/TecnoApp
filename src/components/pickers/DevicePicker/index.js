@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { getDeviceFilters, getDeviceList, getPartialDeviceList, viewDevice } from "../../../actions/deviceActions"
+import { getDeviceFilters, getDeviceList, viewDevice } from "../../../actions/deviceActions"
 import {appConfig} from "../../../config"
-import { cloneJson } from "../../../utils/utils"
 import JsonViewer from '../../JsonViewer.js/index.js'
 import Paginate from "../../Paginate"
 import Table from "../../Table"
@@ -19,7 +18,6 @@ export default function DevicePicker(props){
     useEffect(()=>!deviceFullList[0] && dispatch(getDeviceList(userData.plant)))
     useEffect(()=>dispatch(getDeviceFilters()),[dispatch])
     useEffect(()=>{
-        console.log(deviceFullList[0])
         const filtered = deviceFullList.filter(device=>{
             let check = true
             for (let key of Object.keys(conditions)){
@@ -38,20 +36,14 @@ export default function DevicePicker(props){
         }
         if (value===''){
             delete obj[cond]
-            console.log('obj',obj)
             setConditions(obj)
         }else{
             cond==='area'||cond==='line'?
             obj[cond] = e.target.value
             : obj[cond] = e.target.value
-            console.log('obj',obj)
             setConditions(obj)
         }
     }
-
-    useEffect(()=>console.log('filteredList',filteredList),[filteredList])
-    useEffect(()=>console.log('deviceFullList',deviceFullList),[deviceFullList])
-    useEffect(()=>console.log('conditions',conditions),[conditions])
 
     function FilterOption(props){
         const {field, options}=props

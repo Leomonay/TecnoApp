@@ -13,8 +13,7 @@ import { getRefrigerants } from "../../../actions/adminCylindersActions";
 import ProgramForm from "../../forms/ProgramForm";
 
 export default function PlanTask(props){
-    const [plant, setPlant] = useState(props.plant)
-    const [year, setYear] = useState(props.year)
+    const {plant, year} = useSelector(state=>state.data)
 
     const [filters, setFilters]=useState({ valueFilters:{}, rangeFilters:{}, includeFilters: {} })
 
@@ -33,9 +32,6 @@ export default function PlanTask(props){
         dispatch(getRefrigerants())
         dispatch(getPlanDevices({plant,year}))
     },[dispatch, plant, year])
-
-    useEffect(()=>setPlant(props.plant),[props.plant])
-    useEffect(()=>setYear(props.year),[props.year])
 
     async function handleSave(json){
         dispatch(setDeviceStrategy(json))
@@ -154,8 +150,6 @@ export default function PlanTask(props){
 
             {programForm&&selection&& <ProgramForm 
                 selection={selection}
-                year={year}
-                plant={plant}
                 save={(json)=>handleSave(json)}
                 onClose={()=>setProgramForm(!programForm)}
                 />}

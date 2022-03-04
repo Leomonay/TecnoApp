@@ -132,3 +132,82 @@ export function deleteOrder(code){
         )
     }
 }
+
+export function newIntervention(order,data){
+    return async function(dispatch){
+        return fetch(`${appConfig.url}/intervention`,{
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body:JSON.stringify({order:order,...data}),
+        })
+        .then(response => response.json())
+        .then(json=> dispatch({
+                type: 'ADD_INTERVENTION',
+                payload: json
+            })
+        )
+    }
+}
+
+export function updateIntervention(id,update){
+    return async function(dispatch){
+        return fetch(`${appConfig.url}/intervention`,{
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body:JSON.stringify({id,update}),
+        })
+        .then(response => response.json())
+        .then(json=>{
+            dispatch({
+                type: 'UPDATE_INTERVENTION',
+                payload: json
+            })}
+        )
+    }
+}
+
+export function addCylinderUsage(intervention,user,gases){
+    return async function (dispatch) {
+      return fetch(`${appConfig.url}/cylinders/usages`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({intervention,user,gases}),
+      })
+        .then((response) => response.json())
+        .then((json) => {
+          dispatch({
+            type: "ADD_USAGE",
+            payload: json,
+          });;
+        });
+    };
+}
+
+export function deleteCylinderUsage(intervention,user,usages){
+    return async function (dispatch) {
+      return fetch(`${appConfig.url}/cylinders/usages`, {
+        method: "DELETE",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({intervention,user,usages}),
+      })
+        .then((response) => response.json())
+        .then((json) => {
+          dispatch({
+            type: "DEL_USAGE",
+            payload: json,
+          });;
+        });
+    };
+}

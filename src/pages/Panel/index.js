@@ -33,7 +33,7 @@ export default function Panel(){
 
   useEffect(()=>{conditions&&dispatch(getPlan(conditions))},[conditions,dispatch])
 
-  useEffect(()=>{plan&&console.log('plan',plan)
+  useEffect(()=>{
     //current week monday    
     const today = new Date()
     const lastMonday = today.getDay() === 1?
@@ -41,8 +41,6 @@ export default function Panel(){
       :new Date ( today.setDate( today.getDate() - ( today.getDay() - 1 ) ) )
     let nextMonday = new Date (lastMonday)
     nextMonday.setDate( lastMonday.getDate() + 7)
-    
-    console.log('current', lastMonday, 'next', nextMonday)
     //set pendants, currents and netx tasks
     setPendant(plan.filter(element=> new Date(element.date) < new Date() && element.completed < 100 ))
     setCurrent(plan.filter(element=> new Date(element.date).toLocaleDateString() === lastMonday.toLocaleDateString()))

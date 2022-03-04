@@ -4,17 +4,26 @@ import './index.css'
 import { appConfig } from '../../../config'
 import { useDispatch, useSelector } from 'react-redux'
 import { getStrategies } from '../../../actions/planActions'
+import { FormSelector } from '../FormInput/index.js'
 const {frequencies} = appConfig
 
 export default function ProgramForm(props){
-    const {selection, year, save, onClose}=props
-    const fullProgramList = useSelector(state => state.plan.programList)
-    const [programList, setProgramList] = useState(props.programList)
+    const {selection, save, onClose}=props
+    
+    const {plant, year} = useSelector(state=>state.data)
+    const fullProgramList = useSelector(state => state.plan.programList) // allPrograms
+
+    const [programList, setProgramList] = useState(props.programList) //filtered Program List
     const [planProgram, setPlanProgram] = useState({})
-    const [program, setProgram] = useState(undefined)
+    const [program, setProgram] = useState({})
     const dispatch = useDispatch()
 
     useEffect(()=>setProgramList(fullProgramList),[fullProgramList])
+
+    useEffect(()=>console.log('plant',plant),[plant])
+    useEffect(()=>console.log('year',year),[year])
+    useEffect(()=>console.log('programList',programList),[programList])
+    useEffect(()=>console.log('program',program),[program])
 
     function selectProgram(name){
         const program = programList.find(program=>program.name===name)
@@ -34,12 +43,18 @@ export default function ProgramForm(props){
         setPlanProgram(newProgram)
     }
     
-    function handlePlant(value){
-        const newProgram = {...planProgram}
-        newProgram.plant = value
-        newProgram.device = selection.filter(dev=>dev.plant === value).map(dev=>dev.code)
-        dispatch(getStrategies({plant:value, year:year}))
+    useEffect(()=>{
+        if(!(plant && year && selection))return
+        const newProgram = {plant}
+        newProgram.device = selection.filter(dev=>dev.plant === plant).map(dev=>dev.code)
+        dispatch(getStrategies({plant, year}))
         setPlanProgram(newProgram)
+    },[plant,selection,year,dispatch])
+
+    function handlePeople(e){
+        e.preventDefault()
+        const worker = program.people.find(worker=>worker.id===Number(e.target.value))
+        setProgramItem( 'responsible' , (worker ? {id:worker.id , name:worker.name} : '' ) )
     }
 
     function handleSubmit(e){
@@ -69,56 +84,35 @@ export default function ProgramForm(props){
                         </div>)}
                 </div>
 
-                <div className='section'>
-                    {!props.plant && <PlantSelector select={(value)=>handlePlant(value)}/>}
-                    {!planProgram.plant && <div className='errorMessage'>Debe seleccionar uno</div>}
-                </div>
+                <PlantSelector key={plant}/>
+                {!planProgram.plant && <div className='errorMessage'>Debe seleccionar una planta</div>}
 
-                <div className='section'>
-                    <label className='formLabel'>Programa</label>
-                    <select className='midDropDown'
-                        disabled={!planProgram.plant || planProgram.plant===''}
-                        onChange={(e)=>selectProgram(e.target.value)}>
-                        <option value=''>Sin Seleccionar</option>
-                        {programList && programList.map(program=>program.name).map((name, index)=>
-                            <option key={index} value={name}>{name}</option>
-                        )}
-                    </select>
-                    {!planProgram.name && <div className='errorMessage'>Debe seleccionar uno</div>}
-                </div>
+                <FormSelector label='Programa' defaultValue={program.name}
+                    options={programList?programList.map(p=>p.name):[]}
+                    disabled={!planProgram.plant}
+                    onSelect={(e)=>selectProgram(e.target.value)}/>
+                {!planProgram.name && <div className='errorMessage'>Debe seleccionar un programa</div>}
 
-                <div>
-                    <label className='formLabel'>Frecuencia</label>
-                    <select className='midDropDown'
-                        defaultValue={'48'}
-                        disabled={!planProgram.name || planProgram.name===''}
-                        onChange={(event)=>setProgramItem('frequency', Number(event.target.value))}
-                        >
-                        {frequencies.map((element, index)=>
-                        <option key={index} value={element.weeks}>{element.frequency}</option>)}
-                    </select>
-                </div>
+                <FormSelector label='Frecuencia' defaultValue={program.name}
+                    options={frequencies || []}
+                    disabled={!planProgram.name}
+                    valueField={'weeks'}
+                    captionField={'frequency'}
+                    onSelect={(e)=>setProgramItem('frequency', Number(e.target.value))} />
+                {!planProgram.frequency && <div className='errorMessage'>Debe seleccionar una frecuencia</div>}
 
-                <div className='section'>
-                    <label className='formLabel'>Responsable</label>
-                    <select className='midDropDown' 
-                        disabled={!planProgram.name || planProgram.name===''}
-                        onChange={(e)=>{
-                        const worker = program.people.find(worker=>worker.id===Number(e.target.value))
-                        setProgramItem( 'responsible' , (worker ?
-                            {id:worker.id , name:worker.name}
-                            : '' ) )
-                    }}>
-                        <option value=''>Sin Seleccionar</option>
-                        {program&&program.people.map( (worker, index) =>
-                            <option key={index} value={worker.id}>{worker.name}</option>
-                        )}
-                    </select>
-                </div>
+                <FormSelector label='Responsable' defaultValue={program.name}
+                    options={program? program.people : []}
+                    disabled={!planProgram.frequency}
+                    valueField={'id'}
+                    captionField={'name'}
+                    onSelect={(e)=>handlePeople(e)} />
+                {!planProgram.responsible && <div className='errorMessage'>Debe seleccionar un responsable</div>}
 
                 <div className='section'>
                         <label className='formLabel'>Comentarios</label>
                         <textarea className='planComments'
+                            placeholder='Descripción o resumen de actividades, recomendaciones, etc.'
                             onChange={(e)=>setProgramItem('observations',e.target.value)}/>
                     </div>
                 

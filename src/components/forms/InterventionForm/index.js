@@ -1,63 +1,44 @@
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { getWorkerList } from "../../../actions/peopleActions"
-import { cloneJson } from "../../../utils/utils"
 import PeoplePicker from "../../pickers/PeoplePicker"
-import { appConfig } from "../../../config"
 import './index.css'
-import { getCylinderList } from "../../../actions/adminCylindersActions"
+import { getCylinderList, resetCylinderList } from "../../../actions/adminCylindersActions"
 import AddCylinder from "../AddCylinder"
+import AddTextForm from "../AddText"
+import { addCylinderUsage, deleteCylinderUsage, updateIntervention } from "../../../actions/workOrderActions"
 
-const {headersRef} = appConfig
-
-function KGinput(props){
-    const {object, disabled, readOnly, defaultValue, select, min, max, step}=props
-    const [errors, setErrors] = useState(!object.init)
-
-    function validation(value){
-        return !!value && value>Number(min) && value<=Number(max)
-    }
-
-    function setValue(event){
-        const value = Number(event.target.value)
-        const check = validation(value)
-        setErrors(!check)
-        select( (check && value) || undefined)
-    }
-
-    return(
-    <div className='gasLabel'>
-        <input type="number"
-            className='aIKGInput'
-            onChange={(event)=>setValue(event)}
-            defaultValue={defaultValue}
-            disabled={disabled}
-            readOnly={readOnly}
-            min={min} max={max} step={step}/>
-        {!disabled && errors && <div className='errorMessage'>entre {min} y {max}</div>}
-    </div>
-    )
-}
 
 export default function AddIntervention(props){
+    const {data, select, close} = props
     const {userData,workersList} = useSelector(state=>state.people)
     const {allCylinders} = useSelector(state=>state.adminCylinders)
     const [intervention, setIntervention] = useState({})
-    const [freon, setFreon]=useState(false)
-    const [errors, setErrors] = useState(false)
-    const [newCyl, setNewCyl] = useState(false)
     const [user, setUser] = useState(undefined)
-    const [max, setMax] = useState(undefined)
     const [cylinderList, setCylinderList] = useState([])
     const [gasUsages, setGasUsages] = useState([])
+    const [addText, setAddText]=useState(false)
     const dispatch=useDispatch()
+
+    // useEffect(()=>console.log('intervention',intervention),[intervention])
+
+    useEffect(()=>{
+        if(data){
+            const editable = {...data}
+            const date = new Date (editable.date)
+            editable.date = date.toISOString().split('T')[0]
+            editable.time = editable.time || `${date.getHours()}:${date.getMinutes()}`
+            setIntervention({...editable})
+            dispatch(getCylinderList(data.workers.map(e=>e.id)))
+            setGasUsages(editable.refrigerant.filter(e=>!!e.code))
+    }},[data, dispatch])
 
     useEffect(()=>{
         if (!userData || !workersList[0]) return
         if(userData.access === 'Worker'){
             setUser({
                 id: userData.id,
-                name: workersList.find(e=>e.idNumber === userData.id).name
+                name: workersList.find(e=>e.id === userData.id).name
             })
         }
     },[userData, workersList])
@@ -68,38 +49,36 @@ export default function AddIntervention(props){
         }else{
             const cylinders = [...allCylinders]
             for (let cylinder of cylinders) cylinder.owner = workersList.find(worker=>worker.id === cylinder.user).name
-            console.log('cylinders',cylinders)
             setCylinderList(cylinders)
-        }
+        }      
     },[allCylinders, workersList])
 
-    useEffect(()=>console.log('intervention', intervention),[intervention])
-    useEffect(()=>console.log('gasUsages', gasUsages),[gasUsages])
-    useEffect(()=>console.log('cylinderList', cylinderList),[cylinderList])
-
-    function getErrors(){
-        let errors = []
-        let missingFields = []
-        for (let key of ['date', 'time', 'workers', 'task']) if (!intervention[key]) missingFields.push(headersRef[key])
-        missingFields[0] && errors.push(`Debe completar ${missingFields.join(', ')}. `)
-        const {workers, refrigerant} = intervention
-        if (workers && workers.length === 0) errors.push(` Los trabajadores deben ser 2 o más. `)
-        if (refrigerant){
-            for (let code of refrigerant){
-                const missingKeys=[]
-                for (let key of ['init', 'final', 'total']){
-                    if (!code[key]) missingKeys.push(key)
-                }
-                missingKeys[0] && errors.push(` Garrafa n° ${code.cylinder} no posee campo${missingKeys[0]&&'s'} ${missingKeys.join(', ')}.`)
-            }
-        }
-        setErrors( errors ? `Errores: ${errors.join('')}` : false )
-        return !errors[0]
-    }
+    useEffect(()=>dispatch(resetCylinderList()),[dispatch])
 
     function saveIntervention(){
-        props.select(intervention)
-        props.close()
+        if(intervention.id){
+            let update={}
+            const dataWorkers = data.workers.map(e=>e.id)
+            const newWorkers = intervention.workers.map(e=>e.id)
+            if(newWorkers.filter(id=>dataWorkers.includes(id)).length !== newWorkers.length){
+                update.workers=intervention.workers
+            }
+            if(intervention.task !== data.task) update.task = intervention.task
+            const date = intervention.date+' '+intervention.time
+            if(date !== data.date) update = {...update, date: intervention.date, time:intervention.time}
+            if(Object.keys(update).length>=1)dispatch(updateIntervention(intervention.id, update))
+
+            const newGases = gasUsages.filter(e=>!e.id && !!e.code)
+            if(newGases[0])dispatch(addCylinderUsage(intervention.id, userData.id, newGases))
+            
+            const keptGases = gasUsages.map(gas=>gas.id)
+            const deletedGases = data.refrigerant.filter(e=>!!e.code && !keptGases.includes(e.id))
+            if(deletedGases[0])dispatch(deleteCylinderUsage(intervention.id,userData.id,deletedGases))
+
+        }else{
+            select({...intervention,refrigerant:gasUsages})
+        }
+        close()
     }
 
     function handlePeople(idArray){
@@ -111,7 +90,8 @@ export default function AddIntervention(props){
         e.preventDefault()
         const index = Number(e.target.value)
         let usages = [...gasUsages]
-        setGasUsages(usages.splice(index,1))
+        usages.splice(index,1)
+        setGasUsages(usages)
     }
 
     useEffect(()=>{if(!workersList[0])dispatch(getWorkerList())},[workersList, dispatch])
@@ -122,8 +102,11 @@ export default function AddIntervention(props){
             <div className='addInterventionForm'>
             <div className='section'>
                 <div className='formTitle aIFtitle'>AGREGAR INTERVENCIÓN</div>
-                <div className='button closeButton' onClick={()=>props.close()}>X</div>
+                <div className='button closeButton' onClick={()=>close()}>X</div>
             </div>
+
+            {data && data.task}
+
 
 
                 <div className='addInterventionSection'>
@@ -133,6 +116,7 @@ export default function AddIntervention(props){
                             type='date'
                             max={new Date().toISOString().split("T")[0]}
                             onChange={(e)=>setIntervention({...intervention, date:e.target.value})}
+                            defaultValue={intervention.date}
                         />
                         {(!intervention.date) && <div className='errorMessage'>Debe ingresarse una fecha menor o igual que hoy.</div>}
                     </div>
@@ -143,6 +127,7 @@ export default function AddIntervention(props){
                         type='time'
                         disabled={!intervention.date}
                         min='00:00'
+                        defaultValue={intervention.time}
                         max={intervention.date===(new Date().toISOString().split("T")[0])?
                             Date().toString().split(' ')[4].substring(0,5)
                             :'23:59'}
@@ -163,10 +148,11 @@ export default function AddIntervention(props){
                     <div className='addInterventionField'>
                         <b>Personal</b>
                         <PeoplePicker name='Intervinientes'
-                            key={user?user.id:1}
-                            defaultValue = {userData.access==="Worker" ? user : undefined}
+                            key={(user?user.id:1)+(intervention.id?intervention.id:1)}
+                            mandatory = {userData.access==="Worker" ? user : false}
                             options={workersList}
-                            disabled={!intervention.time}
+                            disabled={!intervention.time || (intervention.id && userData.access!=="Admin")}
+                            idList = {intervention.workers || (user && userData.access==='Worker') ? [user] : []}
                             update={(idArray)=>handlePeople(idArray)}
                             />
                         {( (!intervention.workers) || intervention.workers.length<2) &&
@@ -180,15 +166,28 @@ export default function AddIntervention(props){
                     <textarea className='longTextInput'
                         id='addInterventionTask'
                         disabled={!intervention.workers || !intervention.workers[0]}
+                        defaultValue={intervention.task}
                         onChange={(e)=>setIntervention({...intervention, task:e.target.value})}
                         />
                     {(!intervention.task) &&
                         <div className='errorMessage'>Este campo no puede quedar vacío.</div>}
+
+                    {intervention.id&&<button className='addButton' onClick={()=>setAddText(true)}>Agregar comentario</button>}
+                            {addText&&<AddTextForm user={userData.user} 
+                                select={(text)=>setIntervention({...intervention, task: intervention.task+' || '+text})}
+                                close={()=>setAddText(false)}
+                                />}
+
+
                 </div>
             </div>
 
             <b>Consumos de GAS</b>
-            <AddCylinder cylinderList={cylinderList} disabled={false} create={(cylinder)=>setGasUsages([...gasUsages,cylinder])}/>
+            <AddCylinder 
+                cylinderList={cylinderList}
+                disabled={false}
+                stored={gasUsages}
+                create={(cylinder)=>setGasUsages([...gasUsages,{...cylinder, user:userData.id}])}/>
             <div className="addInterventionField">
             {gasUsages.map((cylinder, index)=>
                 <div className='formListItem fr211' key={index}>
@@ -201,18 +200,17 @@ export default function AddIntervention(props){
             </div>
             <div className="addInterventionField">
                 <div className='listField'>
-                    {`TOTAL: ${gasUsages.map(e=>e.total).reduce((a,b)=>a+b,0)}`}
+                    <b>{`TOTAL: ${Number(gasUsages.map(e=>e.total).reduce((a,b)=>a+b,0))} kg.`}</b>
                 </div>
             </div>
 
-                <div className="addInterventionField">
-                    {errors  && <div className="alert alert-warning" role="alert">{errors}</div>}
-                        <button className='button'
-                            onClick={()=>getErrors() && saveIntervention()}>
-                        AGREGAR INTERVENCIÓN
-                        </button>
-                    </div>
+            <div className="addInterventionField">
+                    <button className='button'
+                        onClick={()=>saveIntervention()}>
+                    GUARDAR INTERVENCIÓN
+                    </button>
                 </div>
+            </div>
 
         </div>
     )

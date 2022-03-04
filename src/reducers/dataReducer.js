@@ -3,7 +3,8 @@ const initialState = {
     data:{},
     locationTree:{},
     servicePointList:[],
-    plantName:''
+    plant:'',
+    year:(new Date()).getFullYear()
 };
 
 
@@ -27,7 +28,12 @@ export default function dataReducer (state = initialState,action){
         case 'PLANT_NAME':
             return{
                 ...state,
-                plantName: action.payload
+                plant: action.payload
+            }
+        case 'SET_YEAR':
+            return{
+                ...state,
+                year: action.payload
             }
         default: return state;
     }

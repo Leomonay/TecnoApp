@@ -5,14 +5,13 @@
 }
 .deviceCard{
     display: flex;
-    flex-wrap:wrap;
+    /* flex-wrap:wrap; */
     justify-content: space-evenly;
     width: calc(100% - 3rem);
     background: linear-gradient(45deg, lightyellow, whitesmoke, lightyellow);
     border: 1px solid whitesmoke;
     box-shadow: 0 0 .3rem grey;
     border-radius: .5rem;
-    /* padding: .2rem; */
     margin: .3rem  .2rem;
 }
 .deviceCardColumn{
@@ -67,7 +66,7 @@
 }
 .deviceItems{
     display: flex;
-    flex-wrap: wrap;
+    /* flex-wrap: wrap; */
     justify-content: center;
     min-width: 17rem
 }
@@ -118,6 +117,9 @@
     .saveArea{
         height: fit-content;
         width: 100%;
+    }
+    .deviceItems, .deviceCard{
+        flex-wrap: wrap;
     }
     .iconFrame{
         transform: scale(.9);

@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useState } from 'react'
 import { appConfig } from '../../../config'
+import { FormInput, FormSelector } from '../../forms/FormInput'
 import './index.css'
 const {frequencies} = appConfig
 
@@ -17,6 +18,7 @@ export default function PlanDevice(props){
     ,[startProgram,newProgram])
     
     useEffect(()=>setStartProgram( device.strategy ),[device.strategy])
+    useEffect(()=>console.log( 'newProgram',newProgram ),[newProgram])
    
     function handleProperty(key, value){
         let program = {...newProgram}
@@ -92,57 +94,40 @@ export default function PlanDevice(props){
                         newProgram.name.length+1
                         : 1}>
                     <div className='section justifyCenter'>
-                        <label className='formLabel'>Programa</label>
-                        <select className='midDropDown'
-                            defaultValue={newProgram && newProgram.name}
-                            onChange={(event)=>handleProgram(event.target.value)}>
-                            <option value=''>Sin Seleccionar</option>
-                            {programs && programs.map( (program, index)=>
-                                <option key={index} value={program.name}>{program.name}</option>
-                            )}
-                        </select> 
+                        <FormSelector label={'Programa'} onSelect={(e)=>handleProgram(e.target.value)}
+                            defaultValue={newProgram? newProgram.name : undefined}
+                            options={programs ? programs.map(p=>p.name) : []}/>
                     </div>
 
                     <div className='section justifyCenter'
                         key={newProgram && newProgram.responsible?
                             newProgram.responsible.id+2
                             : 2}>
-                        <label className='formLabel'>Responsable</label>
-                        <select className='midDropDown' 
-                            onChange={(event)=>handleProperty(
-                                'responsible', 
-                                program.people.find(worker=>worker.id === Number(event.target.value) )
-                                )}
-                            defaultValue={(newProgram && newProgram.responsible)?
-                                ''+newProgram.responsible.id
-                                :''}>
-                            <option value=''>Sin Asignar</option>
-                            {program && program.people.map(worker=>
-                                <option key={worker.id} value={worker.id}>{worker.name}</option>
-                            )}
-                        </select>
+                        <FormSelector label={'Responsable'}
+                            onSelect={(event)=>handleProperty('responsible', program.people.find(worker=>worker.id === Number(event.target.value) ))}
+                            defaultValue={newProgram? newProgram.responsible && newProgram.responsible.id : undefined}
+                            valueField={'id'}
+                            captionField={'name'}
+                            options={program ? program.people : []}/>
                     </div>
 
                     <div className='section justifyCenter'>
-                        <label className='formLabel'>Costo(mU$S)</label>
-                        <input type='number' className='midDropDown' min='0'
-                            value={( newProgram && newProgram.cost) || 0}
-                            onChange={(e)=>handleProperty('cost', Number(e.target.value) )}/>
+                        <FormInput label={'Costo(mU$S)'}
+                            defaultValue={newProgram? newProgram.cost : 0}
+                            changeInput={(e)=>handleProperty('cost', Number(e.target.value) )}/>
                     </div>
 
-                    <div 
+                    <div className='section justifyCenter'
                         key={newProgram && newProgram.frequency?
                             newProgram.frequency+4
                             : 4}
                             >
-                        <label className='formLabel'>Frecuencia</label>
-                        <select className='midDropDown'
-                            defaultValue={(newProgram && newProgram.frequency) || '48'}
-                            onChange={(event)=>handleProperty('frequency', Number(event.target.value))}
-                            >
-                            {frequencies.map((element, index)=>
-                            <option key={index} value={element.weeks}>{element.frequency}</option>)}
-                        </select>
+                        <FormSelector label={'Frecuencia'} onSelect={(e)=>handleProperty('frequency', Number(e.target.value))}
+                            defaultValue={newProgram ? newProgram.frequency : undefined}
+                            valueField={'weeks'}
+                            captionField={'frequency'}
+                            options={frequencies}
+                        />
                     </div>
 
                 </div>

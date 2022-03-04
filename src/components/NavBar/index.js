@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./index.css";
 import logo from '../../assets/icons/logoTecnoclima.png'
 import { Link, NavLink } from 'react-router-dom';

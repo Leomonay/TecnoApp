@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import './index.css'
 
 export default function PeoplePicker(props){
-    const {options,selectedWorkers, disabled, defaultValue} = props
+    const {options,selectedWorkers, disabled, mandatory} = props
     const title = `${props.name}`
     const [enableOptions, setEnableOptions]=useState(false)
-    const [idList,setIDList]=useState(props.idList || defaultValue? [defaultValue] : [])
-    const [notClick] = useState(defaultValue ? defaultValue.id : undefined)
+    const [idList,setIDList]=useState(props.idList || [])
+    const [notClick] = useState(mandatory ? mandatory.id : undefined)
 
     function updateList(worker){
         const list = idList.find(element=>element.id===worker.id)?
@@ -15,6 +15,8 @@ export default function PeoplePicker(props){
         setIDList(list)
         props.update(list)
     }
+
+    // useEffect(()=>setIDList(props.idList),[props.idList])
 
     if(selectedWorkers && selectedWorkers.array[0]){
     const addedKey = Object.keys(selectedWorkers.array[0])[1]
@@ -40,13 +42,16 @@ export default function PeoplePicker(props){
                 disabled={disabled}
                 onClick={(e)=>handleOptions(e)}>{
                         idList.length>=1?
-                        idList.map((worker, index)=><div key={index} className='selectedWorker'>{worker.name}</div>)
+                        idList.map((worker, index)=>{
+                            console.log('worker'+index,worker)
+                            return<div key={index} className='selectedWorker'>{worker.name}</div>
+                            })
                         :title
                     }</button>
             {enableOptions&&<div className='peoplePickerListContainer'>
                 <button className='close' onClick={()=>setEnableOptions(!enableOptions)}>X</button>
                 <div className='peoplePickerList'>
-                {options.map((option, index)=>
+                {options.sort((a,b)=>a.name>b.name?1:-1).map((option, index)=>
                     <div className={`peopleCard${idList.map(e=>e.id).includes(option.id)?' selectedCard':''}`}
                         key={index}
                         onClick={()=>(option.id !== notClick) && updateList({id: option.id, name: option.name})}>

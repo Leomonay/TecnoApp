@@ -18,7 +18,6 @@ export default function TaskList(props){
         for ( let i=0; i<=2 ; i++ ){
             const completed = task.completed
             let percent = completed>=50? completed-50 : completed
-            console.log(percent)
             let start = completed>=50? [...half] : [...zero]
             let end = completed>=50? [...full] : [...half]
 

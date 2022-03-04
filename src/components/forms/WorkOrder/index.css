@@ -1,8 +1,6 @@
 .WOBackground{
     display: flex;
     flex-direction: column;
-    /* justify-content: space-between; */
-    /* font-size: 70%; */
     width: calc(100% - .5rem);
     height: 100%;
     margin: 0
@@ -19,42 +17,11 @@
     justify-content: flex-start;
 }
 
-.WOformField{
-    display: flex;
-    align-items: center;
-    justify-content: space-evenly;
-    width: 100%;
-    padding: 0 .2rem;
-}
-.WOformLabel{
-    display: flex;
-    height: 100%;
-    min-width: 6rem;
-    align-items: center;
-    background-color: grey;
-    border-bottom-left-radius: .5rem;
-    border-top-left-radius: .5rem;
-    padding: 0 .2rem;
-    color: whitesmoke;
-    font-weight: bold;
-    justify-content: center;
-}
-.WOformInput{
-    display: flex;
-    height: 100%;
-    width: 100%;
-    margin-bottom: 0.5rem;
-    border: none;
-    border-bottom-right-radius: .5rem;
-    border-top-right-radius: .5rem;
-}
-
 .formLabel{
     display: flex;
     align-items: center;
     /* margin: 0; */
 }
-
 
 .WOsearchButton{
     min-width: fit-content;
@@ -128,19 +95,7 @@
 }
 
 /* DECRIPTION FORM STYLES */
-.addTextForm{
-    height: 10rem;
-    width: 90%;
-    background-color: silver;
-    border:2px outset grey;
-    box-shadow: 0 0 .5rem black;
-    align-content: center;
-}
-.addTextInput{
-    width: 90%;
-    height: 50%;
-    margin: .2rem 5%
-}
+
 .wOProgress{
     display: flex;
     flex-direction: row;
