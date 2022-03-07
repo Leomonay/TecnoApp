@@ -3,7 +3,7 @@ const initialState = {
     devicePlanList:[],
     planResult:'',
     calendar: undefined,
-    selectedTask: undefined,
+    selectedTask: {},
     plan:[]
 }
 

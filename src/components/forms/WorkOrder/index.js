@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useParams } from "react-router-dom/cjs/react-router-dom.min"
 import { getDeviceFromList, searchWODevice } from "../../../actions/deviceActions"
-import { addOrdertoDate } from "../../../actions/planActions"
+import { addOrdertoDate, selectTask } from "../../../actions/planActions"
 import { getWOOptions, newIntervention, newWorkOrder, searchWO, updateOrder } from "../../../actions/workOrderActions"
 
 import InterventionList from "../../lists/InterventionList"
@@ -44,6 +44,8 @@ export default function WorkOrder(){
         }).map(task=> (new Date (task.date)))
     ) , [plan, device ])
 
+    useEffect(()=>console.log('task', task),[task])
+
     useEffect(()=>{
     if(!order.code)return    
     console.log('!order.code',!order.code)
@@ -62,7 +64,7 @@ export default function WorkOrder(){
 
 
     useEffect(()=>{
-        setSelectDate(!!selectedTask)
+        setSelectDate(!!selectedTask.date)
         setTask(selectedTask)
     },[selectedTask])
 
@@ -131,15 +133,15 @@ export default function WorkOrder(){
     }
 
     function selectTaskDate(date){
-        const planDate = planDates.find(planDate=>{ 
-            return(new Date (planDate)).toLocaleDateString() === date})
+        const planDate = planDates.find(planDate=>{ return(new Date (planDate)).toLocaleDateString() === date})
+        dispatch(selectTask(date? planDate : {}))
 
-        !date ? setTask({})
-        :setTask({
-            device:deviceCode,
-            date : planDate,
-            plant:device.plant,
-            strategy:plan.find(task=>task.code===device.code).strategy})
+        // !date ? setTask({})
+        // :setTask({
+        //     device:deviceCode,
+        //     date : planDate,
+        //     plant:device.plant,
+        //     strategy:plan.find(task=>task.code===device.code).strategy})
     }
 
     function createIntervention(data){
@@ -168,19 +170,21 @@ export default function WorkOrder(){
                             <FormInput label='N° OT' defaultValue={otCode} readOnly={true}/>
                             <FormInput label='Estado' defaultValue={orderDetail.status} readOnly={true}/>
                         </div>}
+
                         {planDates[0]&&<div className={`WOformField WOformImportant ${selectDate?'bg-darkRed':'bg-grey'}`}>
                             <div className="WOformField">
-                                <input className='WOcheck' type='checkBox' defaultChecked={!!selectedTask}
+                                <input className='WOcheck' type='checkBox' defaultChecked={!!selectedTask.date}
                                     onChange={(e)=>setSelectDate(e.target.checked)}/>
                                 <label>{`${selectDate?'TAREA DE PLAN':'¿TAREA DE PLAN?'}`}</label>
                             </div>
                             {selectDate?
                                 <FormSelector label='Fecha Plan'
-                                    defaultValue={(new Date (task.date)).toLocaleDateString()}
+                                    defaultValue={task.date? (new Date (task.date)).toLocaleDateString():undefined}
                                     options={planDates.map(e=>e.toLocaleDateString())}
                                     onSelect={(e)=>{selectTaskDate(e.target.value)}}/>
                                 :<label className='WOformInput'/>}
                         </div>}
+
                     </section>}
 
                         {pickDevice && <DevicePicker

@@ -77,8 +77,7 @@ export default function CylindersList({ cylinders, workers, refrigerants }) {
             <label>Stock Actual</label>
             <label>Refrigerante</label>
           </div>
-          {cylinders.length !== 0 &&
-            cylinders.map((element) => {
+          {cylinders[0] && cylinders.map((element) => {
               return (
                 <div key={element._id} className={styles.tabla}>
                 <label>{element.code}</label>
