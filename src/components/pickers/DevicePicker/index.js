@@ -83,7 +83,7 @@ export default function DevicePicker(props){
     }
 
     return(
-        <div className="addInterventionModal">
+        <div className="formModal">
             <div className='devicePickerBackground'>
                 <div className='devicePickerHeader'>
                     <div className='title'>BÚSQUEDA DE EQUIPOS</div>

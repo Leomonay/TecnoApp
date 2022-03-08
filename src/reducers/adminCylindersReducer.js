@@ -1,17 +1,14 @@
-import {
-  filterByWorker,
-  filterByRefrigerant,
-  filterByStatus,
-} from "../utils/utils";
 const initialState = {
-  cylinders: [],
   workers: [],
   refrigerants: [],
   allCylinders: [],
-  cylinderData: {},
+  cylinderResult: {}
 };
 
 export default function adminCilindesReducer(state = initialState, action) {
+  let cylindersList = [...state.allCylinders]
+  let index = undefined
+
   switch (action.type) {
     case "GET_CYLINDERS":
       return {
@@ -48,35 +45,29 @@ export default function adminCilindesReducer(state = initialState, action) {
         refrigerants: refrigerants,
       };
 
-    case "ALL_FILTERS":
-      let filtered = state.allCylinders;
-      let worker = "";
-      if (action.payload.worker !== "All") {
-        if (action.payload.worker !== "Stock") worker = action.payload.worker;
-
-        filtered = filterByWorker(worker, filtered);
-      }
-
-      if (action.payload.refrigerant !== "All") {
-        filtered = filterByRefrigerant(action.payload.refrigerant, filtered);
-      }
-
-      if (action.payload.status !== "All") {
-        filtered = filterByStatus(action.payload.status, filtered);
-      }
-      return {
+    case 'DELETE_CYLINDER':
+      index = state.allCylinders.findIndex(e=>e.id === action.payload.id)
+      cylindersList.splice(index,1)    
+      return{
         ...state,
-        cylinders: filtered,
-      };
+        allCylinders: cylindersList
+      }
 
-    case "CYLINDER_DATA":
-      let cylData = state.allCylinders.filter(
-        (element) => element._id === action.payload
-      );
-      return {
+    case "UPDATE_CYLINDER":
+      index = state.allCylinders.findIndex(e=>e.id === action.payload.id)
+      cylindersList[index] = {...action.payload, assignedTo: action.payload.user}
+      return{
         ...state,
-        cylinderData: cylData[0],
-      };
+        allCylinders: cylindersList
+      }
+
+    case "NEW_CYLINDER":
+    cylindersList.push(action.payload)
+      return{
+        ...state,
+        allCylinders: cylindersList.sort((a,b)=>a.code>b.code?1:-1),
+        cylinderResult: action.payload
+      }
 
     default:
       return state;

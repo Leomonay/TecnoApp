@@ -53,7 +53,7 @@ export default function UserDetail(props){
 
             <button
                 type='submit'
-                className={JSON.stringify(newUser)===JSON.stringify(user)? 'disabledButton' : undefined}
+                className='button'
                 disabled={JSON.stringify(newUser)===JSON.stringify(user)}>
                 GUARDAR USUARIO</button>
             </form>

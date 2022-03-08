@@ -1,51 +1,31 @@
 import React from "react";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
-import {
-  getCylinderData,
-  deleteCylinder,
-  getCylinderList,
-} from "../../../../actions/adminCylindersActions";
-import UpdateCylinder from "../UpdateCylinder/UpdateCylinder";
+// import { deleteCylinder } from "../../../../actions/adminCylindersActions";
+import { getCylinderList,deleteCylinder } from "../../../../actions/StoreActions";
+import NewCylinder from "../../../../components/forms/NewCylinder";
 
-import styles from "./CylinderList.module.css";
+import './index.css'
 
-const assignedTo = (workers, id) => {
-  console.log('id',id)
-  let worker = workers.filter((e) => e.id === id);
-  if (worker.length !== 0) return worker[0].name;
-  else return "En Stock";
-};
 
-const refrigerantContain = (refrigerants, id) => {
-  let refrigerant = refrigerants.filter((e) => e.id === id);
-  if (refrigerant.length !== 0) return refrigerant[0].refrigerante;
-};
-
-export default function CylindersList({ cylinders, workers, refrigerants }) {
+export default function CylindersList({ cylinders, workers, statuses }) {
+  const {refrigerants} = useSelector((state)=>state.adminCylinders)
+  const [cylinder, selectCylinder] = useState(false)
   const dispatch = useDispatch();
 
-  let [showModalUpdate, setShowModalUpdate] = useState(false);
-
   //Función boton editar una garrafa de la lista
-  let [updateCylinderData, setUpdateCylinderData] = useState({
-    newAssignedTo: "",
-    newStatus: "",
-    id: "",
-    oldCode: "",
-    oldAssignedTo: "",
-    oldStatus: "",
-  });
-
-  const handleEditCylinder = (event) => {
-    dispatch(getCylinderData(event.target.value));
-    setShowModalUpdate(true);
+  const handleEditCylinder = (id) => {
+    const cylinder = {...cylinders.find(e=>e.id===id)}
+    if (!cylinder.assignedTo && cylinder.user) cylinder.assignedTo = cylinder.user
+    delete cylinder.user
+    cylinder.refrigerant = refrigerants.find(r=>r.code === cylinder.refrigerant).id
+    console.log('cylinder from List', cylinder)
+    selectCylinder(cylinder)
   };
   //Fin funciones para editar una garrafa de la lista
 
   //Funcion para borrar una garrafa
-
   const handleDeleteCylinder = async (event) => {
     let response = await dispatch(deleteCylinder({ id: event.target.value }));
     if (response.hasOwnProperty("message")) {
@@ -55,60 +35,56 @@ export default function CylindersList({ cylinders, workers, refrigerants }) {
     }
     dispatch(getCylinderList());
   };
-  //Fin función para borrar una garrafa
 
+  //Fin función para borrar una garrafa
   return (
     <div>
-      <UpdateCylinder
-        updateCylinderData={updateCylinderData}
-        setUpdateCylinderData={setUpdateCylinderData}
-        setShowModalUpdate={setShowModalUpdate}
-        showModalUpdate={showModalUpdate}
-        workers={workers}
-      />
+      {cylinder &&
+        <NewCylinder
+          cylinder={cylinder}
+          onSave={()=>{}}
+          statuses={statuses}
+          onClose={()=>selectCylinder(false)}/>}
 
-      <div>
-        <div className={styles.divScroll}>
-          <div className={styles.tabla}>
-            <label>Code</label>
-            <label>Asignado</label>
-            <label>Status</label>
-            <label>Stock Inicial</label>
-            <label>Stock Actual</label>
-            <label>Refrigerante</label>
-          </div>
-          {cylinders[0] && cylinders.map((element) => {
-              return (
-                <div key={element._id} className={styles.tabla}>
-                <label>{element.code}</label>
-                {/* <label>{element.user}</label> */}
-                  <label>{assignedTo(workers, element.user)}</label>
-                  <label>{element.status}</label>
-                  <label>{element.initialStock}</label>
-                  <label>{element.currentStock}</label>
-                  <label>{element.refrigerant}</label>
-                  {/* <label>
-                    {refrigerantContain(refrigerants, element.refrigerant)}
-                  </label> */}
-                  <button
-                    key={"delete" + element}
-                    className={styles.removeButton}
-                    title="Eliminar"
-                    value={element._id}
-                    onClick={(e) => handleDeleteCylinder(e)}
-                  />
-                  <button
-                    className={styles.editButton}
-                    title="Edit"
-                    key={"edit" + element}
-                    value={element._id}
-                    onClick={(e) => handleEditCylinder(e)}
-                  />
-                </div>
-              );
-            })}
-        </div>
-      </div>
+      <table class="table table-striped" style={{textAlign:'center', marginLeft: '1rem', marginRight: '1rem'}}>
+        <thead>
+          <tr>
+            <th scope="col">Código</th>
+            <th scope="col">Asignado</th>
+            <th scope="col">Status</th>
+            <th scope="col">Stock Inicial</th>
+            <th scope="col">Stock Actual</th>
+            <th scope="col">Refrigerante</th>
+            <th scope="col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {cylinders[0] && cylinders.map( (element, index)=>
+          <tr key={index}>
+            <td><b>{element.code}</b></td>
+            <td>{element.user? workers.find(e=>e.id===element.user).name : 'STOCK'}</td>
+            <td>{element.status}</td>
+            <td>{element.initialStock}</td>
+            <td>{element.currentStock}</td>
+            <td>{element.refrigerant}</td>
+            <td>
+              <button className="button removeButton"
+                title="Eliminar"
+                onClick={() => dispatch(deleteCylinder(element.id))}
+                style={{margin:'0'}}
+                value={element.id}>
+              </button>
+              <button
+                  className='button editButton'
+                  title="Modificar"
+                  value={element._id}
+                  style={{margin:'0 .2rem'}}
+                  onClick={() => handleEditCylinder(element.id)}
+                />
+            </td>
+          </tr>)}
+        </tbody>
+      </table>
     </div>
   );
 }

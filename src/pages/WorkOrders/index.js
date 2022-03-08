@@ -85,14 +85,14 @@ export default function WorkOrders(){
         :
         <div className='column'>
           <div className='section'>
-            <button onClick={()=>setFilterList(true)} style={{width:'100%'}}>
+            <button className='button' onClick={()=>setFilterList(true)} style={{width:'100%'}}>
               <b>BUSCAR FILTRANDO LISTA</b>
             </button>
           </div>
           <form className='searchForm' onSubmit={(e)=>handleSubmit(e)}>
               <label><b>N° OT: </b></label>
               <input className='codeInput' type='text' onChange={(e)=>setCode(e.target.value)}/>
-              <button type='submit'>BUSCAR OT</button>
+              <button className='button' type='submit'>BUSCAR OT</button>
             </form>
         </div>}
         

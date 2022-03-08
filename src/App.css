@@ -22,7 +22,7 @@
   width: 100vw;
   height: 100vh;
 }
-button, .button{
+.button{
   background-color: darkred;
   color: white;
   border-radius: 5em;
@@ -34,7 +34,7 @@ button, .button{
   text-align: center;
   text-decoration: none;
 }
-button:hover, .button:hover{
+.button:hover{
   background-color: red;
   color: whitesmoke
 }
@@ -45,6 +45,11 @@ button:hover, .button:hover{
 .button:active{
   transform: scale(.95);
   box-shadow: 0 0 2px grey
+}
+.button:disabled{
+  border: 1px solid grey;
+  background-color: silver;
+  color: grey
 }
 *::-webkit-scrollbar{
   -webkit-appearance: none;

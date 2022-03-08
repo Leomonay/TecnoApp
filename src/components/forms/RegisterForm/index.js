@@ -71,7 +71,8 @@ export default function RegisterForm(){
             </div>
         )}
         <div className="loginButtons">
-            <button className={`button ${!validate&&'disabledButton'}`}
+            <button className='button'
+                disabled={!validate}
                 onClick={()=>validate&&addNewUser()}>
                 Registrar Usuario
             </button>

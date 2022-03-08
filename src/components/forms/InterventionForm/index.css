@@ -1,4 +1,4 @@
-.addInterventionModal{
+.formModal{
     position: absolute;
     top:0;
     left: 0;
@@ -9,7 +9,7 @@
     align-items: center;
     background-color: rgba(0,0,0,0.2);
 }
-.addInterventionForm{
+.formBody{
     bottom: 0;
     left: 0;
     right: 0;
@@ -133,7 +133,7 @@
         width: 80vw;
         min-width: 0;
     }
-    .addInterventionForm{
+    .formBody{
         width: 90%;
     }
     .aIKGInput{

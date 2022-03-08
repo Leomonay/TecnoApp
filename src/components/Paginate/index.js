@@ -25,7 +25,7 @@ export default function Paginate(props){
 
     function EdgeButton(page, caption, pageTo){
         return (
-        <button className={`pageButton ${current===page?'disabledButton':''}`}
+        <button className='pageButton'
             title={pageTo}
             onClick={(e)=>handleClick(e)}
             disabled={current===page}

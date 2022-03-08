@@ -64,6 +64,7 @@ export default function WorkOrder(){
 
 
     useEffect(()=>{
+        if(!selectedTask)return
         setSelectDate(!!selectedTask.date)
         setTask(selectedTask)
     },[selectedTask])
@@ -195,9 +196,9 @@ export default function WorkOrder(){
                         <div className='formTitle'>Datos del equipo</div>
                         <div className="WOrow">
                             <FormInput label='Cod.Eq.' defaultValue={deviceCode} placeholder={'Ingrese equipo'} readOnly={!!otCode} changeInput={(e)=>handleDevCode(e)}/>
-                            {!selectedWODevice && <button className='WOsearchButton' onClick={(e)=>searchCode(e)}> BUSCAR </button>}
-                            {!selectedWODevice && <button className='WOsearchButton' onClick={()=>setPickDevice(true)}>BÚSQUEDA AVANZADA</button>}
-                            {selectedWODevice &&  <button className='WOsearchButton'
+                            {!selectedWODevice && <button className='WOsearchButton button' onClick={(e)=>searchCode(e)}> BUSCAR </button>}
+                            {!selectedWODevice && <button className='WOsearchButton button' onClick={()=>setPickDevice(true)}>BÚSQUEDA AVANZADA</button>}
+                            {selectedWODevice &&  <button className='WOsearchButton button'
                                 disabled={permissions.woData} 
                                 onClick={(e)=>handleDevCode(e)} value=''>
                                 <i className="fas fa-backspace"/>
@@ -313,7 +314,7 @@ export default function WorkOrder(){
             </section>
 
             <section  className="WOsection">
-                <button onClick={handleSave}>Guardar Cambios</button>
+                <button className = 'button' onClick={handleSave}>Guardar Cambios</button>
                 {otCode&&<button onClick={()=>{}}>Solicitar Cierre</button>}                
             </section>
 

@@ -117,7 +117,7 @@ export default function ProgramForm(props){
                     </div>
                 
                 <div className='section' style={{justifyContent:'center'}}>
-                    <button className={planProgram.name?undefined:'disabledButton'}
+                    <button className='button'
                         type='submit'
                         disabled={!planProgram.name}>
                         GUARDAR PLAN

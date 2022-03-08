@@ -47,7 +47,7 @@ function NavBar() {
                 Menú Admin
               </NavLink>}
             </div>
-            <button className="logOutButton" onClick={handleLogOut}>
+            <button className="logOutButton button" onClick={handleLogOut}>
                 <div className="screenWidth">Cerrar Sesión</div>
                 {/* <i className="fas fa-sign-out-alt phonewidth"></i> */}
             </button>

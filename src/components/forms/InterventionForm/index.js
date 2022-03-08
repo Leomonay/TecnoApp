@@ -97,9 +97,9 @@ export default function AddIntervention(props){
     useEffect(()=>{if(!workersList[0])dispatch(getWorkerList())},[workersList, dispatch])
 
     return(
-        <div className='addInterventionModal'>
+        <div className='formModal'>
 
-            <div className='addInterventionForm'>
+            <div className='formBody'>
             <div className='section'>
                 <div className='formTitle aIFtitle'>AGREGAR INTERVENCIÓN</div>
                 <div className='button closeButton' onClick={()=>close()}>X</div>

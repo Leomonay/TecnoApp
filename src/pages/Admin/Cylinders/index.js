@@ -2,71 +2,75 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import AddCylinder from "./addCylinder/addCylinder";
 import CylindersList from "./CylindersList/CylinderList";
 
-import {
-  getCylinderList,
-  getEmpleados,
-  getRefrigerants,
-  allFilters
-} from "../../../actions/adminCylindersActions";
-import { FilterByWorker } from "./FilterByWorker/FilterByWorker";
-import { FilterByStatus } from "./FilterByStatus/FilterByStatus";
-import { FilterByRefrigerant } from "./FilterByRefrigerant/FilterByRefrigerant";
+import { getCylinderList, getEmpleados, getRefrigerants, allFilters } from "../../../actions/adminCylindersActions";
 
-import styles from "./index.module.css"
+import NewCylinder from "../../../components/forms/NewCylinder";
+import { FormSelector } from "../../../components/forms/FormInput";
 
 export default function AdminCylinders() {
   const dispatch = useDispatch();
 
-  const { cylinders, workers, refrigerants } = useSelector(
-    (state) => state.adminCylinders
-  );
+  const { allCylinders, workers, refrigerants } = useSelector( (state) => state.adminCylinders )
+  const [addCylinder, setAdd] = useState(false)
+  const [filteredList, setFilteredList] = useState([])
+  const [filterState, setFilterState] = useState({});
+  const statuses = ["Nueva", "En uso", "Vacia", "Descartada"];
 
-  let [showModal, setShowModal] = useState(false);
 
-  const [filterState, setFilterState] = useState({
-    worker: "All",
-    status: "All",
-    refrigerant: "All",
-  });
+  useEffect(() => {
+    dispatch(getEmpleados())
+    dispatch(getRefrigerants())
+    dispatch(getCylinderList())
+  }, [dispatch]);
 
-  useEffect(() => dispatch(getEmpleados()), [dispatch]);
-  useEffect(() => dispatch(getRefrigerants()), [dispatch]);
-  useEffect(() => dispatch(getCylinderList()), [dispatch]);
   useEffect(() => {
     dispatch(allFilters(filterState));
   }, [filterState, dispatch]);
 
+  useEffect(()=>setFilteredList(allCylinders.filter(cylinder=>{
+    let check = true
+    for (let key of Object.keys(filterState) ){
+      if ( cylinder[key] !== filterState[key] ) check=false
+    }
+    return check
+  })),[filterState,allCylinders])
+
+  function setFilter(event){
+    event.preventDefault()
+    const newFilter = {...filterState}
+    const {name, value} = event.target
+    value? newFilter[name] = ( name === 'user'? Number(value) : value) : delete newFilter[name]
+    setFilterState(newFilter)
+  }
+
+  useEffect(()=>console.log('filterState', filterState),[filterState])
+
+
   return (
     <div className="adminOptionSelected">
-      Administración de Garrafas
-      <button title="Agregar Garrafa" onClick={() => setShowModal(true)}>
-        Agregar Garrafa
-      </button>
-      <div className={styles.divFilters}>
+      <div className="formTitle">Administración de Garrafas</div>
 
-      <FilterByWorker
-        workers={workers}
-        setFilterState={setFilterState}
-        filterState={filterState}
-        />
-      <FilterByStatus
-        setFilterState={setFilterState}
-        filterState={filterState}
-        />
-      <FilterByRefrigerant  refrigerants={refrigerants}
-        setFilterState={setFilterState}
-        filterState={filterState}
-        />
-        </div>
+      <button className='button' title="Agregar Garrafa" onClick={() => setAdd(true)} style={{marginBottom:'.5rem'}}>
+          Agregar Garrafa
+        </button>
+
+      <div style={{display: 'grid', gridTemplateColumns: '1fr 2fr 2fr 2fr', textAlign: 'center'}}>
+        <b>Filtros:</b>
+        <FormSelector label='Responsable' name='user' options={workers} valueField='id' captionField='name' onSelect={setFilter}/> 
+        <FormSelector label='Estado' name='status' options={statuses} onSelect={setFilter}/> 
+        <FormSelector label='Refrigerante' name='refrigerant' options={refrigerants.map(r=>r.refrigerante)} onSelect={setFilter}/> 
+      </div>
+
       <CylindersList
-        cylinders={cylinders}
+        cylinders={filteredList}
         workers={workers}
         refrigerants={refrigerants}
+        statuses={statuses}
       />
-      <AddCylinder setShowModal={setShowModal} showModal={showModal} />
+
+      {addCylinder && <NewCylinder key={allCylinders.length} onClose={()=>setAdd(false)} statuses={statuses}/>}
     </div>
   );
 }

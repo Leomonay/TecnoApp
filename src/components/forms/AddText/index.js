@@ -13,7 +13,7 @@ export default function AddTextForm(props){
     }
 
     return(
-        <div className="addInterventionModal">
+        <div className="formModal">
             <form className="addTextForm" onSubmit={(e)=>handleAddText(e)}>
                 <button className="closeButton" onClick={()=>close()}>X</button>
                 <div className="title">Agregar Texto</div>
