@@ -32,7 +32,7 @@ export default function WorkOrderListItem(props){
           </Link>
           <div className='buttonsRow'>
             <Link to={`/ots/edit/${order.code}`} className='button editButton' title='Modificar'/>
-            {props.isAdmin && <button className='removeButton' title='Eliminar' onClick={()=>setWarning(!warning)}/>}
+            {props.isAdmin && <button className='button removeButton' title='Eliminar' onClick={()=>setWarning(!warning)}/>}
             {warning && <WarningOption 
               message={`¿Desea eliminar la OT ${order.code}, con todas las intervenciones asociadas y los consumos de gas?`}
               accept={()=>orderToDelete(order.code)}

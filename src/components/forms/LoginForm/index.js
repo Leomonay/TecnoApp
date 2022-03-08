@@ -38,7 +38,7 @@ export default function LoginForm(){
             />
             </div>
             <div className="loginButtons">
-                <button type='sumbit'>Iniciar Sesión</button>
+                <button className="button" type='sumbit'>Iniciar Sesión</button>
             </div>
         </form>
     )

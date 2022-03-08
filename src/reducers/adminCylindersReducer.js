@@ -44,29 +44,39 @@ export default function adminCilindesReducer(state = initialState, action) {
         ...state,
         refrigerants: refrigerants,
       };
-
-    case 'DELETE_CYLINDER':
-      index = state.allCylinders.findIndex(e=>e.id === action.payload.id)
-      cylindersList.splice(index,1)    
+    case 'RESET_RESULT':
       return{
         ...state,
-        allCylinders: cylindersList
+        cylinderResult: action.payload
       }
 
+    case 'DELETE_CYLINDER':
+      if(action.payload.error) return{ ...state, cylinderResult: {error: action.payload.error} }
+      index = state.allCylinders.findIndex(e=>e.id === action.payload.id)
+      cylindersList.splice(index,1)
+      return{
+        ...state,
+        allCylinders: cylindersList,
+        cylinderResult: {success: action.payload.message}
+      }   
+
     case "UPDATE_CYLINDER":
+      if(action.payload.error) return{ ...state, cylinderResult: {error: action.payload.error} }
       index = state.allCylinders.findIndex(e=>e.id === action.payload.id)
       cylindersList[index] = {...action.payload, assignedTo: action.payload.user}
       return{
         ...state,
-        allCylinders: cylindersList
+        allCylinders: cylindersList,
+        cylinderResult: {success: `Garrafa ${action.payload.code} actualizada`}
       }
 
     case "NEW_CYLINDER":
+    if(action.payload.error) return{ ...state, cylinderResult: {error: action.payload.error} }
     cylindersList.push(action.payload)
       return{
         ...state,
         allCylinders: cylindersList.sort((a,b)=>a.code>b.code?1:-1),
-        cylinderResult: action.payload
+        cylinderResult: {success: `Garrafa ${action.payload.code} creada`}
       }
 
     default:

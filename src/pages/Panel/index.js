@@ -5,6 +5,7 @@ import { callMostRecent } from '../../actions/workOrderActions'
 import { getPlan, selectTask } from '../../actions/planActions';
 import TaskList from '../../components/lists/taskList';
 import { getDeviceFromList } from '../../actions/deviceActions';
+import WOList from '../../components/lists/WorkOrderList';
 
 export default function Panel(){
   const dispatch = useDispatch()
@@ -51,23 +52,12 @@ export default function Panel(){
   return (
     <div className='PanelBackground'>
         <TaskList pendant={pendant} current={current} next={next} access={userData.access}/>
-
-
-
-            {/* <div className='panelSquare'>
-              <div className='title'>10 reclamos más recientes</div>
-                <WOList mostRecent={mostRecent}/>
-            </div>
+        {userData.access==='Admin' &&
             <div className='panelSquare'>
-              <div className='title'>Pendientes del plan</div>
-
-              <div className="wOList">
-                {pendants[0]?
-                  pendants.map((date,index)=><DateCard key={index} date={date} access={userData.access}/>)
-                  :<div className="successMessage">¡Excelente! ¡No hay pendientes del plan a la fecha!</div>}
-              </div>
-            </div> */}
-
+              <div className='title'>10 reclamos más recientes</div>
+              <WOList mostRecent={mostRecent}/>
+            </div>
+        }
     </div>
   );
 }

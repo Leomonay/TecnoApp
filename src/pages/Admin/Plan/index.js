@@ -13,7 +13,6 @@ export default function AdminPlan(){
     const {plant, year} = useSelector(state=>state.data)
     
     const [step, setStep] = useState(steps[0])
-    const thisYear = (new Date()).getFullYear()
     const [years, setYears] = useState([])
     const dispatch = useDispatch()
 

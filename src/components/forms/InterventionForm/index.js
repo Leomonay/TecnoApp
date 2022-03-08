@@ -13,21 +13,24 @@ export default function AddIntervention(props){
     const {data, select, close} = props
     const {userData,workersList} = useSelector(state=>state.people)
     const {allCylinders} = useSelector(state=>state.adminCylinders)
-    const [intervention, setIntervention] = useState({})
+    const [intervention, setIntervention] = useState(userData.access==="Worker"?
+        {workers:workersList.find(e=>e.id === userData.id)}:{})
     const [user, setUser] = useState(undefined)
     const [cylinderList, setCylinderList] = useState([])
     const [gasUsages, setGasUsages] = useState([])
     const [addText, setAddText]=useState(false)
     const dispatch=useDispatch()
 
-    // useEffect(()=>console.log('intervention',intervention),[intervention])
+    useEffect(()=>console.log('intervention',intervention),[intervention])
 
     useEffect(()=>{
         if(data){
             const editable = {...data}
             const date = new Date (editable.date)
             editable.date = date.toISOString().split('T')[0]
-            editable.time = editable.time || `${date.getHours()}:${date.getMinutes()}`
+            let hours = date.getHours()
+            let minutes = date.getMinutes()
+            editable.time = editable.time || `${hours}:${(minutes < 10? '0' :'') + minutes}`
             setIntervention({...editable})
             dispatch(getCylinderList(data.workers.map(e=>e.id)))
             setGasUsages(editable.refrigerant.filter(e=>!!e.code))
@@ -48,7 +51,9 @@ export default function AddIntervention(props){
             setCylinderList([])
         }else{
             const cylinders = [...allCylinders]
-            for (let cylinder of cylinders) cylinder.owner = workersList.find(worker=>worker.id === cylinder.user).name
+            for (let cylinder of cylinders){
+                cylinder.owner = workersList.find(worker=>worker.id === cylinder.user.id).name
+            }
             setCylinderList(cylinders)
         }      
     },[allCylinders, workersList])
@@ -149,10 +154,9 @@ export default function AddIntervention(props){
                         <b>Personal</b>
                         <PeoplePicker name='Intervinientes'
                             key={(user?user.id:1)+(intervention.id?intervention.id:1)}
-                            mandatory = {userData.access==="Worker" ? user : false}
                             options={workersList}
                             disabled={!intervention.time || (intervention.id && userData.access!=="Admin")}
-                            idList = {intervention.workers || (user && userData.access==='Worker') ? [user] : []}
+                            idList = {intervention.workers || []}
                             update={(idArray)=>handlePeople(idArray)}
                             />
                         {( (!intervention.workers) || intervention.workers.length<2) &&
@@ -172,7 +176,7 @@ export default function AddIntervention(props){
                     {(!intervention.task) &&
                         <div className='errorMessage'>Este campo no puede quedar vacío.</div>}
 
-                    {intervention.id&&<button className='addButton' onClick={()=>setAddText(true)}>Agregar comentario</button>}
+                    {intervention.id&&<button className='button addButton' onClick={()=>setAddText(true)}>Agregar comentario</button>}
                             {addText&&<AddTextForm user={userData.user} 
                                 select={(text)=>setIntervention({...intervention, task: intervention.task+' || '+text})}
                                 close={()=>setAddText(false)}
@@ -194,7 +198,7 @@ export default function AddIntervention(props){
                     <div className='listField'>{`${cylinder.code} (${cylinder.owner})`}</div>
                     <div className='listField'>{`${cylinder.total} kg.`}</div>
                     <div className='listField'>
-                        <button className="removeButton delCylinder" value={index} onClick={(e)=>deleteCylinder(e)}/>
+                        <button className="button removeButton delCylinder" value={index} onClick={(e)=>deleteCylinder(e)}/>
                     </div>
                 </div>)}
             </div>

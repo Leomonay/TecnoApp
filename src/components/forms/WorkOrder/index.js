@@ -274,7 +274,7 @@ export default function WorkOrder(){
                                 onChange={(e)=>handleValue(e,'description')}
                                 readOnly={(!!otCode && userData.access!=='Admin')|| !order.solicitor}
                                 defaultValue={order.description}/>
-                            {permissions.woDescription&&<button className='addButton' onClick={()=>setEditDesc(true)}>Agregar comentario</button>}
+                            {permissions.woDescription&&<button className='button addButton' onClick={()=>setEditDesc(true)}>Agregar comentario</button>}
                             {editDesc&&<AddTextForm user={userData.user} 
                                 select={(text)=>setOrder({...order,description: order.description+' || '+text})}
                                 close={()=>setEditDesc(false)}
@@ -315,7 +315,7 @@ export default function WorkOrder(){
 
             <section  className="WOsection">
                 <button className = 'button' onClick={handleSave}>Guardar Cambios</button>
-                {otCode&&<button onClick={()=>{}}>Solicitar Cierre</button>}                
+                {otCode&&<button className='button' onClick={()=>{}}>Solicitar Cierre</button>}                
             </section>
 
         </div>

@@ -2,7 +2,7 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import CylindersList from "./CylindersList/CylinderList";
+import CylindersList from "../../../components/lists/CylindersList";
 
 import { getCylinderList, getEmpleados, getRefrigerants, allFilters } from "../../../actions/adminCylindersActions";
 

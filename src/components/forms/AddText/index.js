@@ -15,11 +15,11 @@ export default function AddTextForm(props){
     return(
         <div className="formModal">
             <form className="addTextForm" onSubmit={(e)=>handleAddText(e)}>
-                <button className="closeButton" onClick={()=>close()}>X</button>
+                <button className="button closeButton" onClick={()=>close()}>X</button>
                 <div className="title">Agregar Texto</div>
                 <textarea className='addTextInput' onChange={(e)=>setText(`(${ today.toLocaleDateString() } ${user}) ${e.target.value}`)}/>
                 <div className="flex centerH">
-                    <button className="addButton" type='submit'>Agregar</button>
+                    <button className="button addButton" type='submit'>Agregar</button>
                 </div>
             </form>
         </div>

@@ -12,3 +12,7 @@
 .cylinderListRow > *{
     background-color: whitesmoke;
 }
+.crossedUp{
+    text-decoration:line-through;
+    color: grey;
+}

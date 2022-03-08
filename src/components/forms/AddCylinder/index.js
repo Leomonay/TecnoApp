@@ -13,8 +13,11 @@ export default function AddCylinder(props){
 
     function setCode(code){
         const cylinder = {...cylinderList.find(element=>element.code === code)}
-        const consumptions = stored.filter(cylinder => cylinder.code === code).map(e=>e.total).reduce((a,b)=>a+b,0)
-        cylinder.currentStock-=consumptions
+        console.log('cylinder',cylinder)
+        // const consumptions = stored.filter(cylinder =>
+        //     cylinder.code === code).map(e=>e.total).reduce((a,b)=>a+b,0)
+        // console.log('consumptions',consumptions)
+        // cylinder.currentStock-=consumptions
         cylinder.init = cylinder.currentStock
         setCylinder(code?cylinder:{})
         setMax(cylinder? cylinder.currentStock : 0)
@@ -110,7 +113,7 @@ export default function AddCylinder(props){
                     placeholder='gas (kg.)'/>
 
                 <div className='aIKGInput'>
-                    <button className='addCylinder' onClick={(e)=>handleClick(e)} disabled={!cylinder.total}>Agregar</button>
+                    <button className='button addCylinder' onClick={(e)=>handleClick(e)} disabled={!cylinder.total}>Agregar</button>
                 </div>
             </form>
             {errors && <div className="section">

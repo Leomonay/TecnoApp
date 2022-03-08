@@ -50,8 +50,8 @@ export default function InterventionList(props){
                     </div>
 
                     <div className='gridField buttonsField'>
-                        {permission&&<button className="editionButton" onClick={()=>setEdit(item)}/>}
-                        {userData.access==='Admin'&&<button className="deletionButton" onClick={()=>onDelete()}/>}
+                        {permission&&<button className="button editionButton" onClick={()=>setEdit(item)}/>}
+                        {userData.access==='Admin'&&<button className="button deletionButton" onClick={()=>onDelete()}/>}
                         {edit && 
                             <AddIntervention select={()=>{}}
                                 close={()=>setEdit(false)}
@@ -61,7 +61,7 @@ export default function InterventionList(props){
                 </div>)
         })}
 
-        {permission&&<button className='addButton' onClick={()=>{openAdd()}}>
+        {permission&&<button className='button addButton' onClick={()=>{openAdd()}}>
             <b>Agregar intervención</b>
         </button>}
     </div>

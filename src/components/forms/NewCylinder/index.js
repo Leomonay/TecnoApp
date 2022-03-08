@@ -3,20 +3,30 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import './index.css'
 import { ButtonPad, FormInput, FormSelector } from "../FormInput";
-import { addCylinder, updateCylinder } from "../../../actions/StoreActions.js";
+import { addCylinder, resetResult, updateCylinder } from "../../../actions/StoreActions.js";
 
 const NewCylinder = ({cylinder, onClose, statuses}) => {
   const dispatch = useDispatch();
   const [inputCylinder, setInputCylinder] = useState({...cylinder} || {})
-  const { workers, refrigerants } = useSelector((state) => state.adminCylinders);
+  const { workers, refrigerants, cylinderResult } = useSelector((state) => state.adminCylinders);
   const [errors, setErrors] = useState(true);
   const [ableStatuses, setStatuses] = useState(['Seleccionar Destino'])
   const [alarm, setAlarm] = useState(false)
-  
+
+  useEffect(()=>{
+    if(!cylinder || !cylinder.assignedTo) return
+    const newCylinder = {...cylinder}
+    newCylinder.assignedTo = cylinder.assignedTo.id
+    setInputCylinder(newCylinder)
+  },[cylinder])
+
+  useEffect(()=>console.log('inputCylinder',inputCylinder),[inputCylinder])
+
   const handleChange = (event) => {
     event.preventDefault()
     setAlarm(false)
-    const {name, value} = event.target
+    let {name, value} = event.target
+    if (name==='assignedTo') value = Number(value)
     const cylinder = {...inputCylinder}
     value? cylinder[name] = value : delete cylinder[name]
     let errorList = []
@@ -48,9 +58,19 @@ const NewCylinder = ({cylinder, onClose, statuses}) => {
   //Fin de la función para agregar una garrafa
 
   const handleClose = () => {
+    dispatch(resetResult())
     setInputCylinder({})
-    onClose(false);
+    setErrors(false)
+    setAlarm(false)
+    onClose();
   };
+
+  useEffect(()=>{
+    if (cylinderResult.error){
+      setErrors([cylinderResult.error])
+      setAlarm(true)
+    }
+  },[cylinderResult, dispatch])
 
   return (
     <div className="formModal">
@@ -75,14 +95,9 @@ const NewCylinder = ({cylinder, onClose, statuses}) => {
           type='number' min='0' max='16' step='.1' placeholder='Peso [kg]'
           disabled={!inputCylinder.refrigerant}
           changeInput={(e)=>handleChange(e)}/>
-        
-        {inputCylinder.currentStock && <FormInput label='Peso Actual' name="currentStock"
-          defaultValue={inputCylinder.currentStock} 
-          type='number' min='0' max='16' step='.1' placeholder='Peso [kg]'
-          disabled={!inputCylinder.refrigerant}
-          changeInput={(e)=>handleChange(e)}/>}
 
-        <FormSelector key={workers.length} label='Destino' name="assignedTo" valueField='id' captionField='name'
+        {inputCylinder.assignedTo && !workers.find(w=>w.id === inputCylinder.assignedTo) && <div className="errorMessage">El usuario asignado no se encuentra activo</div>}
+        <FormSelector key={workers.length+inputCylinder.assignedTo+'8'} label='Destino' name="assignedTo" valueField='id' captionField='name'
           defaultValue={inputCylinder.assignedTo}
           disabled={!inputCylinder.initialStock}
           options={workers}
@@ -97,11 +112,18 @@ const NewCylinder = ({cylinder, onClose, statuses}) => {
             onClick={(e)=>handleChange(e)}>{value}</button>)}
         </ButtonPad>
         
-        <div className="formField">
+        {!cylinderResult.success && <div className="formField">
           <button className='button' type='submit' disabled={!inputCylinder.status}>GUARDAR GARRAFA</button>
-        </div>
-        {alarm && <div class="alert alert-danger" role="alert">
+        </div>}
+        {alarm && <div className="alert alert-danger" role="alert">
           {errors.join(' - ')}
+        </div>}
+        {cylinderResult.success && <div className="alert alert-success" 
+          style={{display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center'}} role="alert">
+          <div>{cylinderResult.success}</div>
+          <button type="button" class="btn btn-success" onClick={()=>handleClose()}>Salir</button>
         </div>}
       </form>
     </div>

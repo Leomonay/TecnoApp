@@ -15,9 +15,9 @@ export function FormInput(props){
                 placeholder={placeholder}
                 type={type ||'text'}
                 name={name}
-                min={type==='number' && min}
-                max={type==='number' && max}
-                step={type==='number' && step}
+                min={type==='number' ? min : undefined}
+                max={type==='number' ? max : undefined}
+                step={type==='number' ? step : undefined}
                 onChange={(e)=>changeInput&&changeInput(e)}/>
         </div>
     )
@@ -47,7 +47,7 @@ export function ButtonPad({label, temp,children}){
     return(
         <div className='formField'>
             <div className='buttonPad' style={{gridTemplateColumns: template}}>
-                <label className="formFieldLabel">{headersRef[label] || label}</label>
+                <label className="formFieldLabel" style={{height: '100%'}}>{headersRef[label] || label}</label>
                 {children}
             </div>
         </div>

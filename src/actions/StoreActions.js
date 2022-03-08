@@ -51,3 +51,10 @@ export function deleteCylinder(id){
     type: 'DELETE_CYLINDER'
   })
 }
+
+export function resetResult(){
+  return{
+    type: 'RESET_RESULT',
+    payload: {}
+  }
+}
