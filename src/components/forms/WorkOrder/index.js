@@ -353,7 +353,7 @@ export default function WorkOrder(){
 
             {errors && <div className="alert alert-danger" role="alert">
                 <b>Ooops! Ocurrieron errores:</b>
-                <ul>{errors.map(e=><li>{e}</li>)}</ul>
+                <ul>{errors.map((e,index)=><li key={index}>{e}</li>)}</ul>
 
             </div>}
 
