@@ -9,8 +9,8 @@ import Paginate from "../../Paginate";
 import PlanDevice from "../../Cards/PlanDevice";
 import './index.css'
 import { getDeviceOptions } from "../../../actions/deviceActions";
-import { getRefrigerants } from "../../../actions/adminCylindersActions";
 import ProgramForm from "../../forms/ProgramForm";
+import { cylinderActions } from "../../../actions/StoreActions";
 
 export default function PlanTask(props){
     const {plant, year} = useSelector(state=>state.data)
@@ -29,7 +29,7 @@ export default function PlanTask(props){
     useEffect(()=>{
         dispatch(getDeviceOptions())
         dispatch(getStrategies({plant, year}))
-        dispatch(getRefrigerants())
+        dispatch(cylinderActions.getGases())
         dispatch(getPlanDevices({plant,year}))
     },[dispatch, plant, year])
 

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import './index.css'
 import { ButtonPad, FormInput, FormSelector } from "../FormInput";
-import { addCylinder, resetResult, updateCylinder } from "../../../actions/StoreActions.js";
+import { cylinderActions } from "../../../actions/StoreActions.js";
 
 const NewCylinder = ({cylinder, onClose, statuses}) => {
   const dispatch = useDispatch();
@@ -45,9 +45,9 @@ const NewCylinder = ({cylinder, onClose, statuses}) => {
     if(errors[0]){
       setAlarm(true)
     }else if (inputCylinder.id){
-      dispatch(updateCylinder(inputCylinder))
+      dispatch(cylinderActions.update(inputCylinder))
     }else{
-      dispatch(addCylinder(inputCylinder))
+      dispatch(cylinderActions.addNew(inputCylinder))
     }
   };
 
@@ -58,7 +58,7 @@ const NewCylinder = ({cylinder, onClose, statuses}) => {
   //Fin de la función para agregar una garrafa
 
   const handleClose = () => {
-    dispatch(resetResult())
+    dispatch(cylinderActions.resetResult())
     setInputCylinder({})
     setErrors(false)
     setAlarm(false)

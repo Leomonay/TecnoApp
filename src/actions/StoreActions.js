@@ -15,46 +15,170 @@ export function serverAction(data){
     })
     .then((response) => response.json())
     .then((json) => dispatch({type: data.type, payload:json}))
+    .catch( e=>console.error(e.message) )
   }
 }
+
+const getAction = (endpoint, type)=> serverAction({endpoint, method:'GET',type})
+const postAction = (endpoint, body, type)=> serverAction({endpoint, method:'POST',body,type})
+const putAction = (endpoint, body, type)=> serverAction({endpoint, method:'PUT',body,type})
+const deleteAction = (endpoint, type)=> serverAction({endpoint, method:'DELETE',type})
 
 //Cylinder Actions
-export function getCylinderList(array) {
-    return serverAction({
-        endpoint:`cylinders${array?`?ids=[${array}]`:``}`,
-        method: 'GET',
-        type: "GET_CYLINDERS"
+export const cylinderActions = {
+  getList: (array) => getAction(`cylinders${array?`?ids=[${array}]`:``}` , "GET_CYLINDERS"),
+  addNew: (cylinder) => postAction(`cylinders`, cylinder, "NEW_CYLINDER" ),
+  update: (cylinder) => putAction(`cylinders`, cylinder, 'UPDATE_CYLINDER'),
+  delete: (id) => deleteAction(`cylinders?id=${id}`, 'DELETE_CYLINDER' ),
+  resetResult: () => ({type: 'RESET_RESULT', payload: {}}),
+  getGases: ()=>getAction('cylinders/refrigerant', 'GET_REFRIGERANTS'),
+  resetList: ()=> ({type: "GET_CYLINDERS", payload: []})
+}
+
+//People Actions
+export const peopleActions = {
+  getWorkers: ()=> getAction('users?access=Worker', 'WORKERS_LIST'), //getWorkerList
+  getSupervisors: ()=> getAction('users?access=Supervisor', 'SUPERVISORS'), //getSupervisors
+  getOptions: ()=> getAction('users/options', 'USER_OPTIONS'), //getUserOptions1
+  getAllUsers: (filters)=> postAction('users/filtered', filters, 'USER_LIST'), //getUsersList
+  update: (idNumber, update)=> postAction(`users/detail/${idNumber}`, update, 'SELECTED_USER'), //updateUser //should be a PUT action
+  addNew: (user)=> postAction('users', user, 'NEW_USER') //addUser
+}
+
+export const deviceActions = {
+  getList: (plantCode)=>postAction('devices/filters', {plant: plantCode}, 'FULL_DEVICE_LIST'), //getDeviceList //this should be getAction
+  getPartialList: (filters)=>{
+    filters.plant='SSN' // <-- review this. Should be userData.plant or selected plant. 
+    postAction('devices/filters', filters, 'PARTIAL_LIST')}, //getPartialDeviceList // should be get action
+  getFilters: (plant)=>getAction(`devices/filters?plant=${plant || 'SSN'}`, 'DEVICE_FILTERS'), //getDeviceFilters // <-- review plantCode
+  viewDevice: (code)=>({type: 'DEVICE_VIEW', payload: code}), //viewDevice <-- review
+  getDetail: (device)=>({type: 'DEVICE_WORK_ORDER_DETAIL', payload: device}), //getDeviceFromList
+  listByLine: (lineName)=>getAction(`devices/byLine/${lineName}`, 'PARTIAL_LIST'), //deviceListByLine
+  getByName: (name)=>getAction(`devices/byName/${name}`, 'PARTIAL_LIST'),//deviceByName
+  getOptions: ()=>getAction('devices/options', 'DEVICE_OPTIONS')//getDeviceOptions
+
+}
+
+//review all these device actions...
+export function getDevicesList(selectedData) {
+  return async function (dispatch) {
+      if(selectedData.linesName !== "")
+    {return fetch(`${appConfig.url}/abmdevices/devicelist?line=${selectedData.linesName}&sp=${selectedData.spName}`)
+      .then((response) => response.json())
+      .then((json) => {
+        dispatch({
+          type: "GET_ALLDEVICES",
+          payload: json,
+        });
+        //return json;
+      });}
+  };
+}
+
+export function getOptionsList() {
+  return async function (dispatch) {
+    return fetch(`${appConfig.url}/abmdevices/options`)
+      .then((response) => response.json())
+      .then((json) => {
+        dispatch({
+          type: "GET_ALLOPTIONS",
+          payload: json,
+        });
+      });
+  };
+}
+
+export function addDevice(device) {
+  return async function (dispatch) {
+    return fetch(`${appConfig.url}/abmdevices/`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(device),
     })
-}
-export function addCylinder(cylinder) {
-  return serverAction({
-    endpoint:`cylinders/`,
-    method: 'POST',
-    body: cylinder,
-    type: "NEW_CYLINDER"
-  })
+      .then((response) => response.json())
+      .then((json) => {
+        return json;
+      });
+  };
 }
 
-export function updateCylinder(cylinder) {
-  return serverAction({
-    endpoint:`cylinders`,
-    method: 'PUT',
-    body: cylinder,
-    type: 'UPDATE_CYLINDER'
-  })
+export function deleteDevice(device) {
+  return async function (dispatch) {
+   return fetch(`${appConfig.url}/abmdevices/delete`, {
+     method: "DELETE",
+     headers: {
+       Accept: "application/json",
+       "Content-Type": "application/json",
+     },
+     body: JSON.stringify(device),
+   })
+     .then((response) => response.json())
+     .then((json) => {
+       return (json);
+     });
+ };
 }
 
-export function deleteCylinder(id){
-  return serverAction({
-    endpoint:`cylinders?id=${id}`,
-    method: 'DELETE',
-    type: 'DELETE_CYLINDER'
-  })
+export const getDeviceData = (payload) => {
+  return {
+    type: "DEVICE_DATA",
+    payload: payload,
+  };
+};
+
+export const resetDeviceData = (payload) => {
+  return {
+    type: "RESET_DEVICE_DATA",
+    payload: payload,
+  };
+};
+
+export function updateDevice(device) {
+  return async function (dispatch) {
+   return fetch(`${appConfig.url}/abmdevices/update`, {
+     method: "PUT",
+     headers: {
+       Accept: "application/json",
+       "Content-Type": "application/json",
+     },
+     body: JSON.stringify(device),
+   })
+     .then((response) => response.json())
+     .then((json) => {
+       return (json);
+     });
+ };
 }
 
-export function resetResult(){
-  return{
-    type: 'RESET_RESULT',
-    payload: {}
-  }
+
+
+
+
+
+
+
+
+//check if this equals to peopleActions.getAllUsers()
+export const getEmpleados = ()=>getAction('users', "GET_WORKERS")
+
+//replace this
+export function searchWODevice(devCode){
+  return async function(dispatch){
+  return fetch(`${appConfig.url}/devices/filters`,{
+      method:'POST',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+      },
+      body:JSON.stringify({filters:{code:devCode}})
+  })
+      .then(response => response.json())
+      .then(json=>dispatch({
+          type: 'DEVICE_WORK_ORDER_DETAIL',
+          payload: json.list[0]
+      })
+  )}
 }

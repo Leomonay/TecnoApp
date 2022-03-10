@@ -3,10 +3,10 @@ import { useDispatch, useSelector } from "react-redux"
 import { getWorkerList } from "../../../actions/peopleActions"
 import PeoplePicker from "../../pickers/PeoplePicker"
 import './index.css'
-import { getCylinderList, resetCylinderList } from "../../../actions/adminCylindersActions"
 import AddCylinder from "../AddCylinder"
 import AddTextForm from "../AddText"
 import { addCylinderUsage, deleteCylinderUsage, updateIntervention } from "../../../actions/workOrderActions"
+import { cylinderActions } from "../../../actions/StoreActions"
 
 
 export default function AddIntervention(props){
@@ -32,7 +32,7 @@ export default function AddIntervention(props){
             let minutes = date.getMinutes()
             editable.time = editable.time || `${hours}:${(minutes < 10? '0' :'') + minutes}`
             setIntervention({...editable})
-            dispatch(getCylinderList(data.workers.map(e=>e.id)))
+            dispatch(cylinderActions.getList(data.workers.map(e=>e.id)))
             setGasUsages(editable.refrigerant.filter(e=>!!e.code))
     }},[data, dispatch])
 
@@ -58,7 +58,7 @@ export default function AddIntervention(props){
         }      
     },[allCylinders, workersList])
 
-    useEffect(()=>dispatch(resetCylinderList()),[dispatch])
+    useEffect(()=>dispatch(cylinderActions.resetList()),[dispatch])
 
     function saveIntervention(){
         if(intervention.id){
@@ -88,7 +88,7 @@ export default function AddIntervention(props){
 
     function handlePeople(idArray){
         setIntervention({...intervention, workers: idArray})
-        dispatch(getCylinderList(idArray.map(e=>e.id)))
+        dispatch(cylinderActions.getList(idArray.map(e=>e.id)))
     }
 
     function deleteCylinder(e){

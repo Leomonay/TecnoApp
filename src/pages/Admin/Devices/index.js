@@ -14,8 +14,8 @@ import { FilterByArea } from "./FilterByAreas/FilterByAreas.js";
 import { FilterByLine } from "./FilterByLines/FilterByLines.js";
 import { FilterByPlant } from "./FilterByPlant/FilterByPlant.js";
 import { FilterBySP } from "./FilterBySP/FilterBySP.js";
-import { getRefrigerants } from "../../../actions/adminCylindersActions";
 import styles from "./index.module.css";
+import { cylinderActions } from "../../../actions/StoreActions.js";
 
 export default function AdminDevices() {
   const dispatch = useDispatch();
@@ -44,7 +44,7 @@ export default function AdminDevices() {
     [dispatch, selectedData]
   );
   useEffect(() => dispatch(getOptionsList()), [dispatch]);
-  useEffect(() => dispatch(getRefrigerants()), [dispatch]);
+  useEffect(() => dispatch(cylinderActions.getGases()), [dispatch]);
 
   return (
     <div className="adminOptionSelected">

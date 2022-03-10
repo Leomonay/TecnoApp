@@ -44,6 +44,7 @@ export default function adminCilindesReducer(state = initialState, action) {
         ...state,
         refrigerants: refrigerants,
       };
+      
     case 'RESET_RESULT':
       return{
         ...state,

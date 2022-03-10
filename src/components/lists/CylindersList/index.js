@@ -1,7 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteCylinder } from "../../../actions/StoreActions";
+import { cylinderActions, deleteCylinder } from "../../../actions/StoreActions";
 import NewCylinder from "../../forms/NewCylinder";
 import './index.css'
 
@@ -60,7 +60,7 @@ export default function CylindersList({ cylinders, workers, statuses }) {
             <td>
               <button className="button removeButton"
                 title="Eliminar"
-                onClick={() => dispatch(deleteCylinder(element.id))}
+                onClick={() => dispatch(cylinderActions.delete(element.id))}
                 style={{margin:'0'}}
                 value={element.id}>
               </button>

@@ -4,10 +4,11 @@ import { useDispatch, useSelector } from "react-redux";
 
 import CylindersList from "../../../components/lists/CylindersList";
 
-import { getCylinderList, getEmpleados, getRefrigerants, allFilters } from "../../../actions/adminCylindersActions";
+import { getEmpleados } from "../../../actions/StoreActions";
 
 import NewCylinder from "../../../components/forms/NewCylinder";
 import { FormSelector } from "../../../components/forms/FormInput";
+import { cylinderActions } from "../../../actions/StoreActions";
 
 export default function AdminCylinders() {
   const dispatch = useDispatch();
@@ -21,18 +22,15 @@ export default function AdminCylinders() {
 
   useEffect(() => {
     dispatch(getEmpleados())
-    dispatch(getRefrigerants())
-    dispatch(getCylinderList())
+    dispatch(cylinderActions.getGases())
+    dispatch(cylinderActions.getList())
   }, [dispatch]);
-
-  useEffect(() => {
-    dispatch(allFilters(filterState));
-  }, [filterState, dispatch]);
 
   useEffect(()=>setFilteredList(allCylinders.filter(cylinder=>{
     let check = true
     for (let key of Object.keys(filterState) ){
-      if ( cylinder[key] !== filterState[key] ) check=false
+        const cylinderValue = (key === 'user' && cylinder.user) ? cylinder[key].id : cylinder[key]
+        if ( cylinderValue !== filterState[key] ) check=false
     }
     return check
   })),[filterState,allCylinders])
