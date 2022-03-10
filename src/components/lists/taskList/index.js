@@ -73,7 +73,7 @@ export default function TaskList(props){
             {(!current[0] && !pendant[0]) &&
                 <div>¡Excelente! ¡No hay trabajos pendientes!</div>
             }
-            {current[0]&&
+            {next[0]&&
                 <div>
                     <b>Tareas de la próxima semana</b>
                     <div className='taskList'>

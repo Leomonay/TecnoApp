@@ -51,6 +51,7 @@ export default function Panel(){
 
   return (
     <div className='PanelBackground'>
+      <div style={{display:'flex'}}>
         <TaskList pendant={pendant} current={current} next={next} access={userData.access}/>
         {userData.access==='Admin' &&
             <div className='panelSquare'>
@@ -58,6 +59,7 @@ export default function Panel(){
               <WOList mostRecent={mostRecent}/>
             </div>
         }
+      </div>
     </div>
   );
 }

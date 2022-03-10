@@ -1,4 +1,6 @@
 import { appConfig } from "../apiConfig"
+import { serverAction } from "./StoreActions"
+
 
 export function selectWorkOrder(ot){
     return{
@@ -6,90 +8,58 @@ export function selectWorkOrder(ot){
         payload: ot
     }
 }
+
 export function callMostRecent(filters){
-    return async function(dispatch){
-    return fetch(`${appConfig.url}/workorder/mostrecent`,{
-        method:'POST',
-        headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        },
-        body:JSON.stringify(filters)
+    return serverAction({
+        endpoint:`workorder/mostrecent`,
+        method: 'POST',
+        body: filters,
+        type: 'MOST_RECENT'
     })
-        .then(response => response.json())
-        .then(json=>dispatch({
-            type: 'MOST_RECENT',
-            payload: json
-        })
-    )}
 }
 
 export function getWOOptions(){
-    return async function(dispatch){
-        return fetch(`${appConfig.url}/workorder/options`)
-            .then(response => response.json())
-            .then(json=>dispatch({
-                type: 'GET_WO_OPTIONS',
-                payload: json
-            })
-        )}
+    return serverAction({
+        endpoint:`workorder/options`,
+        method: 'GET',
+        type: 'GET_WO_OPTIONS'
+    })
 }
 
 export function newWorkOrder(order){
-    return async function(dispatch){
-        return fetch(`${appConfig.url}/workorder/`,{
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                },
-                body:JSON.stringify(order)
-        })
-            .then(response => response.json())
-            .then(json=>{
-                dispatch({
-                    type: 'NEW_ORDER',
-                    payload: json.orderId
-                })
-            })
-        }
+    return serverAction({
+        endpoint:`workorder`,
+        method: 'POST',
+        body: order,
+        type: 'NEW_ORDER'
+    })
 }
+
+
 export function updateOrder(code,update){
-    return async function(dispatch){
-        return fetch(`${appConfig.url}/workorder/${code}`,{
-            method: 'PUT',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                },
-                body:JSON.stringify(update)
-        })
-            .then(response => response.json())
-            .then(json=>{
-                dispatch({
-                    type: 'UPDATED_ORDER',
-                    payload: json
-                })
-            })
-        }
+    return serverAction({
+        endpoint:`workorder/${code}`,
+        method: 'PUT',
+        body: update,
+        type: 'UPDATED_ORDER'
+    })
 }
+
 export function resetNewOrder(){
     return{
         type: 'NEW_ORDER',
         payload: null
     } 
 }
+
 export function searchWO(code){
-    return async function(dispatch){
-        return fetch(`${appConfig.url}/workorder/detail/${code}`)
-            .then(response => response.json())
-            .then(json=> dispatch({
-                    type: 'ORDER_DETAIL',
-                    payload: json
-                })
-            )
-        }
+    return serverAction({
+        endpoint:`workorder/detail/${code}`,
+        method: 'GET',
+        type: 'ORDER_DETAIL'
+    })
 }
+
 export function resetDetail(){
     return{
         type: 'ORDER_DETAIL',
@@ -98,116 +68,55 @@ export function resetDetail(){
 }
 
 export function getWOList(conditions){
-    return async function(dispatch){
-        return fetch(`${appConfig.url}/workorder/list`,{
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body:JSON.stringify(conditions),
-        })
-        .then(response => response.json())
-        .then(json=> dispatch({
-                type: 'ORDER_LIST',
-                payload: json
-            })
-        )
-    }
-}
-export function deleteOrder(code){
-    return async function (dispatch){
-        return fetch(`${appConfig.url}/workorder/${code}`,{
-            method: 'DELETE',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            }
-        })
-        .then(response => response.json())
-        .then(json=> dispatch({
-            type: 'DELETED_ORDER',
-            payload: json
-            })
-        )
-    }
+    return serverAction({
+        endpoint:`workorder/list`,
+        method: 'POST',
+        body: conditions, //<--- to improve, should be a GET
+        type: 'ORDER_LIST'
+    })
 }
 
+export function deleteOrder(code){
+    return serverAction({
+        endpoint:`workorder/${code}`,
+        method: 'DELETE',
+        type: 'DELETED_ORDER'
+    })
+}
+
+
 export function newIntervention(order,data){
-    return async function(dispatch){
-        return fetch(`${appConfig.url}/intervention`,{
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body:JSON.stringify({order:order,...data}),
-        })
-        .then(response => response.json())
-        .then(json=> dispatch({
-                type: 'ADD_INTERVENTION',
-                payload: json
-            })
-        )
-    }
+    return serverAction({
+        endpoint:`intervention`,
+        method: 'POST',
+        body: {order:order,...data},
+        type: 'ADD_INTERVENTION'
+    })
 }
 
 export function updateIntervention(id,update){
-    return async function(dispatch){
-        return fetch(`${appConfig.url}/intervention`,{
-            method: 'PUT',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body:JSON.stringify({id,update}),
-        })
-        .then(response => response.json())
-        .then(json=>{
-            dispatch({
-                type: 'UPDATE_INTERVENTION',
-                payload: json
-            })}
-        )
-    }
+    return serverAction({
+        endpoint:`intervention`,
+        method: 'PUT',
+        body: {id,update},
+        type: 'UPDATE_INTERVENTION'
+    })
 }
 
 export function addCylinderUsage(intervention,user,gases){
-    return async function (dispatch) {
-      return fetch(`${appConfig.url}/cylinders/usages`, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({intervention,user,gases}),
-      })
-        .then((response) => response.json())
-        .then((json) => {
-          dispatch({
-            type: "ADD_USAGE",
-            payload: json,
-          });;
-        });
-    };
+    return serverAction({
+        endpoint:`cylinders/usages`,
+        method: 'POST',
+        body: {intervention,user,gases},
+        type: 'ADD_USAGE'
+    })
 }
 
 export function deleteCylinderUsage(intervention,user,usages){
-    return async function (dispatch) {
-      return fetch(`${appConfig.url}/cylinders/usages`, {
-        method: "DELETE",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({intervention,user,usages}),
-      })
-        .then((response) => response.json())
-        .then((json) => {
-          dispatch({
-            type: "DEL_USAGE",
-            payload: json,
-          });;
-        });
-    };
+    return serverAction({
+        endpoint:`cylinders/usages`,
+        method: 'DELETE',
+        body: {intervention,user,usages},
+        type: 'DEL_USAGE'
+    })
 }

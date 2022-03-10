@@ -2,72 +2,76 @@ import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useParams } from "react-router-dom/cjs/react-router-dom.min"
 import { getDeviceFromList, searchWODevice } from "../../../actions/deviceActions"
-import { addOrdertoDate, selectTask } from "../../../actions/planActions"
+import { dateOrder, selectTask } from "../../../actions/planActions"
 import { getWOOptions, newIntervention, newWorkOrder, searchWO, updateOrder } from "../../../actions/workOrderActions"
 
 import InterventionList from "../../lists/InterventionList"
 import DevicePicker from "../../pickers/DevicePicker"
 import WOProgress from "../../progress/WOProgresBar"
+import WarningErrors from "../../warnings/WarningErrors"
 import AddTextForm from "../AddText"
 import {FormInput, FormSelector} from "../FormInput"
 import AddIntervention from "../InterventionForm"
 import './index.css'
 
 export default function WorkOrder(){
+//global variables
     const {otCode} = useParams()
     const {userData} = useSelector(state=>state.people)
     const {selectedWODevice} = useSelector(state=>state.devices)
     const {plan, selectedTask} = useSelector((state=>state.plan))
     const {workOrderOptions, orderDetail} = useSelector(state=>state.workOrder)
-    const dispatch = useDispatch()
-    const [planDates, setPlanDates] = useState([])
-    const [selectDate, setSelectDate] = useState(false)
-    const [interventions, setInterventions] = useState([])
-    const [pickDevice, setPickDevice] = useState(false)
 
+//openers
+    const [selectDate, setSelectDate] = useState(false)
+    const [pickDevice, setPickDevice] = useState(false)
+    const [intForm, setIntForm] = useState(false)
+    const [editDesc, setEditDesc] = useState(false)
+    const [errors, setErrors]=useState(false)
+    const [warnings, setWarnings]=useState(false)
+
+//local data states
+    const [planDates, setPlanDates] = useState([])
+    const [interventions, setInterventions] = useState([])
     const [device, setDevice] = useState({})
     const [deviceCode, setDeviceCode] = useState('')
     const [power, setPower] = useState(undefined)
     const [order,setOrder] = useState({})
-    const [intForm, setIntForm] = useState(false)
-    const [editDesc, setEditDesc] = useState(false)
-
     const [update, setUpdate] = useState({})
-    const [task, setTask] = useState({})
+    const [supervisor, setSupervisor] = useState(undefined)
 
-    const [permissions, setPermissions]=useState({woData:false,woDescription:false,editInterventions:true})
+    const [permissions, setPermissions] = useState({woData:false,woDescription:false,editInterventions:true})
+    const dispatch = useDispatch()
+
 
     useEffect(()=> setPlanDates(
         plan.filter(task=>{
             const today = new Date()
             return task.code===device.code && (new Date (task.date)) <= today.setDate(today.getDate()+7)
-        }).map(task=> (new Date (task.date)))
+        }).map(task=>({...task, localDate: (new Date (task.date)).toLocaleDateString()}))
     ) , [plan, device ])
 
-    useEffect(()=>console.log('task', task),[task])
+    useEffect(()=>console.log('selectedTask', selectedTask),[selectedTask])
+    useEffect(()=>console.log('planDates', planDates),[planDates])
+    useEffect(()=>console.log('plan', plan),[plan])
+    useEffect(()=>console.log('order',order),[order])
 
     useEffect(()=>{
-    if(!order.code)return    
-    console.log('!order.code',!order.code)
-    console.log("userData.access==='Admin'",userData.access==='Admin')
-    
+    if(!order.code)return
     setPermissions({
         woData: !!order.code && userData.access!=='Admin',
-        woDescription: order.code&&!order.closed&&(userData.id===order.userId || order.supervisor===userData.id || userData.access==='Admin'),
+        woDescription: order.code&&!order.closed&&(userData.id===order.userId || supervisor===userData.id || userData.access==='Admin'),
         editInterventions: 
             !order.code
             || userData.access==='Admin'
-            || (!order.closed && (order.supervisor===userData.id || order.userId===userData.id) )
-    })},[order,userData])
-
-    useEffect(()=>console.log('order',order),[order])
-
+            || (!order.closed && (supervisor===userData.id || order.userId===userData.id) )
+    })},[order,userData, supervisor])
 
     useEffect(()=>{
         if(!selectedTask)return
         setSelectDate(!!selectedTask.date)
-        setTask(selectedTask)
-    },[selectedTask])
+        if(!supervisor) setSupervisor(selectTask.supervisor)
+    },[selectedTask, supervisor])
 
     useEffect(()=>otCode && dispatch(searchWO(otCode)),[otCode, dispatch])
     
@@ -81,9 +85,11 @@ export default function WorkOrder(){
             : undefined)
         const code = device ? device.code : undefined
         if(code) dispatch(searchWODevice(code))
+        setSupervisor(orderDetail.supervisor)
+        dispatch(selectTask(plan.find(date=>date.id === orderDetail.taskDate)))
         setOrder(orderDetail)
         setInterventions(orderDetail.interventions)
-    },[orderDetail, dispatch])
+    },[orderDetail, dispatch, plan])
 
     useEffect(()=>{
         // setDevice(selectedWODevice || [])
@@ -94,10 +100,12 @@ export default function WorkOrder(){
         }else{
             setPower(undefined)
         }
-        setDeviceCode( selectedWODevice ? selectedWODevice.code : '')
-        setDevice(selectedWODevice || {})
-        selectedWODevice && selectedWODevice.code && dispatch(getWOOptions())
-    },[selectedWODevice, dispatch])
+        if (!otCode && selectedWODevice.servicePoints && selectedWODevice.servicePoints.length === 1){ 
+            setOrder({servicePoint:selectedWODevice.servicePoints[0]})
+        }setDeviceCode( selectedWODevice ? selectedWODevice.code : '')
+            setDevice(selectedWODevice || {})
+            selectedWODevice && selectedWODevice.code && dispatch(getWOOptions())
+    },[selectedWODevice, dispatch, otCode])
 
     function searchCode(e){
         e.preventDefault()
@@ -114,35 +122,63 @@ export default function WorkOrder(){
         e.preventDefault()
         let object = otCode ? {...update} : {...order}
         const {value} = e.target
+        console.log(`order.${item}:`,value)
         if (!value){
-            otCode ? delete object[item] : object[item] = null
+            otCode ? object[item]=null : delete object[item]
         }else{
             object[item]=value
         }
         otCode ? setUpdate ({object}) : setOrder(object)
     }
 
-    function handleSave(){
-        if(otCode){
-            dispatch(updateOrder(otCode,update))
-            if(task.date) dispatch(addOrdertoDate(otCode, task.date))
+    function checkErrors(){
+        const errors = []
+        const warnings = []
+        // if (!supervisor && selectedTask) setSupervisor(selectedTask.supervisor)
+        
+        if(!deviceCode) errors.push('Debe seleccionar un equipo') 
+        if(!supervisor) errors.push('Debe seleccionar un supervisor')
+        if(!order.clientWO) warnings.push('¿Seguro que desea guardar la orden sin una OT Cliente?')
+        if(!order.class) errors.push('Debe indicar la clase de la orden')
+        if(!order.issue) errors.push('Debe indicar el problema')
+        if(!order.cause) errors.push('Debe indicar la causa')
+        if(!order.solicitor) errors.push('Debe indicar quién solicitó la orden')
+        if(!order.phone) warnings.push('¿Seguro que desea guardar la orden sin un teléfono asociado?')
+        if(!order.servicePoint) warnings.push('¿Seguro que desea guardar la orden sin un lugar de servicio asociado?')
+        if(!order.description) errors.push('Debe asignar una descripción')
+        if(!interventions || !interventions[0]) warnings.push('¿Seguro que desea guardar la orden sin intervenciones?')
+        if(!order.completed || order.completed === 0 || (!!order.Detail && order.completed === orderDetail.completed)) warnings.push('¿Seguro que desea guardar la orden sin modificar el avance?')
+
+        if (errors[0]){
+            setErrors(errors)
         }else{
-            const sendOrder = {...order, user:userData.user, interventions, device:deviceCode}
-            if(task.date) sendOrder.task = task
+            setErrors(false)
+            if (warnings[0]){
+                setWarnings(warnings)
+            }else{
+                handleSave()
+            }
+        }
+    }
+
+    
+    function handleSave(){
+        //dipatch update taskDate if otCode, add or remove if not
+        if(otCode){
+            dispatch(updateOrder(otCode,{...update, supervisor}))
+            dispatch(dateOrder(otCode,update.taskDate))
+        }else{
+            const sendOrder = {...order, user:userData.user, interventions, device:deviceCode, supervisor}
             dispatch(newWorkOrder(sendOrder))
         }
     }
 
-    function selectTaskDate(date){
-        const planDate = planDates.find(planDate=>{ return(new Date (planDate)).toLocaleDateString() === date})
-        dispatch(selectTask(date? planDate : {}))
-
-        // !date ? setTask({})
-        // :setTask({
-        //     device:deviceCode,
-        //     date : planDate,
-        //     plant:device.plant,
-        //     strategy:plan.find(task=>task.code===device.code).strategy})
+    function selectTaskDate(e){
+        e.preventDefault()
+        const id = e.target.value
+        otCode?
+            setUpdate({...update, taskDate: id})
+            :setOrder({...order,taskDate: id})
     }
 
     function createIntervention(data){
@@ -160,6 +196,7 @@ export default function WorkOrder(){
 
     return(
         <div className="WOBackground">
+            {warnings && <WarningErrors warnings={warnings} close={()=>setWarnings(false)} proceed={()=>handleSave()}/>}
             <div className='WOupperSection'>
                 
                 <div className="WOcolumn">
@@ -173,17 +210,17 @@ export default function WorkOrder(){
                         </div>}
 
                         {planDates[0]&&<div className={`WOformField WOformImportant ${selectDate?'bg-darkRed':'bg-grey'}`}>
-                            <div className="WOformField">
-                                <input className='WOcheck' type='checkBox' defaultChecked={!!selectedTask.date}
+                                <input className='WOcheck' type='checkBox' defaultChecked={selectedTask && selectedTask.date }
                                     onChange={(e)=>setSelectDate(e.target.checked)}/>
                                 <label>{`${selectDate?'TAREA DE PLAN':'¿TAREA DE PLAN?'}`}</label>
-                            </div>
-                            {selectDate?
-                                <FormSelector label='Fecha Plan'
-                                    defaultValue={task.date? (new Date (task.date)).toLocaleDateString():undefined}
-                                    options={planDates.map(e=>e.toLocaleDateString())}
-                                    onSelect={(e)=>{selectTaskDate(e.target.value)}}/>
-                                :<label className='WOformInput'/>}
+                                {selectDate?
+                                    <FormSelector key={selectedTask} label='Fecha Plan'
+                                        defaultValue={selectedTask ? selectedTask.id :undefined }
+                                        options={planDates}
+                                        valueField='id'
+                                        captionField='localDate'
+                                        onSelect={(e)=>{selectTaskDate(e)}}/>
+                                    :<label className='WOformInput'/>}
                         </div>}
 
                     </section>}
@@ -223,8 +260,8 @@ export default function WorkOrder(){
                         <div className='formTitle'>Detalle de la orden de trabajo</div>
                         <div className="WOrow">
                             {workOrderOptions.supervisor&&
-                            <FormSelector key={order.supervisor} label='Supervisor' 
-                                defaultValue={order.supervisor}
+                            <FormSelector key={supervisor} label='Supervisor' 
+                                defaultValue={supervisor}
                                 options={workOrderOptions.supervisor}
                                 valueField='id'
                                 captionField='name'
@@ -241,7 +278,7 @@ export default function WorkOrder(){
                                     defaultValue={order[option]}
                                     options={workOrderOptions[option].sort((a,b)=>a>b?1:-1)}
                                     onSelect={(e)=>handleValue(e,option)}
-                                    disabled={permissions.woData || !order.supervisor}/>))}
+                                    disabled={permissions.woData}/>))}
                         <div className="section">
                             <FormInput label='Solicitó' defaultValue={order.solicitor}
                                 readOnly={permissions.woData || !order.cause || !order.issue || !order.class}
@@ -251,15 +288,17 @@ export default function WorkOrder(){
                                 changeInput={(e)=>handleValue(e,'phone')}/>
                         </div>
                         {!!otCode&&<FormInput label='Creación' key={order.user}
-                            defaultValue={`${ getDate(order.regDate) } por ${order.user}`}
+                            defaultValue={`${ getDate(order.regDate)} por ${order.user}`}
                             readOnly={permissions.woData}
                             />}
 
                         <FormSelector key={device.servicePoints} label='L. Servicio' 
-                            defaultValue={order.servicePoint ? order.servicePoint
-                                :(device.servicePoints && device.servicePoints.length===1?
-                                    device.servicePoints[0]
-                                    :undefined)}
+                            defaultValue={order.servicePoint
+                            //  ? order.servicePoint
+                            //     :(device.servicePoints && device.servicePoints.length === 1?
+                            //         device.servicePoints[0]
+                            //         :undefined)
+                                    }
                             options={device.servicePoints}
                             onSelect={(e)=>handleValue(e,'servicePoint')}
                             disabled={permissions.woData}/>
@@ -268,19 +307,18 @@ export default function WorkOrder(){
 
                 <div className="WOcolumn">
                     <section className="WOsection">
-                        <div className="WODescriptionSection">
                             <div className='formTitle'>Observaciones</div>
                             <textarea className="WODescription" 
                                 onChange={(e)=>handleValue(e,'description')}
                                 readOnly={(!!otCode && userData.access!=='Admin')|| !order.solicitor}
                                 defaultValue={order.description}/>
-                            {permissions.woDescription&&<button className='button addButton' onClick={()=>setEditDesc(true)}>Agregar comentario</button>}
+                            {permissions.woDescription&&
+                                <button className='button addButton' onClick={()=>setEditDesc(true)}>Agregar comentario</button>}
                             {editDesc&&<AddTextForm user={userData.user} 
                                 select={(text)=>setOrder({...order,description: order.description+' || '+text})}
                                 close={()=>setEditDesc(false)}
                                 />}
                             {/* bloquear para OT Cerradas */}
-                        </div>
                     </section>
                 </div>
 
@@ -313,8 +351,14 @@ export default function WorkOrder(){
                     select={(e)=>handleValue(e,'completed')}/>
             </section>
 
-            <section  className="WOsection">
-                <button className = 'button' onClick={handleSave}>Guardar Cambios</button>
+            {errors && <div className="alert alert-danger" role="alert">
+                <b>Ooops! Ocurrieron errores:</b>
+                <ul>{errors.map(e=><li>{e}</li>)}</ul>
+
+            </div>}
+
+            <section  className="formField">
+                <button className = 'button' onClick={checkErrors}>Guardar Cambios</button>
                 {otCode&&<button className='button' onClick={()=>{}}>Solicitar Cierre</button>}                
             </section>
 

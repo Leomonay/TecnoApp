@@ -2,9 +2,9 @@ import { appConfig } from "../apiConfig";
 
 const token = localStorage.getItem('tecnoToken')
 
-function serverAction(data){
+export function serverAction(data){
   return async function(dispatch){
-    return fetch(data.url,{
+    return fetch(`${appConfig.url}/${data.endpoint}`,{
       method: data.method,
       headers: {
         Accept: "application/json",
@@ -21,23 +21,23 @@ function serverAction(data){
 //Cylinder Actions
 export function getCylinderList(array) {
     return serverAction({
-        url:`${appConfig.url}/cylinders${array?`?ids=[${array}]`:``}`,
+        endpoint:`cylinders${array?`?ids=[${array}]`:``}`,
         method: 'GET',
         type: "GET_CYLINDERS"
     })
 }
 export function addCylinder(cylinder) {
   return serverAction({
-      url:`${appConfig.url}/cylinders/`,
-      method: 'POST',
-      body: cylinder,
-      type: "NEW_CYLINDER"
+    endpoint:`cylinders/`,
+    method: 'POST',
+    body: cylinder,
+    type: "NEW_CYLINDER"
   })
 }
 
 export function updateCylinder(cylinder) {
   return serverAction({
-    url: `${appConfig.url}/cylinders`,
+    endpoint:`cylinders`,
     method: 'PUT',
     body: cylinder,
     type: 'UPDATE_CYLINDER'
@@ -46,7 +46,7 @@ export function updateCylinder(cylinder) {
 
 export function deleteCylinder(id){
   return serverAction({
-    url: `${appConfig.url}/cylinders?id=${id}`,
+    endpoint:`cylinders?id=${id}`,
     method: 'DELETE',
     type: 'DELETE_CYLINDER'
   })

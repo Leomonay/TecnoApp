@@ -1,43 +1,60 @@
 import { appConfig } from "../apiConfig"
+import { serverAction } from "./StoreActions"
+
+
 
 export function createStrategy(object){
-    return async function (dispatch){
-        return fetch(`${appConfig.url}/strategies`,{
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(object)
-        })
-        .then(response=>response.json())
-        .then(json=>{
-            dispatch({
-                type: 'NEW_PROGRAM',
-                payload: json
-            })
-        })
-    }
+    return serverAction({
+        endpoint:`strategies`,
+        method: 'POST',
+        body: object,
+        type: 'NEW_PROGRAM'
+      })
+    // return async function (dispatch){
+    //     return fetch(`${appConfig.url}/strategies`,{
+    //         method: 'POST',
+    //         headers: {
+    //             'Accept': 'application/json',
+    //             'Content-Type': 'application/json',
+    //         },
+    //         body: JSON.stringify(object)
+    //     })
+    //     .then(response=>response.json())
+    //     .then(json=>{
+    //         dispatch({
+    //             type: 'NEW_PROGRAM',
+    //             payload: json
+    //         })
+    //     })
+    // }
 }
 
+// export function updateStrategy (data) { serverAction(`strategies`,'PUT','UPDATE_PROGRAM',data) }
+
 export function updateStrategy(data){
-    return async function (dispatch){
-        return fetch(`${appConfig.url}/strategies`,{
-            method: 'PUT',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response=>response.json())
-        .then(json=>{
-            if(!json.error)dispatch({
-                type: 'UPDATE_PROGRAM',
-                payload: json
-            })
-        })
-    }
+    return serverAction({
+        endpoint:`strategies`,
+        method: 'PUT',
+        body: data,
+        type: 'UPDATE_PROGRAM'
+      })
+    // return async function (dispatch){
+    //     return fetch(`${appConfig.url}/strategies`,{
+    //         method: 'PUT',
+    //         headers: {
+    //             'Accept': 'application/json',
+    //             'Content-Type': 'application/json',
+    //         },
+    //         body: JSON.stringify(data)
+    //     })
+    //     .then(response=>response.json())
+    //     .then(json=>{
+    //         if(!json.error)dispatch({
+    //             type: 'UPDATE_PROGRAM',
+    //             payload: json
+    //         })
+    //     })
+    // }
 }
 
 //createPlan
@@ -164,10 +181,10 @@ export function getPlan(conditions){
     }
 }
 
-export function addOrdertoDate(order,date){
+export function dateOrder(order,date){
     return async function (dispatch){
-        return fetch(`${appConfig.url}/tasks/order`,{
-            method: 'POST',
+        return fetch(`${appConfig.url}/tasks?order=${order}&date=${date}`,{
+            method: 'PUT',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',

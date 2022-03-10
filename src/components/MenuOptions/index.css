@@ -1,4 +1,18 @@
-
+.listMenuOption{
+    text-align: center;
+    color: whitesmoke;
+    background:none;
+}
+.listMenuOption>*:hover{
+    color: whitesmoke
+}
+.listMenuOption:hover{
+    border: 1px solid white;
+}
+.activeListOption{
+    background-color: grey;
+    color: white;
+}
 .menuOptionsBackground{
     display: flex;
     flex-direction: column;
@@ -6,37 +20,14 @@
     background-color: grey;
     width: 10rem;
 }
-.menuOption{
-    background: linear-gradient(70deg, grey, black, grey);
-    font-size: 1.2rem;
-    padding: 5px;
-    color: white;
-    text-align: center;
-    border-radius: 5px;
-    margin: 5px;
-    border-radius: 5px;
-    box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    border: 1px solid black;
-    text-decoration: none;
-}
-.menuOption:active{
-    transform: scale(.95);
-}
-@media(max-width:900px){
-    .menuOptionsBackground{
-        flex-direction: row;
+@media(max-width: 768px){
+    .listMenuOption{
         width: 100%;
-        justify-content: space-evenly;
-        height: 2rem;
     }
-    .menuOption{
-        display: flex;
-        width: 20%;
-        justify-content: center;
-        align-items: center;
-        font-size: 1rem;
-        margin: .1rem;
-        padding: .2rem;
+    .menuOptionsBackground{
+        width: 100%;
+        flex-direction: row;
+        height: fit-content;
+        justify-content: space-evenly;
     }
 }

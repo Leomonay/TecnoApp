@@ -123,7 +123,7 @@ const NewCylinder = ({cylinder, onClose, statuses}) => {
             flexDirection: 'column',
             alignItems: 'center'}} role="alert">
           <div>{cylinderResult.success}</div>
-          <button type="button" class="btn btn-success" onClick={()=>handleClose()}>Salir</button>
+          <button type="button" className="btn btn-success" onClick={()=>handleClose()}>Salir</button>
         </div>}
       </form>
     </div>

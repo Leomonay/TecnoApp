@@ -85,6 +85,7 @@
 .addButton{
     background: green;
     padding: .2rem .5rem;
+    margin: .5rem auto
 }
 .addButton:hover{
     background: greenyellow;
