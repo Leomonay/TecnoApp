@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
+import { Link } from "react-router-dom"
 import { deviceActions } from "../../../actions/StoreActions"
 import { ErrorModal, SuccessModal } from "../../../components/warnings"
 import WarningErrors from "../../../components/warnings/WarningErrors"
@@ -346,7 +347,7 @@ export default function DeviceAdmin(){
                         <tbody>
                             {filteredList.map(device=>
                             <tr key={(device.code)}>
-                                <th scope="row">{device.code}</th>
+                                <th scope="row"><Link to={`/equipos/${device.code}`}>{device.code}</Link></th>
                                 <td className="col-1">{device.plant}</td>
                                 <td>{device.area}</td>
                                 <td>{device.line}</td>

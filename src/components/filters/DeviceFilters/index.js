@@ -125,7 +125,7 @@ export default function DeviceFilters(props){
         setOptions(newOptions)
     },[filteredList])
 
-    useEffect(()=>setFilteredList(list.filter( device=>applyFilters(device, filters) )),[list,filters])
+    useEffect(()=>list&& setFilteredList(list.filter( device=>applyFilters(device, filters) )),[list,filters])
     useEffect(()=>select(filteredList),[filteredList, select])
 
     function inputRange(field,values){

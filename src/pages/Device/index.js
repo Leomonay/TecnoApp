@@ -106,7 +106,7 @@ export default function Device(){
                             <FormInput label='Estado' defaultValue={device.status} readOnly={true} />
                         </div>
                     </div>
-                    <div className="col">
+                    <div className="col col-md-6">
                         <div className='container'>
                             <h5>HISTORIAL DE RECLAMOS</h5>
                             <div className="flex">
