@@ -52,16 +52,12 @@ export default function WorkOrder(){
         }).map(task=>({...task, localDate: (new Date (task.date)).toLocaleDateString()}))
     ) , [plan, device ])
 
-    useEffect(()=>console.log('selectedTask', selectedTask),[selectedTask])
-    useEffect(()=>console.log('planDates', planDates),[planDates])
-    useEffect(()=>console.log('plan', plan),[plan])
-    useEffect(()=>console.log('order',order),[order])
-
     useEffect(()=>{
     if(!order.code)return
     setPermissions({
-        woData: !!order.code && userData.access!=='Admin',
-        woDescription: order.code&&!order.closed&&(userData.id===order.userId || supervisor===userData.id || userData.access==='Admin'),
+        woData: (order.code && userData.access!=='Admin'),
+        woDescription: order.code && !order.closed 
+            && (userData.id===order.userId || supervisor===userData.id || userData.access==='Admin'),
         editInterventions: 
             !order.code
             || userData.access==='Admin'
@@ -120,7 +116,6 @@ export default function WorkOrder(){
         e.preventDefault()
         let object = otCode ? {...update} : {...order}
         const {value} = e.target
-        console.log(`order.${item}:`,value)
         if (!value){
             otCode ? object[item]=null : delete object[item]
         }else{
@@ -207,11 +202,13 @@ export default function WorkOrder(){
                             <FormInput label='Estado' defaultValue={orderDetail.status} readOnly={true}/>
                         </div>}
 
-                        {planDates[0]&&<div className={`WOformField WOformImportant ${selectDate?'bg-darkRed':'bg-grey'}`}>
-                                <input className='WOcheck' type='checkBox' defaultChecked={selectedTask && selectedTask.date }
-                                    onChange={(e)=>setSelectDate(e.target.checked)}/>
+                        {(planDates[0] || order.taskDate )&& <div className={`WOformField WOformImportant ${(selectDate || order.taskDate)?'bg-darkRed':'bg-grey'}`}>
+                                <input className='WOcheck' type='checkBox'
+                                    defaultChecked={(selectedTask && selectedTask.date) || order.taskDate }
+                                    onChange={(e)=>setSelectDate(e.target.checked)}
+                                    disabled={permissions.woData}/>
                                 <label>{`${selectDate?'TAREA DE PLAN':'¿TAREA DE PLAN?'}`}</label>
-                                {selectDate?
+                                {selectDate || order.taskDate?
                                     <FormSelector key={selectedTask} label='Fecha Plan'
                                         defaultValue={selectedTask ? selectedTask.id :undefined }
                                         options={planDates}
@@ -352,13 +349,12 @@ export default function WorkOrder(){
             {errors && <div className="alert alert-danger" role="alert">
                 <b>Ooops! Ocurrieron errores:</b>
                 <ul>{errors.map((e,index)=><li key={index}>{e}</li>)}</ul>
-
             </div>}
 
-            <section  className="formField">
+            {!permissions.woData && <section  className="formField">
                 <button className = 'button' onClick={checkErrors}>Guardar Cambios</button>
                 {otCode&&<button className='button' onClick={()=>{}}>Solicitar Cierre</button>}                
-            </section>
+            </section>}
 
         </div>
     )

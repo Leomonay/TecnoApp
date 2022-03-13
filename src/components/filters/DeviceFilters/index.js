@@ -14,7 +14,10 @@ function applyFilters(device, filters){
         if(typeof includeFilters[key] === 'string'){
             if( !device[key].toLowerCase().includes(includeFilters[key].toLowerCase()) ) check = false
         }else{
-            device[key].map(e=>{if (!e.toLowerCase().includes(includeFilters[key].toLowerCase())) check=false})
+            for (let element of device[key]){
+                if (element.toLowerCase.includes(
+                        includeFilters[key].toLowerCase() )) check=false
+            }
         }
 
     }

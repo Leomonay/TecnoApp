@@ -1,23 +1,20 @@
-import { useEffect, useState } from "react"
+import { 
+    // useEffect, 
+    useState } from "react"
 import './index.css'
 
 export default function AddCylinder(props){
     const {cylinderList, disabled, create} = props
-    const [stored, setStored]=useState([])
+    // const [stored, setStored]=useState([])
     const [cylinder, setCylinder]=useState({})
     const [max,setMax]=useState(0)
     const [min]=useState(2.2)
     const [errors, setErrors] = useState(undefined)
 
-    useEffect(()=>setStored(props.stored),[props.stored])
+    // useEffect(()=>setStored(props.stored),[props.stored])
 
     function setCode(code){
         const cylinder = {...cylinderList.find(element=>element.code === code)}
-        console.log('cylinder',cylinder)
-        // const consumptions = stored.filter(cylinder =>
-        //     cylinder.code === code).map(e=>e.total).reduce((a,b)=>a+b,0)
-        // console.log('consumptions',consumptions)
-        // cylinder.currentStock-=consumptions
         cylinder.init = cylinder.currentStock
         setCylinder(code?cylinder:{})
         setMax(cylinder? cylinder.currentStock : 0)

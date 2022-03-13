@@ -30,9 +30,7 @@ export const  ErrorModal = (props) =>{
     )
 }
 
-
 export const SuccessModal = ({message, link, close})=>{
-    console.log('link', link)
     function handleClose(e){
         e.preventDefault()
         close()

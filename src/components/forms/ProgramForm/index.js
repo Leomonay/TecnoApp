@@ -20,11 +20,6 @@ export default function ProgramForm(props){
 
     useEffect(()=>setProgramList(fullProgramList),[fullProgramList])
 
-    useEffect(()=>console.log('plant',plant),[plant])
-    useEffect(()=>console.log('year',year),[year])
-    useEffect(()=>console.log('programList',programList),[programList])
-    useEffect(()=>console.log('program',program),[program])
-
     function selectProgram(name){
         const program = programList.find(program=>program.name===name)
         setPlanProgram(program?

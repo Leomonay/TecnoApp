@@ -43,9 +43,6 @@ export default function AdminCylinders() {
     setFilterState(newFilter)
   }
 
-  useEffect(()=>console.log('filterState', filterState),[filterState])
-
-
   return (
     <div className="adminOptionSelected">
       <div className="formTitle">Administración de Garrafas</div>

@@ -7,17 +7,13 @@ import DeviceFilters from "../../filters/DeviceFilters";
 export default function DeviceList(){
     const {deviceFullList} = useSelector(state=>state.devices)
     const {userData} = useSelector(state=>state.people)
-    const [filteredList, setFilteredList] = useState([])
+    const [filteredList, setFilteredList] = useState(deviceFullList)
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
-    useEffect(()=>{
-        if(deviceFullList[0])return
-        dispatch(deviceActions.getFullList(userData.plant))
-    },[deviceFullList,userData,dispatch])
-
     useEffect(()=>setFilteredList(deviceFullList),[deviceFullList])
+    useEffect(()=>dispatch(deviceActions.getFullList(userData.plant)),[dispatch, userData])
 
     function handleSelect(e, code){
         e.preventDefault()
@@ -32,7 +28,7 @@ export default function DeviceList(){
                 <DeviceFilters list={deviceFullList} select={setFilteredList}/>
             </div>
             <div>
-                <table className="table table-hover" style={{fontSize: '80%'}}>
+                <table className="table table-hover" style={{fontSize: '80%', maxHeight:'100%', overflowY:'auto'}}>
                     <thead>
                         <tr>
                             <th scope="col">Codigo Eq.</th>
@@ -50,7 +46,6 @@ export default function DeviceList(){
                     </thead>
                     <tbody>
                         {filteredList[0] && filteredList.map((device, index)=>{
-                            console.log(device, index)
                             return<tr key={index} style={{cursor:'pointer'}} onClick={(e)=>handleSelect(e,device.code)}>
                                 <th style={{minWidth: '5rem'}}>{device.code}</th>
                                 <td>{device.name}</td>

@@ -71,9 +71,6 @@ function CreateDevice({close}){
     const [device, setDevice] = useState({active:true, regDate: new Date().toISOString().split("T")[0]})
     const dispatch = useDispatch()
 
-    useEffect(()=>console.log('device', device),[device])
-    useEffect(()=>console.log('locations', locations),[locations])
-
     //Setting Options
     useEffect(()=>setLocations(deviceOptions.locations),[deviceOptions])
     useEffect(()=>{if(!locations || !locations[0]) dispatch(deviceActions.allOptions())},[locations, dispatch])
@@ -242,7 +239,7 @@ function CreateDevice({close}){
                                 close={()=>dispatch(deviceActions.resetResult())}/>}
                         {deviceResult.success &&
                             <SuccessModal message={`Equipo creado correctamente. El código es ${deviceResult.success}.`}
-                                link={`/device/${deviceResult.success}`}
+                                link={`/equipos/${deviceResult.success}`}
                                 close={handleCloseSuccess}/>
                         }
                     </div>
@@ -281,7 +278,6 @@ export default function DeviceAdmin(){
     function setfilter(e){
         e.preventDefault()
         const {id, value} = e.target
-        console.log('name', id, 'value', value)
         const newFilters = {...filters}
         value? newFilters[id]=value : delete newFilters[id]
         setFilters(newFilters)
@@ -299,7 +295,7 @@ export default function DeviceAdmin(){
     }
 
     return(
-        <div>
+        <div className='adminOptionSelected'>
             <div className="container">
                 <div className="row">
                     <div className="col col-8">
@@ -315,53 +311,55 @@ export default function DeviceAdmin(){
                     <b>Filtros</b>
                     {locOptions.map((field)=>
                     <div className="col" key={field.name}>
-                    <div className="input-group mb-3">
-                        <span className="input-group-text" id="inputGroup-sizing-default">{field.caption}</span>
-                        <select key={filters[field.name]} className="form-select"
-                                id={field.name}
-                                value={filters[field.name]}
-                                onChange={setfilter}
-                                aria-label="Default select example">
-                                <option value=''>{`Sin especificar`}</option>
-                                {field.values.map((item)=><option value={item} key={item}>{item}</option>)}
-                            </select>
-                            {filters[field.name]&&
-                                <button className="btn" style={{color:'red'}} id={field.name} onClick={deleteFilter}>
-                                    <i id={field.name} className="fas fa-minus-circle"/>
-                                </button>
-                            }
+                        <div className="input-group mb-3">
+                            <span className="input-group-text" id="inputGroup-sizing-default">{field.caption}</span>
+                            <select key={filters[field.name]} className="form-select"
+                                    id={field.name}
+                                    value={filters[field.name]}
+                                    onChange={setfilter}
+                                    aria-label="Default select example">
+                                    <option value=''>{`Sin especificar`}</option>
+                                    {field.values.map((item)=><option value={item} key={item}>{item}</option>)}
+                                </select>
+                                {filters[field.name]&&
+                                    <button className="btn" style={{color:'red'}} id={field.name} onClick={deleteFilter}>
+                                        <i id={field.name} className="fas fa-minus-circle"/>
+                                    </button>
+                                }
                         </div>
                     </div>)}
                 </div>
+                <div className="row">
+                    <table className="table table-striped" style={{fontSize: '85%',  maxHeight:'inherit', overflowY:'auto'}}>
+                        <thead>
+                            <tr>
+                                <th scope="col">Código</th>
+                                <th scope="col">Planta</th>
+                                <th scope="col">Area</th>
+                                <th scope="col">Linea</th>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Tipo</th>
+                                <th scope="col">Potencia</th>
+                                <th scope="col">Refrigerante</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {filteredList.map(device=>
+                            <tr key={(device.code)}>
+                                <th scope="row">{device.code}</th>
+                                <td className="col-1">{device.plant}</td>
+                                <td>{device.area}</td>
+                                <td>{device.line}</td>
+                                <td>{device.name}</td>
+                                <td>{device.type}</td>
+                                <td>{device.power>=9000 ? `${Math.floor(device.power/3000)} tnRef` : `${device.power} frig`}</td>
+                                <td>{device.refrigerant}</td>
+                            </tr>)}
+                        </tbody>
+                    </table>
+                    {create && <CreateDevice close={addNewForm}/>}
+                </div>
             </div>
-            <table className="table table-striped" style={{fontSize: '85%'}}>
-                <thead>
-                    <tr>
-                        <th scope="col">Código</th>
-                        <th scope="col">Planta</th>
-                        <th scope="col">Area</th>
-                        <th scope="col">Linea</th>
-                        <th scope="col">Nombre</th>
-                        <th scope="col">Tipo</th>
-                        <th scope="col">Potencia</th>
-                        <th scope="col">Refrigerante</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {filteredList.map(device=>
-                    <tr key={(device.code)}>
-                        <th scope="row">{device.code}</th>
-                        <td>{device.plant}</td>
-                        <td>{device.area}</td>
-                        <td>{device.line}</td>
-                        <td>{device.name}</td>
-                        <td>{device.type}</td>
-                        <td>{device.power>=9000 ? `${Math.floor(device.power/3000)} tnRef` : `${device.power} frig`}</td>
-                        <td>{device.refrigerant}</td>
-                    </tr>)}
-                </tbody>
-            </table>
-            {create && <CreateDevice close={addNewForm}/>}
         </div>
     )
 }

@@ -4,7 +4,6 @@ import { setDeviceStrategy, getPlanDevices, getStrategies,
     // updatePlan
  } from "../../../actions/planActions";
 import DeviceFilters from "../../filters/DeviceFilters";
-import LocationFilter from "../../filters/LocationFilter";
 import Paginate from "../../Paginate";
 import PlanDevice from "../../Cards/PlanDevice";
 import './index.css'

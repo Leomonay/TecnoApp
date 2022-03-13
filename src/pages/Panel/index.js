@@ -12,7 +12,6 @@ export default function Panel(){
   const {mostRecent} = useSelector((state) => state.workOrder);
   const {userData}=useSelector((state=>state.people))
   const {plan} = useSelector((state=>state.plan))
-  const today = new Date()
   const [conditions, setConditions]=useState(null)
   const [filters, setFilters] = useState(null)
   const [pendant, setPendant] = useState([])
@@ -51,7 +50,7 @@ export default function Panel(){
 
   return (
     <div className='panelBackground'>
-      <div classname='container'>
+      <div className='container'>
         <div className='row'>
           <div className='col'>
             <TaskList pendant={pendant} current={current} next={next} access={userData.access}/>

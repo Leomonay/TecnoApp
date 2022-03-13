@@ -57,8 +57,8 @@ function App() {
             {access.isLogged && <Route exact path={'/ots/new'} element={<Layout><WorkOrder/></Layout>}/>}
             {access.isLogged && <Route exact path={'/ots/detail/:otCode'} element={<Layout><WorkOrder/></Layout>}/>}
             {/* {access.isLogged && <Route exact path={'/ots/edit/:otCode'} element={<Layout><WorkOrder/></Layout>}/>} */}
-            {access.isLogged && <Route exact path={'/device'} element={<Layout><Device/></Layout>}/>}
-            {access.isLogged && <Route exact path={'/device/:code'} element={<Layout><Device/></Layout>}/>}
+            {access.isLogged && <Route exact path={'/equipos'} element={<Layout><Device/></Layout>}/>}
+            {access.isLogged && <Route exact path={'/equipos/:code'} element={<Layout><Device/></Layout>}/>}
             {access.isLogged && <Route exact path={'/ots/edit/:otCode'} element={<Layout><WorkOrder/></Layout>}/>}
             {access.isLogged && <Route exact path={'/plan'} element={<Layout><Plan/></Layout>}/>}
             {access.isAdmin && <Route exact path={'/admin'} element={<Layout><AdminPanel/></Layout>}/>}

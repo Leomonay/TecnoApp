@@ -22,7 +22,7 @@ ChartJS.register(
 
 
 export function Chart(props) {
-    const {position, text, display, labels, values}=props
+    const {position, text, labels, values}=props
     // labels: array of X axis tags
     // values: datasets: [ { label: 'SerieName', data: [array of Y values], backgroundColor: 'rgba'} ]
 
@@ -39,11 +39,7 @@ export function Chart(props) {
         },
       };
             
-      const data = {
-        labels,
-        datasets: values
-      };
-
+      const data = { labels, datasets: values };
 
   return <Bar options={options} data={data} />;
 }

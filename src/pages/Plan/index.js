@@ -9,8 +9,8 @@ import './index.css'
 export default function Plan(){
   const {plan} = useSelector(state=>state.plan)
   const {userData} = useSelector(state=>state.people)
-  const [year, setYear] = useState((new Date()).getFullYear());
-  const [plant, setPlant] = useState(userData.plant || undefined);
+  const [year] = useState((new Date()).getFullYear());
+  const [plant] = useState(userData.plant || undefined);
   const [filteredList, setFilteredList] = useState(plan)
   const [filters, setFilters] = useState({})
   const [page, setPage] = useState({first:0, size:10})

@@ -1,6 +1,5 @@
 import { useParams } from 'react-router-dom'
 import MenuOptions from '../../../components/MenuOptions'
-import AdminDevices from '../Devices'
 import AdminPlan from '../Plan'
 import AdminPlants from '../Plants'
 import AdminUsers from '../Users'

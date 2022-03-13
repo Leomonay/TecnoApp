@@ -1,7 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { cylinderActions, deleteCylinder } from "../../../actions/StoreActions";
+import { cylinderActions } from "../../../actions/StoreActions";
 import NewCylinder from "../../forms/NewCylinder";
 import './index.css'
 
@@ -29,7 +29,7 @@ export default function CylindersList({ cylinders, workers, statuses }) {
           statuses={statuses}
           onClose={()=>selectCylinder(false)}/>}
 
-      <table className="table table-striped" style={{textAlign:'center', marginLeft: '1rem', marginRight: '1rem'}}>
+      <table className="table table-striped" style={{textAlign:'center'}}>
         <thead>
           <tr>
             <th scope="col">Código</th>

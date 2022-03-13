@@ -18,7 +18,6 @@ export default function PlanDevice(props){
     ,[startProgram,newProgram])
     
     useEffect(()=>setStartProgram( device.strategy ),[device.strategy])
-    useEffect(()=>console.log( 'newProgram',newProgram ),[newProgram])
    
     function handleProperty(key, value){
         let program = {...newProgram}

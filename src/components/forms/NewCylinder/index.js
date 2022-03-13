@@ -20,7 +20,6 @@ const NewCylinder = ({cylinder, onClose, statuses}) => {
     setInputCylinder(newCylinder)
   },[cylinder])
 
-  useEffect(()=>console.log('inputCylinder',inputCylinder),[inputCylinder])
 
   const handleChange = (event) => {
     event.preventDefault()

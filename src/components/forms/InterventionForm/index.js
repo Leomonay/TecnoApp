@@ -21,7 +21,6 @@ export default function AddIntervention(props){
     const [addText, setAddText]=useState(false)
     const dispatch=useDispatch()
 
-    useEffect(()=>console.log('intervention',intervention),[intervention])
 
     useEffect(()=>{
         if(data){

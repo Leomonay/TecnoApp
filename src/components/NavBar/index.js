@@ -10,7 +10,7 @@ function NavBar() {
 
   const navOptions=[
     {section: 'Órdenes de Trabajo', url:'/ots'},
-    {section:'Equipos', url:'/device'},
+    {section:'Equipos', url:'/equipos'},
     {section:'Plan', url:'/plan'},
   ]
 
@@ -38,7 +38,7 @@ function NavBar() {
         </div>
         {isAdmin&& <div className="navBarLinkContainer">
           <NavLink to={'/admin'}
-            className={(navData) => `col btn nav-item navBarLink ${navData.isActive ? "activeNavLink" :''}`}>
+            className={(navData) => `col btn nav-item navBarLink ${navData.isActive ? "activeAdminLink" :''}`}>
             Menú Admin
           </NavLink>
         </div>}
