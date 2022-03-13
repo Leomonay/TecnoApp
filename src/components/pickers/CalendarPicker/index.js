@@ -84,7 +84,7 @@ export default function CalendarPicker(props){
                                         (new Date ( e )).toLocaleDateString() === date)
                                     
                                     return <button key={weekIndex}
-                                        className={`weekButton${stringDates.includes(date)? ' selectedWeek':''}`}
+                                        className={`button weekButton${stringDates.includes(date)? ' selectedWeek':''}`}
                                         value={weekIndex}
                                         onClick={(e)=>setAllDates(e)}
                                         title={date.split('/').splice(0,2).join('/')}

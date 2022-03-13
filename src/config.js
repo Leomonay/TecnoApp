@@ -51,6 +51,9 @@ const appConfig={
     servicePoints: 'Puntos de Servicio',
     power:'Potencia',
     age: 'Antigüedad',
+    unit: 'Unidad',
+    active: 'Activo',
+
 
     //AdminUsers
     charge: 'Cargo',

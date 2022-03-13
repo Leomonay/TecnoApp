@@ -20,6 +20,7 @@
     align-items: center;
     padding: .5rem;
     max-width: 100%;
+    min-width: 10rem;
 }
 .justifyCenter{
     justify-content: center;
@@ -96,7 +97,7 @@
     align-items: center;
     justify-content: center;
     height: 2rem;
-    width: 100%;
+    width: fit-content;
     margin:0;
     font-size: 100%;
     font-weight: bold;
@@ -128,4 +129,7 @@
     .devicePlanComments{
         width: 100%;
     }
+    .saveButton{
+        width: 100%;
+    }    
 }

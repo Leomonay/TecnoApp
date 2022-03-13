@@ -47,16 +47,26 @@ export const peopleActions = {
 
 export const deviceActions = {
   getList: (plantCode)=>postAction('devices/filters', {plant: plantCode}, 'FULL_DEVICE_LIST'), //getDeviceList //this should be getAction
+  getDetail: (id)=> getAction(`devices/id?id=${id}`, 'DEVICE_WORK_ORDER_DETAIL'),
+  getHistory: (id)=> getAction(`devices/history?code=${id}`, 'DEVICE_HISTORY'),
+  allOptions: ()=> getAction(`devices/fullOptions`, 'DEVICE_OPTIONS'),
+  createNew: (device) => postAction(`devices`, device,'NEW_DEVICE'),
+  resetResult: ()=> ({type: 'RESET_RESULT', payload:{}}),
+
+  getFullList: (plant)=>getAction(`devices/all?plant=${plant}`, 'FULL_DEVICE_LIST'),
   getPartialList: (filters)=>{
     filters.plant='SSN' // <-- review this. Should be userData.plant or selected plant. 
     postAction('devices/filters', filters, 'PARTIAL_LIST')}, //getPartialDeviceList // should be get action
   getFilters: (plant)=>getAction(`devices/filters?plant=${plant || 'SSN'}`, 'DEVICE_FILTERS'), //getDeviceFilters // <-- review plantCode
   viewDevice: (code)=>({type: 'DEVICE_VIEW', payload: code}), //viewDevice <-- review
-  getDetail: (device)=>({type: 'DEVICE_WORK_ORDER_DETAIL', payload: device}), //getDeviceFromList
+  setDevice: (device)=>({type: 'DEVICE_WORK_ORDER_DETAIL', payload: device}), //getDeviceFromList
   listByLine: (lineName)=>getAction(`devices/byLine/${lineName}`, 'PARTIAL_LIST'), //deviceListByLine
   getByName: (name)=>getAction(`devices/byName/${name}`, 'PARTIAL_LIST'),//deviceByName
   getOptions: ()=>getAction('devices/options', 'DEVICE_OPTIONS')//getDeviceOptions
+}
 
+export const plantActions = {
+  getLocations: (plant)=>getAction(`servicePoints?plant=${plant}`, 'LOCATIONS')
 }
 
 //review all these device actions...

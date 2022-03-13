@@ -15,11 +15,7 @@ import { cylinderActions } from "../../../actions/StoreActions";
 export default function PlanTask(props){
     const {plant, year} = useSelector(state=>state.data)
 
-    const [filters, setFilters]=useState({ valueFilters:{}, rangeFilters:{}, includeFilters: {} })
-
     const {devicePlanList, programList} = useSelector(state => state.plan)
-    const {refrigerants} = useSelector(state=>state.adminCylinders)
-    const {deviceOptions} = useSelector(state=>state.devices)
     const [page, setPage]=useState({first:0, size:10})
     const [selection, setSelection]=useState([])
     const [programForm, setProgramForm]=useState(false)
@@ -50,41 +46,6 @@ export default function PlanTask(props){
         setSelection(list)
     }
 
-    function setLocationFilter(json){
-        const newValues = {...filters.valueFilters}
-        const newInclude = {...filters.includeFilters}
-        json.areaName ? newValues.area = json.areaName : delete newValues.area
-        json.lineName ? newValues.line = json.lineName : delete newValues.line
-        json.spName ? newInclude.servicePoints = json.spName : delete newInclude.servicePoints
-        setFilters({...filters, valueFilters: newValues, includeFilters: newInclude})
-    }
-    function setDeviceFilter(json){
-        const valueFilters = {...filters.valueFilters, ...json.valueFilters}
-        const includeFilters = {...filters.includeFilters, ...json.includeFilters}
-        const rangeFilters = {...filters.includeFilters, ...json.rangeFilters}
-        setFilters({valueFilters, includeFilters, rangeFilters})
-    }
-
-    useEffect(()=>{
-        function applyFilters(device, filters){
-            const {valueFilters, rangeFilters, includeFilters} = filters
-            let check = true
-            if(valueFilters) for (let key of Object.keys(valueFilters)){
-                if(device[key]!==valueFilters[key]) check = false
-            }
-            if(rangeFilters) for (let key of Object.keys(rangeFilters)){
-                if(device[key]<rangeFilters[key].min || device[key]>rangeFilters[key].max)
-                check = false
-            }
-            if(includeFilters) for (let key of Object.keys(includeFilters)){
-                if( !device[key].includes(includeFilters[key]) )
-                check = false
-            }
-            return check
-        }
-        setFilteredList(devicePlanList.filter(device=>applyFilters(device, filters)))
-    },[devicePlanList,filters])
-
     function handleSelectAll(){
         let codeList = filteredList.slice(page.first, page.first+page.size)
         let check = selection.length===codeList.length
@@ -92,27 +53,19 @@ export default function PlanTask(props){
         for (let code of codeList.map(e=>e.code)) document.getElementById(code).checked=!check
     }
 
-
     return(
         <div className="pageContent">
             <div className="filterRow">
                 <b>Filtros:</b>
-                <LocationFilter
-                    plant={props.plant}
-                    select={(json)=>setLocationFilter(json)}/>
-                <DeviceFilters
-                    select={(json)=>setDeviceFilter(json)}
-                    programList={programList}
-                    deviceOptions={deviceOptions}
-                    refrigerants={refrigerants}/>
+                <DeviceFilters select = {setFilteredList} list = {devicePlanList} plan = {true}/>
                 <div className={`selectorContainer shortForm`}>
-                    <button className="openFilters"
+                    <button className='btn btn-primary btn-sm'
                         onClick={()=>handleSelectAll()}>
                         Seleccionar Todos
                     </button>
                 </div>
                 {selection[0]&&<div className={`devFilterContainer shortForm`}>
-                    <button className="openFilters" 
+                    <button className='btn btn-primary btn-sm'
                         onClick={()=>setProgramForm(!programForm)}>
                         Asignar Programa a Selección
                     </button>

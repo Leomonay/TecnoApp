@@ -14,9 +14,9 @@ export default function ProgramCard (props){
             <h6>{program.people.length} personas</h6>
             <div className="miniText">{program.description}</div>
             <div className='cardRow'>
-                <button className='editButton' title='Editar' 
+                <button className='button editButton' title='Editar' 
                     onClick={()=>{setEdit(!edit)} }/>
-                <button className='removeButton' title='Eliminar' 
+                <button className='button removeButton' title='Eliminar' 
                     onClick={()=>{} }/>
             </div>
             {edit && <NewProgram

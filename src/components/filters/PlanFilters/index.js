@@ -81,7 +81,7 @@ export default function PlanFilters(props){
         if(!userData || !dispatch)return
         dispatch(getPlantList())
         if(userData.plant){
-            !deviceFullList[0] && dispatch(getDeviceList(userData.plant))
+            (!deviceFullList || !deviceFullList[0]) && dispatch(getDeviceList(userData.plant))
             dispatch(getPlantLocationTree(userData.plant))
         }
     },[deviceFullList,userData,dispatch])

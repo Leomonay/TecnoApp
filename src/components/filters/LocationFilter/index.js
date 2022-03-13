@@ -1,17 +1,22 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getLineServicePoints, getPlantLocationTree } from "../../../actions/dataActions";
+import { getLineServicePoints, getPlantList, getPlantLocationTree } from "../../../actions/dataActions";
 import './index.css'
 
 export default function LocationFilter(props){
+    const {select} = props
     const {locationTree} = useSelector(state=>state.data)
     const {servicePointList} = useSelector(state=>state.data)
+    const {userData} = useSelector(state=>state.people)
     const dispatch = useDispatch()
-    const plant = props.plant
-    const [filter, setFilter] =useState({plantName: undefined, areaName:undefined, lineName:undefined, spName:undefined})
+    const [plant, setPlant] = useState(userData.plant)
+    const [filter, setFilter] =useState({plant: undefined, area:undefined, line:undefined, servicePoint:undefined})
     const [areas, setAreas]=useState([])
     const [lines, setLines]=useState([])
-    const [view, setView]=useState(false)
+    const [plants, setPlants]=useState([])
+
+    useEffect(()=>(!userData.plant || userData.access==='Admin') && dispatch(getPlantList()),[userData, dispatch])
+    useEffect(()=>setPlants(Object.keys(locationTree)),[locationTree])
 
     function deleteFields(json,fields){
         for(let field of fields){
@@ -24,23 +29,30 @@ export default function LocationFilter(props){
 
     function handleLocation(item,name){
         let newFilter = {...filter}
+        const {plant, area, line} = {newFilter}
         switch (item){
+            case 'plant':
+                newFilter = name?{plantName:name}:{}
+                setPlant(plant)
+            break;
             case 'area':
-                newFilter = deleteFields(newFilter, name===''?['area','line','sp']:['line','sp'])
-                name!=='' && setLines(locationTree[plant][name])
+                newFilter = {plant, area:name}
+                name && setLines(locationTree[plant][name])
             break;
             case 'line':
+                newFilter = {plant, area, line:name}
                 newFilter = deleteFields(newFilter, name===''?['line','sp']:['sp'])
-                name!=='' && dispatch(getLineServicePoints(name))
+                name && dispatch(getLineServicePoints(name))
             break;
             case 'sp':
-                if(name==='') newFilter = deleteFields(newFilter, ['sp'])
+                newFilter = {plant, area, line, servicePoint:name}
+                !name && delete newFilter.spName
             break;
             default: break;
         }
         if(name!=='') newFilter[`${item}Name`]=name
         setFilter(newFilter)
-        props.select && props.select(newFilter)
+        select && select(newFilter)
     }
 
     useEffect(()=>{
@@ -52,16 +64,14 @@ export default function LocationFilter(props){
     },[dispatch, plant])
 
     useEffect(()=>setFilter({plantName: plant}),[plant])
-    
     useEffect(()=>{locationTree[plant] && setAreas(Object.keys(locationTree[plant]))},[locationTree,plant])
 
     function LocationSelect(title, array, item, parent){
         return(
-            <select id={`${item}Selector`}
-                className='locationOption'
-                disabled={!filter[`${parent}Name`]}
+            <select className="form-select" id={`${item}Selector`} 
                 onChange={(e)=>handleLocation(item,e.target.value)}
-                defaultValue={filter[`${item}Name`]}>
+                defaultValue={filter[`${item}Name`]}
+                disabled={parent? !filter[`${parent}Name`] : undefined}>
                 <option value='' >{title}</option>
                 {array && array.map((element, index)=>
                     <option key={index} value={element}>{element}</option>
@@ -71,12 +81,22 @@ export default function LocationFilter(props){
     }
 
     return(
-        <div className={`selectorContainer ${view?'longForm':'shortForm'}`}>
-            <button className={`openFilters ${view && 'pressed'}`}
-                onClick={()=>setView(!view)}>Ubicación</button>
-            {view&&LocationSelect('Area', areas, 'area', 'plant')}
-            {view&&LocationSelect('Linea', lines, 'line', 'area')}
-            {view&&LocationSelect('Lugar de Servicio', servicePointList, 'sp', 'line')}
-        </div>
+        <>
+            <button className="btn btn-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                Filtrar Ubicación
+            </button>
+            <div className="collapse" id="collapseExample">
+                    {LocationSelect('Planta', plants, 'plant')}
+                <div>
+                    {LocationSelect('Area', areas, 'area', 'plant')}
+                </div>
+                <div>
+                    {LocationSelect('Linea', lines, 'line', 'area')}
+                </div>
+                <div>
+                    {LocationSelect('Lugar de Servicio', servicePointList, 'sp', 'line')}
+                </div>
+            </div>
+        </>
     )
 }

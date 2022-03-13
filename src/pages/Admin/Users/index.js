@@ -40,7 +40,7 @@ export default function AdminUsers(){
 
     return(
         <div className='adminOptionSelected'>
-            <button className="newUser" onClick={()=>setUserDetail('new')}>CREAR USUARIO</button>
+            <button className="button newUser" onClick={()=>setUserDetail('new')}>CREAR USUARIO</button>
             <div className="title">Lista de Usuarios</div>
             <br/>
             {locationTree && DropdownChoice('plant', Object.keys(locationTree),

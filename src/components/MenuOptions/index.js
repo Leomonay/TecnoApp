@@ -5,18 +5,12 @@ import './index.css'
 
 export default function MenuOptions(props) {
   const {options} = props
-  const {selected} = useParams()
+  // const {selected} = useParams()
 
-  function buildOption(option, index){
-    return(
-      <NavLink className='menuOption list-group-item' key={index} to={option.url} activeClassName='activeOption'>
-        {option.caption}
-      </NavLink>
-    )
-  }
   function buildLIOption(option, index){
     return(
-        <NavLink className='list-group-item listMenuOption' key={index} to={option.url} activeClassName='activeListOption'>
+        <NavLink  key={index} to={option.url} 
+          className={(navData) => `list-group-item listMenuOption ${navData.isActive ? "activeListOption" :''}`}>
           {option.caption}
         </NavLink>
     )

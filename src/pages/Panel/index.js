@@ -50,15 +50,19 @@ export default function Panel(){
   },[plan])
 
   return (
-    <div className='PanelBackground'>
-      <div style={{display:'flex'}}>
-        <TaskList pendant={pendant} current={current} next={next} access={userData.access}/>
-        {userData.access==='Admin' &&
-            <div className='panelSquare'>
-              <div className='title'>10 reclamos más recientes</div>
-              <WOList mostRecent={mostRecent}/>
-            </div>
-        }
+    <div className='panelBackground'>
+      <div classname='container'>
+        <div className='row'>
+          <div className='col'>
+            <TaskList pendant={pendant} current={current} next={next} access={userData.access}/>
+          </div>
+          {userData.access==='Admin' &&
+          <div className='col'>
+                <div className='title'>10 reclamos más recientes</div>
+                <WOList mostRecent={mostRecent}/>
+          </div>
+          }
+        </div>
       </div>
     </div>
   );

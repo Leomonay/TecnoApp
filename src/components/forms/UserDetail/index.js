@@ -37,7 +37,7 @@ export default function UserDetail(props){
     return(
         <div className="modal">
             <form className='userDetailForm' onSubmit={(e)=>handleSubmit(e)}>
-            <button className='closeButton' onClick={()=>props.close()}>X</button>
+            <button className='button closeButton' onClick={()=>props.close()}>X</button>
             <div className="title">{`${user==='new'?'Nuevo':'Editar'} usuario`}</div>
 
             { UserField({label:'Nombre', placeholder:"Nombre y apellido", item:'name'})}

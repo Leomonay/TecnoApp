@@ -21,7 +21,7 @@ export default function ProgramManagement(props){
 
     return(
         <div className="allSpaceFrame">
-            <button className="addButton" onClick={()=>setCreate(!create)}>Crear Programa</button>
+            <button className="button addButton" onClick={()=>setCreate(!create)}>Crear Programa</button>
             {create && <NewProgram
                 close={()=>setCreate(!create)}
                 plant={props.plant}

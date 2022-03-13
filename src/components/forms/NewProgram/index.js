@@ -54,7 +54,7 @@ export default function NewProgram(props){
     return(
         <div className="modal">
             <form onSubmit={(e)=>handleSubmit(e)} className="modalForm">
-                <button className="closeButton" onClick={()=>props.close()}>X</button>
+                <button className="button closeButton" onClick={()=>props.close()}>X</button>
                 <div className="title">{`${program?'Editar':'Crear'} programa`}</div>
                 { !props.plant &&
                     <div className="formRow">
@@ -110,7 +110,7 @@ export default function NewProgram(props){
                         onChange={(e)=>setNewProgram({...newProgram, [e.target.id.replace('InputForm','')]:e.target.value})}/>
                 </div>
                 <div className="submitRow">
-                    <button type='submit'>GUARDAR PROGRAMA</button>
+                    <button className='button' type='submit'>GUARDAR PROGRAMA</button>
                 </div>
             </form>
         </div>

@@ -103,3 +103,7 @@ a{
   text-decoration: none;
   color: inherit
 }
+.pageBackground{
+  width: 100%;
+  height: 100%;
+}

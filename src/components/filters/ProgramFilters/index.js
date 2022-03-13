@@ -53,7 +53,7 @@ export default function ProgramFilters(props){
             )}
         </select>
 
-        <button className="openFilters" onClick={()=>handleDates(!filters.dates)}>
+        <button className="button openFilters" onClick={()=>handleDates(!filters.dates)}>
             {filters.dates?'Mostrar todos los equipos':'Mostrar equipos sin fecha'}
         </button>
 

@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { useParams } from "react-router-dom/cjs/react-router-dom.min"
+import { useParams } from "react-router-dom"
 import { getDeviceFromList, searchWODevice } from "../../../actions/deviceActions"
 import { dateOrder, selectTask } from "../../../actions/planActions"
+import { deviceActions } from "../../../actions/StoreActions"
 import { getWOOptions, newIntervention, newWorkOrder, searchWO, updateOrder } from "../../../actions/workOrderActions"
 
 import InterventionList from "../../lists/InterventionList"
@@ -84,7 +85,8 @@ export default function WorkOrder(){
             `${device.type} (${ device.power+' '+ device.unit } ${device.refrigerant})`
             : undefined)
         const code = device ? device.code : undefined
-        if(code) dispatch(searchWODevice(code))
+        if(code) dispatch(deviceActions.getDetail(code))
+        // if(code) dispatch(searchWODevice(code))
         setSupervisor(orderDetail.supervisor)
         dispatch(selectTask(plan.find(date=>date.id === orderDetail.taskDate)))
         setOrder(orderDetail)
@@ -92,14 +94,10 @@ export default function WorkOrder(){
     },[orderDetail, dispatch, plan])
 
     useEffect(()=>{
-        // setDevice(selectedWODevice || [])
-        if (selectedWODevice && selectedWODevice.powerKcal){
-            let power = selectedWODevice.powerKcal
-            power =  power>=9000 ? selectedWODevice.powerTnRef + ' TR' : selectedWODevice.powerKcal + ' Kcal'
-            setPower(`${selectedWODevice.type} (${ power }) - Refrigerante: ${selectedWODevice.refrigerant}`)
-        }else{
-            setPower(undefined)
-        }
+        if(!selectedWODevice || !selectedWODevice.code)return
+        let {power} = selectedWODevice
+        power = power>=9000? `${Math.floor(power/3000)} tnRef` : `${power} Frig`
+        setPower(`${selectedWODevice.type} (${ power }) - Refrigerante: ${selectedWODevice.refrigerant}`)
         if (!otCode && selectedWODevice.servicePoints && selectedWODevice.servicePoints.length === 1){ 
             setOrder({servicePoint:selectedWODevice.servicePoints[0]})
         }setDeviceCode( selectedWODevice ? selectedWODevice.code : '')

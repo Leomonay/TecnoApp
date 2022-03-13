@@ -1,12 +1,6 @@
 .panelBackground{
     height: 100%;
 }
-/* .menuContainer{
-    width: 15vw;
-    min-width: 15rem;
-    padding:5px;
-    background-color: grey;
-} */
 .panelContainer{
     display: flex;
     flex-wrap: wrap;

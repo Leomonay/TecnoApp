@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom/cjs/react-router-dom.min'
+import { useParams } from 'react-router-dom'
 import MenuOptions from '../../../components/MenuOptions'
 import AdminDevices from '../Devices'
 import AdminPlan from '../Plan'
@@ -6,6 +6,7 @@ import AdminPlants from '../Plants'
 import AdminUsers from '../Users'
 import AdminCylinders from '../Cylinders'
 import './index.css'
+import DeviceAdmin from '../Devices'
 
 export default function AdminPanel(){
     const {selected} = useParams()
@@ -19,7 +20,7 @@ export default function AdminPanel(){
     return(<div className='adminBackground'>
         <MenuOptions options={options}/>
         {selected==='usuarios'&&<AdminUsers/>}
-        {selected==='equipos'&&<AdminDevices/>}
+        {selected==='equipos'&&<DeviceAdmin/>}
         {selected==='plantas'&&<AdminPlants/>}
         {selected==='plan'&&<AdminPlan/>}
         {selected==='garrafas'&&<AdminCylinders/>}

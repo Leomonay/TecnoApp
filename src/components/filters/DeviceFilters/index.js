@@ -1,75 +1,129 @@
-import { useState } from "react"
-import DeviceOptions from "../../dropdown/DeviceOptions"
-import {appConfig} from "../../../config"
-import './index.css'
-const {headersRef} = appConfig
+import { useEffect, useState } from "react"
 
-function RangeInput(props){
-    const {title, field, equivalency, select, actualJson} = props
-    const units = equivalency?Object.keys(equivalency):undefined
-    const [unit, setUnit] = useState( units ? (units[0] || units) : undefined)
-    
-    function setNewJson(field, keys, values){
-        const newJson = actualJson? {...actualJson} : {}
-        for (let i =0; i<keys.length; i++){
-            if(!newJson[field])newJson[field]={}
-            newJson[field][keys[i]] = values[i]
-        }
-        select(field,newJson[field])
+function applyFilters(device, filters){
+    const {valueFilters, rangeFilters, includeFilters} = filters
+    let check = true
+    if(valueFilters) for (let key of Object.keys(valueFilters)){
+        if(device[key]!==valueFilters[key]) check = false
     }
-
-    function updateUnit(field, newEquiv, actualEquiv){
-        const newJson = {...actualJson}
-        if(newJson[field]){
-            const keys = Object.keys(newJson[field])
-            for (let key of keys){
-                newJson[field][key] = newJson[field][key] * newEquiv/actualEquiv
-            }
-            select(field,newJson[field])
-        }
+    if(rangeFilters) for (let key of Object.keys(rangeFilters)){
+        if(device[key]<rangeFilters[key].min || device[key]>rangeFilters[key].max)
+        check = false
     }
+    if(includeFilters) for (let key of Object.keys(includeFilters)){
+        if(typeof includeFilters[key] === 'string'){
+            if( !device[key].toLowerCase().includes(includeFilters[key].toLowerCase()) ) check = false
+        }else{
+            device[key].map(e=>{if (!e.toLowerCase().includes(includeFilters[key].toLowerCase())) check=false})
+        }
 
-    return(
-        <div className="rangeField">
-            <b>{title}: </b>
-            <input className='numberInput'
-                type='number'
-                placeholder='min'
-                min='0'
-                id={`${field}Min`}
-                max={ (actualJson[field] && actualJson[field].max) / (equivalency? equivalency[unit]:1) || undefined}
-                defaultValue={actualJson[field]?actualJson[field].min:undefined}
-                onChange={(e)=>{
-                    setNewJson(field,[ 'min' ],[ e.target.value * (equivalency? equivalency[unit] : 1) ])
-                    }}/>
-            -
-            <input className='numberInput'
-                type='number'
-                placeholder="max"
-                id={`${field}Max`}
-                min={ (actualJson[field] && actualJson[field].min)/(equivalency? equivalency[unit]:1) || undefined}
-                defaultValue={actualJson[field]?actualJson[field].max:undefined}
-                onChange={(e)=>{
-                    setNewJson(field,[ 'max' ],[ e.target.value * (equivalency? equivalency[unit] : 1) ])
-                    }}/>
-            {units&&<button className='unitButton'
-                onClick={()=>{
-                    let newUnit = units[units.findIndex(e=>e===unit)+1] || units[0]
-                    updateUnit(field, equivalency[newUnit], equivalency[unit])
-                    setUnit(newUnit)
-                    }}>{unit}</button>}
-        </div>
-    )
+    }
+    return check
 }
 
-export default function DeviceFilters(props){
-    const {deviceOptions, programList, refrigerants} = props
-    const [view, setView]=useState(false)
-    const [name, setName] = useState('')
-    // const [valueFilters, setValueFilters] = useState({})
-    // const [rangeFilters, setRangeFilters] = useState({})
+        //************************ RANGE INPUT OPTIONS **************************/
+        function RangeInput(props){
+            const {title, field, equivalency, select, deletion} = props
+            const [units] = useState(equivalency ? Object.keys(equivalency) : undefined)
+            const [unit, setUnit] = useState(equivalency ? Object.keys(equivalency)[0] : undefined)
+            const [values, setValues] = useState({})
+    
+            function selectValues (values, unit){
+                const newValues = {...values}
+                const keys = Object.keys(values)
+                if(!keys[0]) return
+                for ( let key of keys )newValues[key] = newValues[key] * (unit ? equivalency[unit] : 1)
+                select(field,newValues)
+            }
+    
+            function setNewValues(e){
+                e.preventDefault()
+                const {name} =e.target
+                const value = Number(e.target.value)
+                const newValues = {...values}
+                newValues[name] = value
+                selectValues(newValues,unit)
+                setValues({...newValues,[name]:value})
+            }
+    
+            function updateUnit(e){
+                e.preventDefault()
+                const newUnit = e.target.value 
+                selectValues(values,newUnit)
+                setUnit(newUnit)
+            }
 
-    const [filters, setFilters] = useState({valueFilters:{}, rangeFilters:{},includeFilters:{}}) 
+            function handleDelete(e){
+                e.preventDefault()
+                setValues({})
+                deletion('rangeFilters',field)
+            }
+        
+            return(
+                <div className="container">
+                        <b>{title}: </b>
+                        <div className="row" key={values}>
+                            <div className="col">
+                                <input className='form-control col-3'
+                                    type='number'
+                                    name='min'
+                                    placeholder='min'
+                                    min='0'
+                                    max={values.max}
+                                    defaultValue={values.min}
+                                    onChange={setNewValues}/>
+                            </div>
+                            <div className="col">
+                                <input className='form-control col-3'
+                                    type='number'
+                                    name='max'
+                                    placeholder="max"
+                                    min={values.min || 0}
+                                    defaultValue={values.max}
+                                    onChange={setNewValues}/>
+                            </div>
+                            {units&& <div className="col">
+                                <select key={unit} className='btn btn-primary' style={{width: '100%'}}
+                                    defaultValue={unit}
+                                    onChange={updateUnit}>
+                                    {units.map(option=><option key={option} value={option}>{option}</option>)}                                   
+                                </select>
+                        </div>}
+                        {(values.min || values.max) && 
+                            <button type="button" className="btn btn-outline-danger col-1"
+                                onClick={handleDelete}                
+                                style={{padding:0}}>
+                                <i className="fas fa-backspace"/>
+                            </button>}
+                    </div>
+                </div>
+            )
+        }
+        //*********************** END OF RANGE OPTIONS *******************************/
+
+
+export default function DeviceFilters(props){
+    const {select, list, plan}=props
+    const [name, setName] = useState('')
+    const [options, setOptions] = useState({})
+    const [filters, setFilters] = useState({valueFilters:{}, rangeFilters:{},includeFilters:{}})
+    const [filteredList, setFilteredList] = useState(list)
+
+    // useEffect(()=>console.log('filters',filters),[filters])
+
+    useEffect(()=>{
+        if(!filteredList[0])return
+        let newOptions = {}
+        for (let key of Object.keys(filteredList[0])){
+            if(!['power', 'age', 'reclaims', 'name'].includes(key)){
+                newOptions[key] = [...new Set(filteredList.map(device=>device[key]))]
+            }
+        }
+        setOptions(newOptions)
+    },[filteredList])
+
+    useEffect(()=>setFilteredList(list.filter( device=>applyFilters(device, filters) )),[list,filters])
+    useEffect(()=>select(filteredList),[filteredList, select])
 
     function inputRange(field,values){
         const newRange = {...filters.rangeFilters}
@@ -77,7 +131,6 @@ export default function DeviceFilters(props){
             {...newRange[field],...values}
             :values
         const newFilters = {...filters,rangeFilters: newRange}
-        props.select(newFilters)
         setFilters(newFilters)
     }
 
@@ -90,7 +143,6 @@ export default function DeviceFilters(props){
             newValues[item]=value
         }
         const newFilters = {...filters,valueFilters: newValues}
-        props.select(newFilters)
         setFilters(newFilters)
     }
 
@@ -103,99 +155,127 @@ export default function DeviceFilters(props){
             newFilter[item]=value
         }
         const newFilters = {...filters,includeFilters: newFilter}
-        props.select(newFilters)
         setFilters(newFilters)    
     }
+
+    // function handleDeleteInputText(e){
+    //     e.preventDefault()
+    // }
 
     function deleteFilter(subJson, key){
         let newJson = {...filters[subJson]}
         delete newJson[key]
         const newFilters = {...filters, [subJson]:newJson}
         setFilters(newFilters);
-        for (let cond of ['Value','Min','Max']){
-            const input = document.getElementById(`${key}${cond}`)
-            if(input) input.value=''
-        }
-        props.select(newFilters)
+        // for (let cond of ['Value','Min','Max']){
+        //     const input = document.getElementById(`${key}${cond}`)
+        //     if(input) input.value=''
+        // }
+        setFilters(newFilters)    
     }
 
+    //**************** SELECTABLE OPTIONS ****************************
+    function DeviceOptions(props){
+        const {title, item, select} = props
+        function handleSelect(e){
+            e.preventDefault()
+            select && select(item, e.target.value)
+        }
+
+        return(
+            <div className="container">
+                <b>{title}:</b>
+                <div className="row">
+                    <div className="col">
+                        <select className="form-select col"
+                            defaultValue={filters.valueFilters ? filters.valueFilters[item]:undefined}
+                            onChange={(event)=>handleSelect(event)}>
+                            <option value=''>Sin especificar</option>
+                            {options[item] && options[item].map((option, index)=><option key={index} value={option}>{option}</option>)}
+                        </select>
+                    </div>
+                    {filters.valueFilters && filters.valueFilters[item] &&
+                        <button type="button" className="btn btn-outline-danger col-1"
+                            onClick={()=>deleteFilter('valueFilters',item)}                
+                            style={{padding:0}}>
+                                <i className="fas fa-backspace"/>
+                        </button>}
+                </div>
+            </div>
+        )
+    }
+    //**************** END OF SELECTABLE OPTIONS ****************************/
+
     return(
-            <div className={`selectorContainer ${view?'longForm':'shortForm'}`}>
-                <button className={`openFilters`} onClick={()=>setView(!view)}>Equipo</button>
-                {view&&<DeviceOptions item='types' select={
-                    (item,event)=>inputValue('type', event.target.value)//
-                    } 
-                    options={deviceOptions['types']}/>}
+        <>
+        <button className="btn btn-primary btn-sm" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
+            Filtros de Equipo
+        </button>
 
-                {view && <RangeInput 
-                    title='Potencia'
-                    field='power'
-                    equivalency={{Frig:1,TR:3000}}
-                    select={(field,json)=>inputRange(field,json)}
-                    actualJson={filters.rangeFilters}
-                    /> }
+        <div className="offcanvas offcanvas-start" tabIndex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+            <div className="offcanvas-header">
+                <h5 className="offcanvas-title" id="offcanvasExampleLabel">Propiedades del equipo</h5>
+                <button type="button" className="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+           <div className="offcanvas-body">
 
-                {view && ['category', 'environment', 'service', 'status'].map((item,index)=>
-                    <DeviceOptions key={index} item={item} select={
-                        (item,event)=>inputValue(item, event.target.value)//
-                        } 
-                        options={deviceOptions[item]} />
-                )}
+            <DeviceOptions title='Planta' item='plant' select={inputValue}/>
+            <DeviceOptions title='Area' item='area' select={inputValue}/>
+            <DeviceOptions title='Linea' item='line' select={inputValue}/>
 
-                {view && <RangeInput 
-                    title='Antigüedad(años)'
-                    field='age'
-                    select={(field,json)=>inputRange(field,json)}
-                    actualJson={filters.rangeFilters}
-                    /> }
-                
-                {view && <RangeInput 
-                    title='Reclamos'
-                    field='reclaims'
-                    select={(field,json)=>inputRange(field ,json)}
-                    actualJson={filters.rangeFilters}
-                    /> }
-
-                {programList[0]&&view&&<DeviceOptions item='program'
-                    options={['SIN ASIGNAR',...programList.map(e=>e.name)]}
-                    select={
-                        (item,event)=>inputValue(item, event.target.value)//
-                    }/>}
-                {view&&<DeviceOptions item='refrigerant'
-                    options={refrigerants.map(e=>e.refrigerante)}
-                    select={
-                        (item,event)=>inputValue(item, event.target.value)//
-                    }/>}
-                {view && <form className="rangeField">
-                    <label><b>Nombre:</b></label>
-                    <input placeholder='nombre total o parcial' onChange={(e)=>setName(e.target.value)}/>
-                    <button onClick={(event)=>includeFilter('name',name, event)}>BUSCAR</button>
-                </form>}
-                {view&&<div className='filterList'> <b>Filtros:</b>
-                    {Object.keys(filters.rangeFilters).map((key, index)=>{
-                        const {rangeFilters} = filters
-                        return<div key={index} className='selectedFilter' title='Borrar Filtro'>
-                            {`${headersRef[key]||key}: ${
-                                rangeFilters[key].min && !rangeFilters[key].max ? `más de ${rangeFilters[key].min}`
-                                :!rangeFilters[key].min && rangeFilters[key].max ? `menos de ${rangeFilters[key].max}`
-                                :rangeFilters[key].min === rangeFilters[key].max ? `${rangeFilters[key].max}`
-                                :`${rangeFilters[key].min} a ${rangeFilters[key].max}`} `}
-                            <button className='deleteFilter' onClick={(e)=>deleteFilter('rangeFilters',key)}>X</button>
-                        </div>}
-                    )}
-                    {Object.keys(filters.valueFilters).map((key,index)=>
-                        <div key={index} className='selectedFilter' title='Borrar Filtro'>
-                            {`${headersRef[key]}: ${filters.valueFilters[key]}`}
-                            <button className='deleteFilter' onClick={(e)=>deleteFilter('valueFilters',key)}>X</button>
+                <div className="container">
+                    <b>Nombre:</b>
+                    <div className="row">
+                        <div className="col">
+                            <form className="d-flex">
+                                <input
+                                    className="form-control me-2"
+                                    type="search"
+                                    placeholder="Nombre total o parcial"
+                                    aria-label="Search"
+                                    onChange={(e)=>setName(e.target.value)}/>
+                                <button className="btn btn-outline-success col" onClick={(event)=>includeFilter('name',name, event)}>BUSCAR</button>
+                            </form>
                         </div>
-                    )}
-                    {Object.keys(filters.includeFilters).map((key,index)=>
-                        <div key={index} className='selectedFilter' title='Borrar Filtro'>
-                            {`${headersRef[key]}: incluye ${filters.includeFilters[key]}`}
-                            <button className='deleteFilter' onClick={(e)=>deleteFilter('includeFilters',key)}>X</button>
-                        </div>
-                    )}
-                </div>}
+                        {name&&<button type="button" className="btn btn-outline-danger col-1"
+                                onClick={(e)=>{
+                                    e.preventDefault()
+                                    setName(undefined)
+                                    deleteFilter('includeFilters','name')
+                                    }}                
+                                style={{padding:0}}>
+                                    <i className="fas fa-backspace"/>
+                            </button>}
+                    </div>
+                </div>
+
+
+                <DeviceOptions title='Tipo' item='type' select={inputValue}/>
+                <RangeInput 
+                        key={filters.rangeFilters ? filters.rangeFilters.power : 0}
+                        title='Potencia'
+                        field='power'
+                        equivalency={{Frig:1,TR:3000}}
+                        select={inputRange}
+                        deletion={deleteFilter}/>
+                <DeviceOptions title='Refrigerante' item='refrigerant' select={inputValue}/>
+                <DeviceOptions title='Categoría' item='category' select={inputValue}/>
+                <DeviceOptions title='Ambiente' item='environment' select={inputValue}/>
+                <DeviceOptions title='Servicio' item='service' select={inputValue}/>
+                <RangeInput
+                        title='Antigüedad(años)'
+                        field='age'
+                        select={inputRange}
+                        deletion={deleteFilter}/>                       
+                <DeviceOptions title='Estado' item='status' select={inputValue}/>
+                {plan && <RangeInput 
+                        title='Reclamos'
+                        field='reclaims'
+                        select={inputRange}
+                        deletion={deleteFilter}/>}
+                {plan && <DeviceOptions title='Programa' item='program' options={options} select={inputValue} deletion={deleteFilter}/>}
+            </div>
         </div>
+       </>
     )
 }

@@ -9,8 +9,9 @@ function NavBar() {
   const isAdmin = userData.access === 'Admin'
 
   const navOptions=[
-    {section: 'Gestión de OT', url:'/ots', crud:true},
-    {section:'Plan', url:'/plan', crud:true},
+    {section: 'Órdenes de Trabajo', url:'/ots'},
+    {section:'Equipos', url:'/device'},
+    {section:'Plan', url:'/plan'},
   ]
 
   function handleLogOut(){
@@ -29,13 +30,15 @@ function NavBar() {
         
         <div className="navBarLinkContainer">
           {navOptions.map((option,index)=>
-            <NavLink to={option.url} key={index} className='col btn nav-item navBarLink' activeClassName="activeNavLink">
+            <NavLink to={option.url} key={index}
+              className={(navData) => `col btn nav-item navBarLink ${navData.isActive ? "activeNavLink" :''}`}>
               {option.section}
             </NavLink>
           )}
         </div>
         {isAdmin&& <div className="navBarLinkContainer">
-          <NavLink to={'/admin'} className='col btn nav-item navBarAdmin' activeClassName="activeAdminLink">
+          <NavLink to={'/admin'}
+            className={(navData) => `col btn nav-item navBarLink ${navData.isActive ? "activeNavLink" :''}`}>
             Menú Admin
           </NavLink>
         </div>}

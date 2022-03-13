@@ -77,7 +77,7 @@ export default function PlanDevice(props){
                     <div className='deviceData'>
                         <b>{`${device.plant} > ${device.area} > ${device.line}`}</b>
                     </div>
-                    <div className='deviceItems'>
+                    <div className='deviceItems wrap'>
                         <DeviceItem title='CATEGORIA' value={device.category} color='paleturquoise' font='70%'/>
                         <DeviceItem title='AMBIENTE'  value={device.environment} color='peachpuff' font='70%'/>
                         <DeviceItem title='SERVICIO' value={device.service} color='lavender' font='70%'/>
@@ -139,7 +139,7 @@ export default function PlanDevice(props){
                         defaultValue={newProgram && newProgram.observations}
                         />
                 </div>
-                {save&&<button className='saveButton' onClick={()=>handleSave()}>GUARDAR</button>}
+                {save&&<button className='button saveButton' onClick={()=>handleSave()}>GUARDAR</button>}
             </div>
         </div>
     )
