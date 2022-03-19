@@ -1,25 +1,34 @@
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useParams } from "react-router-dom"
-import { getDeviceFromList, searchWODevice } from "../../../actions/deviceActions"
-import { dateOrder, selectTask } from "../../../actions/planActions"
-import { deviceActions } from "../../../actions/StoreActions"
-import { getWOOptions, newIntervention, newWorkOrder, searchWO, updateOrder } from "../../../actions/workOrderActions"
+import { dateOrder, selectTask } from "../../actions/planActions"
+import { deviceActions } from "../../actions/StoreActions"
+import { getWOOptions, newIntervention, newWorkOrder, searchWO, updateOrder } from "../../actions/workOrderActions"
 
-import InterventionList from "../../lists/InterventionList"
-import DevicePicker from "../../pickers/DevicePicker"
-import WOProgress from "../../progress/WOProgresBar"
-import WarningErrors from "../../warnings/WarningErrors"
-import AddTextForm from "../AddText"
-import {FormInput, FormSelector} from "../FormInput"
-import AddIntervention from "../InterventionForm"
+import InterventionList from "../../components/lists/InterventionList"
+import WOProgress from "../../components/progress/WOProgresBar"
+import { ErrorModal } from "../../components/warnings"
+import WarningErrors from "../../components/warnings/WarningErrors"
+import AddTextForm from "../../components/forms/AddText"
+import {FormInput, FormSelector} from "../../components/forms/FormInput"
+import AddIntervention from "../../components/forms/InterventionForm"
 import './index.css'
+import DeviceList from "../../components/lists/DeviceList"
+
+function buildDevice(device){
+//order detail
+    if (!device) return {}
+    if(device.power){
+        device.powerAndType=`${device.type} (${ device.power+' '+ device.unit }) ${device.refrigerant}`
+    }
+    return device
+}
 
 export default function WorkOrder(){
 //global variables
     const {otCode} = useParams()
     const {userData} = useSelector(state=>state.people)
-    const {selectedWODevice} = useSelector(state=>state.devices)
+    const {selectedDevice, deviceResult} = useSelector(state=>state.devices)
     const {plan, selectedTask} = useSelector((state=>state.plan))
     const {workOrderOptions, orderDetail} = useSelector(state=>state.workOrder)
 
@@ -36,7 +45,6 @@ export default function WorkOrder(){
     const [interventions, setInterventions] = useState([])
     const [device, setDevice] = useState({})
     const [deviceCode, setDeviceCode] = useState('')
-    const [power, setPower] = useState(undefined)
     const [order,setOrder] = useState({})
     const [update, setUpdate] = useState({})
     const [supervisor, setSupervisor] = useState(undefined)
@@ -44,6 +52,8 @@ export default function WorkOrder(){
     const [permissions, setPermissions] = useState({woData:false,woDescription:false,editInterventions:true})
     const dispatch = useDispatch()
 
+
+    useEffect(()=>console.log('order',order),[order])
 
     useEffect(()=> setPlanDates(
         plan.filter(task=>{
@@ -75,14 +85,9 @@ export default function WorkOrder(){
     useEffect(()=>{
         setOrder(orderDetail)
         if(!orderDetail.code)return
-        const {device} = orderDetail 
-        setDevice(device || [])
-        setPower(device && device.power ?
-            `${device.type} (${ device.power+' '+ device.unit } ${device.refrigerant})`
-            : undefined)
-        const code = device ? device.code : undefined
-        if(code) dispatch(deviceActions.getDetail(code))
-        // if(code) dispatch(searchWODevice(code))
+        const {device} = orderDetail
+        setDevice( device?buildDevice(device):{})
+        setDeviceCode(device.code) 
         setSupervisor(orderDetail.supervisor)
         dispatch(selectTask(plan.find(date=>date.id === orderDetail.taskDate)))
         setOrder(orderDetail)
@@ -90,26 +95,27 @@ export default function WorkOrder(){
     },[orderDetail, dispatch, plan])
 
     useEffect(()=>{
-        if(!selectedWODevice || !selectedWODevice.code)return
-        let {power} = selectedWODevice
-        power = power>=9000? `${Math.floor(power/3000)} tnRef` : `${power} Frig`
-        setPower(`${selectedWODevice.type} (${ power }) - Refrigerante: ${selectedWODevice.refrigerant}`)
-        if (!otCode && selectedWODevice.servicePoints && selectedWODevice.servicePoints.length === 1){ 
-            setOrder({servicePoint:selectedWODevice.servicePoints[0]})
-        }setDeviceCode( selectedWODevice ? selectedWODevice.code : '')
-            setDevice(selectedWODevice || {})
-            selectedWODevice && selectedWODevice.code && dispatch(getWOOptions())
-    },[selectedWODevice, dispatch, otCode])
+        if(!selectedDevice.code)return
+        if (!otCode && selectedDevice.servicePoints && selectedDevice.servicePoints.length === 1){ 
+            setOrder({servicePoint: selectedDevice.servicePoints[0]})
+        }
+        setDeviceCode( selectedDevice.code || '')
+        setDevice( buildDevice(selectedDevice) ) 
+    },[selectedDevice, dispatch, otCode])
+
+    useEffect(()=>dispatch(getWOOptions()),[dispatch])
 
     function searchCode(e){
         e.preventDefault()
-        dispatch(searchWODevice(deviceCode))
+        dispatch(deviceActions.getDetail(deviceCode))
     }
 
     function handleDevCode(e){
         e.preventDefault()
-        selectedWODevice && dispatch(getDeviceFromList(null))
-        setDeviceCode(e.target.value)
+        const {value} = e.target
+        value && setDeviceCode(value)
+        setDevice({})
+        // if(!value)dispatch(deviceActions.resetDevice())
     }
 
     function handleValue(e, item){
@@ -154,6 +160,11 @@ export default function WorkOrder(){
         }
     }
 
+    function handleAdvancedSearch(e){
+        e.preventDefault()
+        setPickDevice(true)
+    }
+
     
     function handleSave(){
         //dipatch update taskDate if otCode, add or remove if not
@@ -175,11 +186,9 @@ export default function WorkOrder(){
     }
 
     function createIntervention(data){
-        if(otCode){
+        otCode?
             dispatch(newIntervention(otCode,data))
-        }else{
-            setInterventions([...interventions,data])
-        }
+            :setInterventions([...interventions,data])
     }
 
     function getDate(date){
@@ -202,7 +211,7 @@ export default function WorkOrder(){
                             <FormInput label='Estado' defaultValue={orderDetail.status} readOnly={true}/>
                         </div>}
 
-                        {(planDates[0] || order.taskDate )&& <div className={`WOformField WOformImportant ${(selectDate || order.taskDate)?'bg-darkRed':'bg-grey'}`}>
+                        {(planDates[0] || order.taskDate )&& <div className={`WOformField text-center WOformImportant ${(selectDate || order.taskDate)?'bg-nav':'bg-grey'}`}>
                                 <input className='WOcheck' type='checkBox'
                                     defaultChecked={(selectedTask && selectedTask.date) || order.taskDate }
                                     onChange={(e)=>setSelectDate(e.target.checked)}
@@ -220,29 +229,36 @@ export default function WorkOrder(){
 
                     </section>}
 
-                        {pickDevice && <DevicePicker
-                            close={()=>setPickDevice(false)}
-                            select={(value)=>dispatch(searchWODevice(value))}/>}
-
+                        {pickDevice && <div className='formModal'>
+                            <div className="container bg-light m-2" style={{maxHeight: '100%', overflowY:'auto'}}>
+                                <DeviceList close={()=>setPickDevice(false)}/>
+                                </div>
+                            </div>}
 
                         <div className='formTitle'>Datos del equipo</div>
-                        <div className="WOrow">
-                            <FormInput label='Cod.Eq.' defaultValue={deviceCode} placeholder={'Ingrese equipo'} readOnly={!!otCode} changeInput={(e)=>handleDevCode(e)}/>
-                            {!selectedWODevice && <button className='WOsearchButton button' onClick={(e)=>searchCode(e)}> BUSCAR </button>}
-                            {!selectedWODevice && <button className='WOsearchButton button' onClick={()=>setPickDevice(true)}>BÚSQUEDA AVANZADA</button>}
-                            {selectedWODevice &&  <button className='WOsearchButton button'
-                                disabled={permissions.woData} 
-                                onClick={(e)=>handleDevCode(e)} value=''>
-                                <i className="fas fa-backspace"/>
-                            </button>}
-                        </div>
+                        <form className="WOrow" onSubmit={searchCode}>
+                                <FormInput label='Cod.Eq.'
+                                    defaultValue={deviceCode}
+                                    placeholder={'código completo'}
+                                    readOnly={!!otCode}
+                                    changeInput={(e)=>handleDevCode(e)}/>
+                                {!device.code &&
+                                    <button type='submit' className='WOsearchButton button' disabled={!deviceCode}> BUSCAR </button>}
+                                {!device.code && <button className='WOsearchButton button' onClick={handleAdvancedSearch}>BÚSQUEDA AVANZADA</button>}
+                                {device.code &&  <button className='WOsearchButton button'
+                                    disabled={permissions.woData} 
+                                    onClick={handleDevCode}>
+                                    <i className="fas fa-backspace"/>
+                                </button>}
+                            {deviceResult.error && <ErrorModal message={`Equipo código '${deviceCode}' no encontrado`} close={()=>dispatch(deviceActions.resetResult())}/>}
+                        </form>
                             <FormInput label='Equipo' defaultValue={device.name} readOnly={true}/>
                         <div className="section">
                             <FormInput label='Planta' defaultValue={device.plant} readOnly={true}/>
                             <FormInput label='Area' defaultValue={device.area} readOnly={true}/>
                         </div>
                             <FormInput label='Linea' defaultValue={device.line} readOnly={true}/>
-                            <FormInput label='Tipo' defaultValue={power} readOnly={true}/>
+                            <FormInput label='Tipo' defaultValue={device.powerAndType} readOnly={true}/>
                         <div className="section">
                             <FormInput label='Categoría' defaultValue={device.category} readOnly={true}/>
                             <FormInput label='Servicio' defaultValue={device.service} readOnly={true}/>
@@ -254,13 +270,13 @@ export default function WorkOrder(){
                     <section className="WOsection">
                         <div className='formTitle'>Detalle de la orden de trabajo</div>
                         <div className="WOrow">
-                            {workOrderOptions.supervisor&&
+                            {(workOrderOptions.supervisor || order.supervisor )&&
                             <FormSelector key={supervisor} label='Supervisor' 
                                 defaultValue={supervisor}
                                 options={workOrderOptions.supervisor}
                                 valueField='id'
                                 captionField='name'
-                                onSelect={(e)=>handleValue(e,'supervisor')}
+                                onSelect={(e)=>setSupervisor(e.target.value)}
                                 disabled={permissions.woData || !deviceCode}/>
                             }
                             <FormInput label='OT Cliente' defaultValue={order.clientWO}
@@ -288,12 +304,7 @@ export default function WorkOrder(){
                             />}
 
                         <FormSelector key={device.servicePoints} label='L. Servicio' 
-                            defaultValue={order.servicePoint
-                            //  ? order.servicePoint
-                            //     :(device.servicePoints && device.servicePoints.length === 1?
-                            //         device.servicePoints[0]
-                            //         :undefined)
-                                    }
+                            defaultValue={order.servicePoint}
                             options={device.servicePoints}
                             onSelect={(e)=>handleValue(e,'servicePoint')}
                             disabled={permissions.woData}/>

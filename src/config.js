@@ -66,7 +66,9 @@ const appConfig={
     //Plan
     program: 'Programa',
     reclaims: 'Reclamos',
-    responsible: 'Responsable'
+    responsible: 'Responsable',
+    year: 'Año',
+    people: 'Personal'
   },
   values:{
     startingYear: 2015

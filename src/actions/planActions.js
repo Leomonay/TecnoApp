@@ -3,6 +3,13 @@ import { serverAction } from "./StoreActions"
 
 
 
+export function selectStrategy(strategy){
+    return{
+        type: 'SELECT_STRATEGY',
+        payload: strategy
+    }
+}
+
 export function createStrategy(object){
     return serverAction({
         endpoint:`strategies`,
@@ -30,13 +37,18 @@ export function createStrategy(object){
 }
 
 // export function updateStrategy (data) { serverAction(`strategies`,'PUT','UPDATE_PROGRAM',data) }
-
+export function resetPlanResult(){
+    return{
+        type: 'RESET_PLAN_RESULT',
+        payload:{}
+    }
+}
 export function updateStrategy(data){
     return serverAction({
         endpoint:`strategies`,
         method: 'PUT',
         body: data,
-        type: 'UPDATE_PROGRAM'
+        type: 'NEW_PROGRAM'
       })
     // return async function (dispatch){
     //     return fetch(`${appConfig.url}/strategies`,{

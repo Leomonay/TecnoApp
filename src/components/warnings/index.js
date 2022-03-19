@@ -7,7 +7,7 @@ export const  ErrorModal = (props) =>{
         close()
     }
     return(
-        <div className="formModal">
+        <div className="modal"  style={{zIndex: 'none'}}>
         <div className="alert alert-danger" role="alert">
             <div className="container">
                 <div className="row" style={{alignItems: 'center'}}>
@@ -36,7 +36,7 @@ export const SuccessModal = ({message, link, close})=>{
         close()
     }
     return(
-        <div className="formModal">
+        <div className="modal" style={{zIndex: 'none'}}>
         <div className="alert alert-success" role="alert">
             <div className="container">
                 <div className="row" style={{alignItems: 'center'}}>
@@ -45,9 +45,9 @@ export const SuccessModal = ({message, link, close})=>{
                         <h5 style={{textAlign: 'center'}}>{message}</h5>
                     </div>
                 </div>
-                <div className="row" style={{alignItems: 'center'}}>
+                {link&&<div className="row" style={{alignItems: 'center'}}>
                     <Link to={link}>Click aquí para acceder</Link>.
-                </div>
+                </div>}
                 <div className="row" style={{alignItems: 'center'}}>
                     <button className="btn btn-success" onClick={handleClose}>
                         Aceptar

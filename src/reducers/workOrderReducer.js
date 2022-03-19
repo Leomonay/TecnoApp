@@ -11,6 +11,7 @@ const initialState = {
 
 export default function workOrderReducer (state = initialState,action){
     let detail = {...state.orderDetail}
+    let currentCodeList = []
     let index = 0
     let array = []
     switch (action.type){
@@ -35,9 +36,11 @@ export default function workOrderReducer (state = initialState,action){
                 newOrderId: action.payload
             };
         case 'ORDER_LIST':
+            currentCodeList = state.workOrderList.map(order=>order.code)
+            let ordersToAdd = action.payload.filter(order=> !currentCodeList.includes(order.code) )
             return{
                 ...state,
-                workOrderList: action.payload
+                workOrderList: [...state.workOrderList,...ordersToAdd]
             };
         case 'ORDER_DETAIL':
             return{

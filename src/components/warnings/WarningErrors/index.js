@@ -19,7 +19,7 @@ export default function WarningErrors(props){
     return(
         <div className="formModal">
             <div className="alert alert-warning" role="alert">
-            <div className="container">
+            <div className="container p-0">
             <div className="row" style={{alignItems: 'center'}}>
                 <div className="col-12">
                     <h3 style={{textAlign: 'center'}}>¡CUIDADO!</h3>
@@ -28,8 +28,8 @@ export default function WarningErrors(props){
                 {warnings.map((warning, index)=>
                 <div className="row" key={index} style={{alignItems: 'center'}}>
                     <div className="col-8">{warning}</div>
-                    <div className="col-2"><button type="button" className="btn btn-success" value={index} style={{width:'100%'}} onClick={deleteWarning}>SI</button></div>
-                    <div className="col-2"><button type="button" className="btn btn-warning" value={index} style={{width:'100%'}} onClick={()=>close()}>NO</button></div>
+                    <div className="col-2"><button type="button" className="btn btn-success p-0" value={index} style={{width:'100%'}} onClick={deleteWarning}>SI</button></div>
+                    <div className="col-2"><button type="button" className="btn btn-warning p-0" value={index} style={{width:'100%'}} onClick={()=>close()}>NO</button></div>
                 </div>)}
                 </div>
             </div>

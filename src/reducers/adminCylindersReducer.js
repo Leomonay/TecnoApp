@@ -5,7 +5,7 @@ const initialState = {
   cylinderResult: {}
 };
 
-export default function adminCilindesReducer(state = initialState, action) {
+export default function adminCylindersReducer(state = initialState, action) {
   let cylindersList = [...state.allCylinders]
   let index = undefined
 

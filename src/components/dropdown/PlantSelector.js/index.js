@@ -1,32 +1,34 @@
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { getPlantList, setPlantName } from "../../../actions/dataActions"
+import { setPlantName } from "../../../actions/dataActions"
+import { plantActions } from "../../../actions/StoreActions"
 import { FormSelector } from "../../forms/FormInput"
 import './index.css'
 
-export function PlantSelector(props){
-    const {disabled, onSelect}=props
-    const {locationTree, plant} = useSelector(state=>state.data)
-    const [plantList, setPlantList] = useState([])
+export function PlantSelector({defaultValue, disabled, onSelect}){
+    const {plant} = useSelector(state=>state.data)
+    const {plantList} = useSelector(state=>state.plants)
     const [value, setValue] = useState(undefined)
     const dispatch = useDispatch()
 
-    useEffect(()=>dispatch(getPlantList()),[dispatch])
-    useEffect(()=>setPlantList(Object.keys(locationTree)),[locationTree])
+    useEffect(()=>dispatch(plantActions.getPlants()),[dispatch])
     useEffect(()=>setValue(plant),[plant])
-
+    useEffect(()=>!!defaultValue && setValue(defaultValue),[defaultValue])
+    
     function handleSelect(e){
         e.preventDefault()
         const {value} = e.target
         dispatch(setPlantName(value))
-        onSelect && onSelect(value)
+        onSelect && onSelect(e)
     }
 
     return(
-        <FormSelector key={value} label={'Planta'}
+        <FormSelector
+            name='plant'
+            label='Planta'
+            onSelect={handleSelect}
+            defaultValue={defaultValue || value}
             options={plantList}
-            onSelect={(e)=>handleSelect(e)}
-            defaultValue={value}
             disabled={disabled}/>
     )
 }

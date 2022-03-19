@@ -14,7 +14,7 @@ export function serverAction(data){
       body: JSON.stringify(data.body)
     })
     .then((response) => response.json())
-    .then((json) => dispatch({type: data.type, payload:json}))
+    .then((json) =>dispatch({type: data.type, payload:json}))
     .catch( e=>console.error(e.message) )
   }
 }
@@ -46,27 +46,34 @@ export const peopleActions = {
 }
 
 export const deviceActions = {
-  getList: (plantCode)=>postAction('devices/filters', {plant: plantCode}, 'FULL_DEVICE_LIST'), //getDeviceList //this should be getAction
-  getDetail: (id)=> getAction(`devices/id?id=${id}`, 'DEVICE_WORK_ORDER_DETAIL'),
+  getList: (plant)=>postAction('devices/filters', {plant}, 'FULL_DEVICE_LIST'), //getDeviceList //this should be getAction
+  getDetail: (id)=> getAction(`devices/id?id=${id}`, 'DEVICE_DETAIL'),
   getHistory: (id)=> getAction(`devices/history?code=${id}`, 'DEVICE_HISTORY'),
   allOptions: ()=> getAction(`devices/fullOptions`, 'DEVICE_OPTIONS'),
-  createNew: (device) => postAction(`devices`, device,'NEW_DEVICE'),
-  resetResult: ()=> ({type: 'RESET_RESULT', payload:{}}),
+  createNew: (device) => postAction(`devices`, device,'DEVICE_DETAIL'),
+  resetResult: ()=> ({type: 'RESET_RESULT'}),
+  resetDevice: ()=> ({type: 'RESET_DEVICE'}),
 
   getFullList: (plant)=>getAction(`devices/all?plant=${plant}`, 'FULL_DEVICE_LIST'),
+
   getPartialList: (filters)=>{
     filters.plant='SSN' // <-- review this. Should be userData.plant or selected plant. 
     postAction('devices/filters', filters, 'PARTIAL_LIST')}, //getPartialDeviceList // should be get action
   getFilters: (plant)=>getAction(`devices/filters?plant=${plant || 'SSN'}`, 'DEVICE_FILTERS'), //getDeviceFilters // <-- review plantCode
   viewDevice: (code)=>({type: 'DEVICE_VIEW', payload: code}), //viewDevice <-- review
-  setDevice: (device)=>({type: 'DEVICE_WORK_ORDER_DETAIL', payload: device}), //getDeviceFromList
+  setDevice: (device)=>({type: 'DEVICE_DETAIL', payload: device}), //getDeviceFromList
   listByLine: (lineName)=>getAction(`devices/byLine/${lineName}`, 'PARTIAL_LIST'), //deviceListByLine
   getByName: (name)=>getAction(`devices/byName/${name}`, 'PARTIAL_LIST'),//deviceByName
   getOptions: ()=>getAction('devices/options', 'DEVICE_OPTIONS')//getDeviceOptions
 }
 
+export const workOrderActions = {
+  getList: (plant, year)=>getAction(`workorder/list${plant||year?'?':''}${plant? `plant=${plant}` :'' }${plant?'&':''}${year? `year=${year}` :'' }`, 'ORDER_LIST')
+}
+
 export const plantActions = {
-  getLocations: (plant)=>getAction(`servicePoints?plant=${plant}`, 'LOCATIONS')
+  getLocations: (plant)=>getAction(`servicePoints?plant=${plant}`, 'LOCATIONS'),
+  getPlants: ()=>getAction(`plants/list`, 'PLANT_LIST')
 }
 
 //review all these device actions...
@@ -187,7 +194,7 @@ export function searchWODevice(devCode){
   })
       .then(response => response.json())
       .then(json=>dispatch({
-          type: 'DEVICE_WORK_ORDER_DETAIL',
+          type: 'DEVICE_DETAIL',
           payload: json.list[0]
       })
   )}

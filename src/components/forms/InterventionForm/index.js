@@ -104,15 +104,12 @@ export default function AddIntervention(props){
         <div className='formModal'>
 
             <div className='formBody'>
-            <div className='section'>
+            <div className='section d-flex'>
                 <div className='formTitle aIFtitle'>AGREGAR INTERVENCIÓN</div>
                 <div className='button closeButton' onClick={()=>close()}>X</div>
             </div>
 
             {data && data.task}
-
-
-
                 <div className='addInterventionSection'>
                     <div className='addInterventionField'>
                         <b>Fecha</b>

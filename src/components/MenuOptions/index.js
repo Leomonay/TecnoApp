@@ -7,8 +7,8 @@ export default function MenuOptions(props) {
 
   function buildLIOption(option, index){
     return(
-        <NavLink  key={index} to={option.url} 
-          className={(navData) => `list-group-item listMenuOption ${navData.isActive ? "activeListOption" :''}`}>
+        <NavLink key={index} to={option.url} 
+          className={(navData) => `list-group-item listMenuOption ${navData.isActive ? "activeListOption" :''} pe-0 ps-0pe-0 ps-0`}>
           {option.caption}
         </NavLink>
     )

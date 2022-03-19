@@ -27,9 +27,18 @@ export default function AdminPlan(){
     
     return(
         <div className='adminOptionSelected'>
-            <div className='section width50'>
-                <PlantSelector select={(value)=>dispatch(setPlantName(value))}/>
-                <FormSelector label={'Año'} options={years} defaultValue={year} onSelect={(e)=>dispatch(setYear(e.target.value))}/>
+            <div className='container'>
+                <div className='row'>
+                    <div className='col-md-3'>
+                        <PlantSelector select={(value)=>dispatch(setPlantName(value))}/>
+                    </div>
+                    <div className='col-md-3'>
+                        <FormSelector label='Año' name='year'
+                            defaultValue={''+year}
+                            options={years}
+                            onSelect={(e)=>dispatch(setYear(e.target.value))}/> 
+                    </div>
+                </div>
             </div>
 
             <div className="navButtons">

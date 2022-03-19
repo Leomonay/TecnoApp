@@ -1,31 +1,39 @@
 const initialState = {
     programList:[],
     devicePlanList:[],
-    planResult:'',
+    planResult:{},
     calendar: undefined,
     selectedTask: {},
+    selectedStrategy:{},
     plan:[]
 }
 
 export default function planReducer (state = initialState,action){
     let list =[]
     switch (action.type){
-        case 'NEW_PROGRAM':
-            list = [...state.programList]
-            list.push(action.payload)
-                return{
-                ...state,
-                programList: list.sort( (a,b)=>a.name>b.name?1:-1 )
-            };
-        case 'UPDATE_PROGRAM':
-            list = state.programList.filter(element=>
-                element.name!==action.payload.name
-                )
-            list.push(action.payload)
+        case 'SELECT_STRATEGY':
             return{
                 ...state,
-                programList: list.sort( (a,b)=>a.name > b.name ? 1:-1 )
+                selectedStrategy: action.payload
             }
+        case 'RESET_PLAN_RESULT':
+            return{
+                ...state,
+                planResult:{}
+            }
+        case 'NEW_PROGRAM':
+            console.log('NEW_PROGRAM', action.payload)
+            list = state.programList.filter(element=>element.name!==action.payload.name)
+            list.push(action.payload)
+            if (action.payload.error){
+                return {...state, planResult : {error: action.payload.error} }    
+            }else{
+                return{
+                ...state,
+                programList: list.sort( (a,b)=>a.name>b.name?1:-1 ),
+                planResult : {success: action.payload.id}
+                }
+            };
         case 'DATES':
             return{
                 ...state,

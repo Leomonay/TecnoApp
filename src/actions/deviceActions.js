@@ -59,7 +59,7 @@ export function viewDevice(code){
 }
 export function getDeviceFromList(device){
     return{
-        type: 'DEVICE_WORK_ORDER_DETAIL',
+        type: 'DEVICE_DETAIL',
         payload: device
     }
 }
@@ -75,7 +75,7 @@ export function searchWODevice(devCode){
     })
         .then(response => response.json())
         .then(json=>dispatch({
-            type: 'DEVICE_WORK_ORDER_DETAIL',
+            type: 'DEVICE_DETAIL',
             payload: json.list[0]
         })
     )}

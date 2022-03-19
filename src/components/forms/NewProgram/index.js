@@ -1,118 +1,155 @@
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { getUsersList } from "../../../actions/peopleActions"
-import { createStrategy, updateStrategy } from "../../../actions/planActions"
+import { createStrategy, resetPlanResult, updateStrategy } from "../../../actions/planActions"
 import { PlantSelector } from "../../dropdown/PlantSelector.js"
 import PeoplePicker from "../../pickers/PeoplePicker"
+import { FormInput, FormSelector, FormTextArea } from "../FormInput"
 import './index.css'
+import { appConfig } from "../../../config"
+import { peopleActions } from "../../../actions/StoreActions"
+import { ErrorModal, SuccessModal } from "../../warnings"
+const {headersRef} = appConfig
 
 export default function NewProgram(props){
-    const thisYear = (new Date()).getFullYear()
-    const years = [thisYear-1, thisYear, thisYear+1]
+    const {close, editProgram} = props
+    const {plant, year} = useSelector(state=>state.data)
+    const {workersList, supervisors} = useSelector(state=>state.people)
+    const {programList,planResult} = useSelector(state=>state.plan)
+    const [programmedWorkers, selectProgrammed]=useState([])
+    const [program, setProgram] = useState(editProgram?
+        {...editProgram,
+            year: `${editProgram.year}`,
+            supervisor:`${editProgram.supervisor && editProgram.supervisor.id}`}
+        :{}) 
+    const [errors, setErrors]=useState(false)
     const dispatch = useDispatch()
-    const {userList} = useSelector(state=>state.people)
-    const [newProgram, setNewProgram]=useState({year:thisYear})
-    const program = props.program || undefined
-    const [plant, setPlant] = useState(props.plant||program? program.plant : undefined)
-    const {selectedWorkers} = props
+
+    useEffect(()=>{
+        dispatch(peopleActions.getWorkers({plant}))
+        dispatch(peopleActions.getSupervisors({plant}))
+    },[dispatch,plant])
+
+    useEffect(()=>{
+        let programmed = []
+        for (let program of programList){
+            for (let worker of program.people){
+                programmed.push({id: worker.id, program:program.name})
+            }
+        }
+        selectProgrammed(programmed)},[programList])
+
+    function handleValue(e){
+        e.preventDefault()
+        setErrors(false)
+        const newProgram={...program}
+        const{name, value}=e.target
+        value? newProgram[name]=value : delete newProgram[value]
+        setProgram(newProgram)
+    }
 
     function handleSubmit(e){
         e.preventDefault()
         let errors = []
-        props.plant && setNewProgram({...newProgram, plant: plant})
-        const cloneprogram = {
-            plant: plant || program.plant,
-            year: newProgram.year || program.year,
-            name: newProgram.name || program.name,
-            supervisor: newProgram.supervisor || program.supervisor || undefined,
-            people: newProgram.people || program.people.map(e=>e.id),
-            description: newProgram.description || program.description
-        }
-
-        if (!cloneprogram.name){errors.push('NOMBRE')}
-        if (!cloneprogram.plant){errors.push('PLANTA')}
-        if(errors.length===0){
-            dispatch(
-                program?
-                updateStrategy({
-                    previous:{
-                        plant: plant, year:thisYear, name:program.name
-                    }, 
-                    update: cloneprogram})
-                :createStrategy(cloneprogram)
-            )
-            props.close()
+        const newProgram = {...program, plant:program.plant || plant, year: program.year || year}
+        const keys = ['plant', 'year', 'name', 'supervisor', 'people', 'description']
+        for (let key of keys) if(!newProgram[key]) errors.push(headersRef[key] || key)
+        if(errors[0]){
+            setErrors(errors)
         }else{
-            alert(`${errors.length===1?"Se requiere el campo":"Se requieren los campos"} ${errors}`)
+            if(program.id){
+                let update = {...program}
+                for (let key of Object.keys(update)){
+                    switch (key){
+                    case 'people':
+                        update.people.length === editProgram.length && 
+                        !update.people.filter(id=>!editProgram.people.find(e=>e.id===id))[0] &&
+                        delete update.people
+                    break;
+                    case 'supervisor':
+                        Number(update.supervisor) === editProgram.supervisor.id && delete update.supervisor
+                    break;
+                    default:
+                        if (key!=='id' && `${update[key]}` === `${editProgram[key]}`) delete update[key]
+                    }
+                }
+                dispatch(updateStrategy(update))
+            }else{
+            dispatch(createStrategy(program))
+            }
         }
     }
 
-    useEffect(()=>dispatch(
-        getUsersList({plant:plant || undefined, access:['Worker','Supervisor'], active:true}))
-    ,[dispatch, plant])
-    
     return(
         <div className="modal">
-            <form onSubmit={(e)=>handleSubmit(e)} className="modalForm">
-                <button className="button closeButton" onClick={()=>props.close()}>X</button>
-                <div className="title">{`${program?'Editar':'Crear'} programa`}</div>
-                { !props.plant &&
-                    <div className="formRow">
-                        <PlantSelector
-                            select={(value)=>setPlant(value)} 
-                            defaultValue={program?program.plant:undefined}/>
+            {program && <form onSubmit={handleSubmit} className="container col-lg-6 bg-light bg-form">
+                <div className="row d-flex mb-2">
+                    <h5 className="col mt-2">{`${program.id?'Editar':'Crear'} programa`}</h5>
+                    <button className="btn btn-close m-2" onClick={close}/>
+                </div>
+                <div className="row">
+                    <div className="col-sm-6 mb-2">
+                        <PlantSelector key={program.plant} defaultValue={program.plant} onSelect={handleValue}/>
                     </div>
-                }
-                <div className="formRow"><label className="formLabel">Año</label>
-                    <select 
-                        onChange={(e)=>setNewProgram({...newProgram, year: e.target.value})}
-                        defaultValue={program?program.year:thisYear}>
-                        {years && years.map((year, index)=>
-                            <option value={year} key={index}>{year}</option>
-                        )}
-                    </select>
+                    <div className="col-sm-6 mb-2">
+                        <FormSelector key={program.year} label='Año' name='year'
+                        options={[year-1,year,year+1]} 
+                        defaultValue={`${program&& program.year}`}
+                        onSelect={handleValue}/>
+                    </div>
                 </div>
-
-                <div className="formRow">
-                    <label className="formLabel">Nombre</label>
-                    <input className="formText" id='nameInputForm'
-                        defaultValue={program ? program.name : undefined}
-                        onChange={(e)=>setNewProgram({
-                            ...newProgram,
-                            [e.target.id.replace('InputForm','')]
-                            :e.target.value})}/>
+                <div className="row">
+                    <div className="col-sm-6 mb-2">
+                        <FormInput label='Nombre' name='name' defaultValue={program.name}
+                            changeInput={handleValue}/>
+                    </div>
+                    <div className="col-sm-6 mb-2">
+                        <FormSelector key={program.supervisor} label='Supervisor'
+                            defaultValue={`${program.supervisor}`}
+                            options={supervisors}
+                            valueField='id'
+                            name='supervisor'
+                            captionField='name'
+                            onSelect={handleValue}/>
+                    </div>
                 </div>
-
-                <div className="formRow"><label className="formLabel">Supervisor</label>
-                    <select onChange={(e)=>setNewProgram({...newProgram, supervisor: Number(e.target.value)})}
-                        defaultValue={program?(program.supervisor.id.toString()):undefined}>
-                        <option value = ''>Seleccionar...</option>
-                        {userList.filter(e=>e.access==='Supervisor').map((person, index)=>
-                            <option key={index} value={person.idNumber}>
-                                {`(${person.idNumber}) ${person.name}`}
-                            </option>
-                        )}
-                    </select>
+                <div className="row mb-2">
+                    <div className='input-group'>
+                        <label className="input-group-text col-3 ps-1 pe-1 is-flex justify-content-center" style={{minWidth: 'fit-content'}}>
+                            Personal
+                        </label>
+                        <div className="form-control p-0 d-grid gap-2">
+                            <PeoplePicker name='Seleccionar...'
+                                options={workersList}
+                                update={(idArray)=>setProgram({...program, people: idArray.map(e=>e.id)})}
+                                idList={program?program.people:undefined}
+                                selectedWorkers={{caption:'Programa(s)', array:programmedWorkers}}
+                                />
+                        </div>
+                    </div>
                 </div>
-
-                <div className="formRow"><label className="formLabel">Personal</label>
-                <PeoplePicker name='Seleccionar..'
-                    options={userList.filter(e=>e.access==='Worker').map(user=>({id:user.idNumber, name:user.name}))}
-                    update={(idArray)=>setNewProgram({...newProgram, people: idArray.map(e=>e.id)})}
-                    idList={program?program.people:undefined}
-                    selectedWorkers={{caption:'Programa(s)', array:selectedWorkers}}
-                    />
+                <div className="row mb-2">
+                    <FormTextArea label={'Descripción'} name='description' defaultValue={program.description}
+                        changeInput={handleValue}/>
                 </div>
-
-                <div className="formRow"><label className="formLabel">Descripción</label>
-                    <textarea className="formText" id='descriptionInputForm'
-                    defaultValue={program?program.description:undefined}
-                        onChange={(e)=>setNewProgram({...newProgram, [e.target.id.replace('InputForm','')]:e.target.value})}/>
-                </div>
-                <div className="submitRow">
-                    <button className='button' type='submit'>GUARDAR PROGRAMA</button>
-                </div>
-            </form>
+                {errors ? <div className="alert alert-danger" role="alert">
+                    {`Debe completar ${errors.join(', ')}.`}
+                    </div>
+                :<div className="row mb-2 d-flex justify-content-center">
+                    <div className='col-md-4 d-grid gap-2'>
+                        <button className='btn btn-success' type='submit'>GUARDAR PROGRAMA</button>
+                    </div>
+                </div>}
+            </form>}
+            {planResult.error&&
+                <ErrorModal message={`No se pudo guardar el programa. Error: ${planResult.error}`}
+                    close={()=>dispatch(resetPlanResult())}
+                />}
+            {planResult.success && <SuccessModal message={'Programa modificado exitosamente!'}
+                    close={()=>{
+                        close()
+                        dispatch(resetPlanResult())
+                    }}
+                />}
         </div>
     )
 }

@@ -1,54 +1,101 @@
 import { useEffect, useState } from 'react'
 import {useDispatch, useSelector} from 'react-redux'
-import { getLineServicePoints } from '../../actions/dataActions'
 import {Link} from 'react-router-dom'
-import { deviceByName, deviceListByLine } from '../../actions/deviceActions'
 import { getSupervisors } from '../../actions/peopleActions'
-import { getWOList, resetDetail } from '../../actions/workOrderActions'
-import GetLocationTree from '../../components/dropdown/locationTree'
-import './index.css'
+import { deleteOrder, resetDetail } from '../../actions/workOrderActions'
 import Paginate from '../../components/Paginate'
-import WorkOrderListItem from '../../components/workOrders/WorkOrderListItem'
-import { selectTask } from '../../actions/planActions'
+import WarningErrors from '../../components/warnings/WarningErrors'
+import { deviceActions, workOrderActions } from '../../actions/StoreActions'
+import './index.css'
 
 //Método para editar intervención
 //Asignar garrafas a personal
 
-export default function WorkOrders(){
-  const {workOrderList} = useSelector(state => state.workOrder)
-  const {servicePointList} = useSelector(state => state.data)
-  const {partialList} = useSelector (state => state.devices)
-  const {userData, supervisors} = useSelector (state => state.people)
-  const today = new Date()
-  const [code, setCode]=useState('')
-  const [filterList, setFilterList]=useState(false)
-  const [page, setPage] = useState({first:0, size: 10})
-  const [conditions, setConditions]=useState({
-    from: new Date(`1/1/${(new Date()).getFullYear()}`),
-    to: new Date(),
-    // from: new Date((new Date()).setMonth((new Date()).getMonth()-10)),
-    // to: new Date((new Date()).setMonth((new Date()).getMonth()-9)),
-    plantName: userData.plant || ''
-  })
-  const [device, setDevice]=useState({})
-  const dispatch = useDispatch()
-  const isAdmin = userData.access === 'Admin'
+function FormInput({label, item, placeholder, select, textArea, type, min, max, defaultValue, result}){
+  return(
+      <div className={`input-group required mb-1 ${result&&!result[item] && `border border-2 border-danger`}`}>
+          <span className="input-group-text" id="inputGroup-sizing-default">{label}</span>
+          {textArea? <textarea className="form-control" id="exampleFormControlTextarea1"
+              name={item}
+              defaultValue={defaultValue || (result && result[item])}
+              onChange={select}
+              placeholder={placeholder}
+              rows="3"/>
+          :<input type={type || 'text'} className="form-control" aria-label="Sizing example input"
+              defaultValue={defaultValue || (result && result[item])}
+              name={item}
+              min={min||'0'}
+              max={max||Infinity}
+              onChange={select}
+              placeholder={placeholder}
+              aria-describedby="inputGroup-sizing-default"/>}
+      </div>)
+}
 
-  function setLocations(obj){
-    let cond = {...conditions}
-    for (let item of ['plantName', 'area', 'line']){
-      !obj[item] && delete cond[item]
+function applyFilters(element, filters){
+  let check = true
+  for (let key of Object.keys(filters)){
+    if (key === 'dateMin') {
+      if( new Date (element.date) < new Date (filters[key]) ) check = false
+    }else if (key === 'dateMax') {
+      if( new Date (element.date) > new Date (filters[key]) ) check = false
+    }else if (['servicePoint', 'supervisor', 'solicitor'].includes(key)){
+      if(!element[key] || !element[key].includes(filters[key])) check=false
+    }else{
+      if(!element[key] || element[key]!== (filters[key])) check=false
     }
-    if (obj.line){
-      dispatch(getLineServicePoints(obj.line))
-      dispatch(deviceListByLine(obj.line))
-    }
-    setConditions({...cond,...obj})
   }
+  return check
+}
 
-  function handleSubmit(event){
-    event.preventDefault()
-    code&&dispatch(getWOList({code:code}))
+
+export const FormSelector = ({label,item, array, values, captions, select, defaultValue, value, result})=>{
+  return(
+      <div className={`input-group mb-3 required  ${result && !result[item] && `border border-2 border-danger`}`}>
+          <span className="input-group-text" id="inputGroup-sizing-default">{label}</span>
+          {array && <select className="form-select" aria-label="Default select example"
+              defaultValue={defaultValue || (result && result[item])}
+              value={value}
+              name={item}
+              onChange={select}>
+              <option value=''>Sin Seleccionar</option>
+              {[...new Set(
+                  array.sort((a,b)=>(captions? (a[captions]>b[captions]) : (a>b) )?1:-1)
+                      .map(e=>JSON.stringify(
+                          values?({value:e[values], caption:e[captions] }) : e[item] || e
+                          )))]
+                      .map((element, index)=>{
+                          const item = JSON.parse(element)
+                          return <option key={index} value={values? item.value : item}>{values?item.caption:item}</option>
+                      })
+              }
+          </select>}
+      </div>
+  )
+}
+
+
+export default function WorkOrders(){
+  const {year} = useSelector(state=>state.data)
+  const {workOrderList} = useSelector(state => state.workOrder)
+  const {userData} = useSelector (state => state.people)
+  const today = new Date()
+
+  const [filteredList, setFilteredList] = useState([])
+  const [code, setCode]=useState('')
+  const [filters, setFilters]=useState({})
+  const [warning, setWarning]=useState(false)
+  const [device, setDevice]=useState({})
+
+  const [page, setPage] = useState({first:0, size: 10})
+
+  const dispatch = useDispatch()
+
+  const [isAdmin] = useState(userData.access === 'Admin')
+
+  function handleWarning(e){
+    e.preventDefault()
+    setWarning(Number(e.target.id))
   }
 
   useEffect(()=>{
@@ -56,156 +103,158 @@ export default function WorkOrders(){
     dispatch(resetDetail())
   },[dispatch])
 
-  useEffect(()=>{
-    const element = document.getElementById('dateFrom')
-    if (element) element.value=conditions.from.toISOString().split('T')[0]
-  },[conditions.from])
-  useEffect(()=>{
-    const element = document.getElementById('dateTo') 
-    if(element) element.value=conditions.to.toISOString().split('T')[0]
-  },[conditions.to])
-
-  useEffect(()=>{
-    if (!conditions || !userData || !dispatch) return
-    const {user} = userData
-    dispatch(getWOList({...conditions, user}))
-  },[dispatch, conditions, userData])
-
-  function resetOrderData(){
-    dispatch(resetDetail())
-    dispatch(selectTask(undefined))
+  function selectFilter(e){
+    const {name, value}=e.target
+    setFilters({...filters,[name]:value})
+  }
+  function clickStatus(e){
+    e.preventDefault()
+    const newFilters = {...filters}
+    const {id}=e.target
+    id==='all' ? delete newFilters.status : newFilters.status=id
+    setFilteredList(newFilters.status ?
+      workOrderList.filter(order=>order.status === newFilters.status)
+      :workOrderList)
+    setFilters(newFilters)
+  }
+  function searchByCode(e){
+    e.preventDefault()
+    setFilteredList(workOrderList.filter(order=>order.code === code))
+  }
+  function searchByDevice(e){
+    e.preventDefault()
+    setFilteredList(workOrderList.filter(order=>order.devCode === device || order.devName.toLowerCase().includes(device.toLowerCase())) )
   }
 
-  return(
-    <div className='wOView'>
-      <div className={`section centerSB`}>
+  function clickDate(e){
+    e.preventDefault()
+    const {value} = e.target
+    const today = new Date()
+    let dateMin = `${today.getFullYear()-(value === 'lastYear'?1:0)}-${value==='month'? (today.getMonth()<9?'0':'')+(today.getMonth() +1 ): '01'}-01`;
+    let lastDate = new Date(today.getFullYear()-(value === 'lastYear'?1:0),
+      (value==='month'? today.getMonth()+ 1 : 12), 0);
+    let dateMax = `${lastDate.getFullYear()}-${(lastDate.getMonth()<9?'0':'')+(lastDate.getMonth()+1)}-${lastDate.getDate()}`
+    if(!workOrderList.filter(order=>(new Date (order.date)).getFullYear === lastDate.getFullYear())[0]) dispatch(workOrderActions.getList(userData.plant, lastDate.getFullYear()))
+    setFilters({...filters,dateMin, dateMax})
+  }
+  function filterList(e){
+    e.preventDefault()
+    setFilteredList(workOrderList.filter(order=>applyFilters(order, filters)).sort((a,b)=>a.code<b.code?1:-1))
+  }
 
-        {filterList?
-          <div className='button' onClick={()=>setFilterList(false)}><b>BUSCAR POR CODIGO</b></div>
-        :
-        <div className='column'>
-          <div className='section'>
-            <button className='button' onClick={()=>setFilterList(true)} style={{width:'100%'}}>
-              <b>BUSCAR FILTRANDO LISTA</b>
-            </button>
-          </div>
-          <form className='searchForm' onSubmit={(e)=>handleSubmit(e)}>
-              <label><b>N° OT: </b></label>
-              <input className='codeInput' type='text' onChange={(e)=>setCode(e.target.value)}/>
-              <button className='button' type='submit'>BUSCAR OT</button>
-            </form>
-        </div>}
-        
-        <Link
-          to='/ots/new'
-          className='button createButton'
-          style={{fontSize:'1.5rem'}}
-          onClick={()=>resetOrderData()}>
-          <b>+</b> Crear nueva OT
-        </Link>
+  function resetFilters(e){
+    e.preventDefault()
+    setFilters({})
+    setFilteredList(workOrderList)
+  }
+
+  useEffect(()=>userData && dispatch && year && dispatch(workOrderActions.getList(userData.plant, year)),[dispatch,userData,year])
+  useEffect(()=>setFilteredList(workOrderList.sort((a,b)=>a.code<b.code?1:-1)),[workOrderList])
+
+  return(
+    <div className='container'>
+      <div className='row d-flex justify-content-end mt-2 mb-2'>
+        <div className='col-md-3 d-grid gap-2'>
+          <Link
+            to='/ots/new'
+            onClick={()=>dispatch(deviceActions.resetDevice())}
+            className='btn btn-success ps-0 pe-0'>
+            <i className="fas fa-toolbox"/> Nueva Orden
+          </Link>
+        </div>
+        <div className='col-md-3 d-grid gap-2'>
+          <Link
+            to='/ots/new'
+            onClick={()=>dispatch(deviceActions.resetDevice())}
+            className='btn btn-warning ps-0 pe-0'>
+            <i className="fas fa-bell"/> Nuevo Reclamo
+          </Link>
+        </div>
       </div>
 
+      <div className='row'>
+        <div className='col-sm-4'>
+          <form className='d-flex' onSubmit={searchByCode}>
+            <FormInput label='N° OT' type='number' item='code' select={(e)=>setCode(Number(e.target.value))}/>
+            <div className='col'>
+              <button className='btn btn-info' type='submit'>
+                <i className="fas fa-search"/>
+              </button>
+              </div>
+            </form>
+        </div>
+        <div className='col-sm-4'>
+          <form className='d-flex' onSubmit={searchByDevice}>
+            <FormInput label='Equipo' item='device' placeholder='código o parte del nombre' select={(e)=>setDevice(e.target.value)}/>
+            <div className='col'>
+              <button className='btn btn-info' type='submit'><i className="fas fa-search"/></button>
+            </div>
+          </form>
+        </div>
+        <div className='col-sm-4 '>
+          <div className='input-group'>
+            <span className="input-group-text" id="inputGroup-sizing-default">Estado</span>
+            <button className={`btn ps-1 pe-1 ${filters.status === 'Abierta' ? 'btn-primary' : 'btn-info'}`} id={'Abierta'} onClick={clickStatus}>Pendientes</button>
+            <button className={`btn ps-1 pe-1 ${filters.status === 'Cerrada' ? 'btn-primary' : 'btn-info'}`} id={'Cerrada'} onClick={clickStatus}>Cerradas</button>
+            <button className={`btn ps-1 pe-1 ${!filters.status ? 'btn-primary' : 'btn-info'}`} id={'all'} onClick={clickStatus}>Todas</button>
+          </div>
+        </div>
+      </div>
 
-      {filterList&&<div className='workOrderHeader'>
-          <div className='column'>
-            <b>Período</b>
-            <div className='filterOption'><b>Desde: </b><input className='dateInput' type='date' id='dateFrom'
-              defaultValue={conditions.from.toISOString().split('T')[0]}
-              onChange={(e)=>{e.target.value.length>8&&setConditions({...conditions, from: new Date(e.target.value)})}}  
-              /></div>
-            <div className='filterOption'><b>Hasta: </b><input className='dateInput' type='date' id='dateTo'
-              defaultValue={conditions.to.toISOString().split('T')[0]}
-              onChange={(e)=>{setConditions({...conditions, to: new Date(e.target.value)})}}  
-              /></div>
-            <div className='section'>
-              <button className='filter button' onClick={()=>setConditions({
-                from: new Date(today.getFullYear(), today.getMonth(), today.getDate()),
-                to: new Date(today.getFullYear(), today.getMonth(), today.getDate()+1),
-              })}>Hoy</button>
-              <button className='filter button' onClick={()=>setConditions({
-                from: new Date(today.getFullYear(), today.getMonth(), 1),
-                to: new Date(today.getFullYear(), today.getMonth()+1, 1),
-              })}>Este mes</button>
-              <button className='filter button' onClick={()=>setConditions({
-                from: new Date(today.getFullYear(), 0, 1),
-                to:new Date(today.getFullYear()+1, 0, 1),
-              })}>Este Año</button>
-            </div>
-          </div>
-          <div className='column'>
-            <b>Ubicación</b>
-            <GetLocationTree
-              plant={(!userData.plant || userData.access==='Admin')? '' : userData.plant}
-              pickerFunction={obj=>setLocations(obj)}
-              />
-              {conditions.line&&<div className='section'>
-                <label className='dropdownLabel'>Lugar de Servicio</label>
-                <select className="dropdownInput" onChange={(e)=>setConditions({...conditions, servicePoint:e.target.value})}>
-                  <option value=''>Sin seleccionar</option>
-                  {servicePointList[0]&& servicePointList.map((sp, index)=>
-                  <option key={index} value={sp}>
-                    {sp}
-                  </option>)}
-                </select>
-              </div>}
-          </div>
-          <div className='column'>
-            <section><b>Equipo: </b>{conditions.device&&`${conditions.device}`}</section>
-            <div className='section'>
-              <label className='dropdownLabel'>Código</label>
-              <input className="textInput" type='text' placeholder='AAA-000' onChange={(e)=>setDevice({...device, code:e.target.value})}/>
-              <button onClick={()=>setConditions({...conditions, device:device.code})}>OK</button>
-            </div>
-            <div className='section'>
-              <label className='dropdownLabel'>Nombre</label>
-              <input className="textInput" type='text' placeholder='coincidencia parcial' onChange={(e)=>setDevice({...device, name:e.target.value})}/>
-              <button onClick={()=>{
-                  dispatch(deviceByName(device.name))
-                  setDevice({...device, list:true})
-                  }}>OK</button>
-              {device.list && <div className='deviceSelector'>
-                <div className='section'
-                  style={{justifyContent:'right', alignItems:'center'}}>
-                    <b>Ocultar Lista</b>
-                  <button title='cerrar lista' onClick={()=>setDevice({...device, list:false})}>X</button>
+      <div className="accordion d-grid gap-2" id="accordionExample">
+        <div className="d-grid gap-2">
+          <button className="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+            Filtros
+          </button>
+          <div id="collapseOne" className="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+            <div className="accordion-body p-0">
+              <form className='container-fluid bg-light m-0' onSubmit={filterList}>
+                <div className='row'>
+                  <div  className='col-md-4'>
+                    <b>Por fechas</b>
+                    <FormInput label='Desde' item='dateMin' type='date' select={selectFilter} defaultValue={filters.dateMin}/>
+                    <FormInput label='Hasta' item='dateMax' type='date' select={selectFilter} defaultValue={filters.dateMax}/>
+                    {filters.dateMax<filters.dateMin &&
+                      <div className="alert alert-danger" role="alert">
+                        {'La fecha Hasta debe ser mayor que la fecha Desde'}
+                      </div>}
+                    <button className='btn btn-sm btn-info m-1 mt-0' value='month' onClick={clickDate}>{(today.getMonth()<9?'0':'')+(today.getMonth()+1)}/{today.getFullYear()}</button>
+                    <button className='btn btn-sm btn-info m-1 mt-0' value='year' onClick={clickDate}>{today.getFullYear()}</button>
+                    <button className='btn btn-sm btn-info m-1 mt-0' value='lastYear' onClick={clickDate}>{today.getFullYear()-1}</button>
+                  </div>
+                  <div  className='col-sm-4'>
+                    <b>Ubicación</b>
+                    <FormSelector label='Planta'  item='plant' 
+                      array={[...new Set((filteredList).map(order=>order.plant))].sort((a,b)=>a>b?1:-1)}
+                      type='date' select={selectFilter}/>
+                    <FormSelector label='Area'  item='area' 
+                      array={[...new Set((filteredList).map(order=>order.area))].sort((a,b)=>a>b?1:-1)}
+                      type='date' select={selectFilter}/>
+                    <FormSelector label='Linea' item='line'
+                      array={[...new Set((filteredList ).map(order=>order.line))].sort((a,b)=>a>b?1:-1)}
+                      type='date' select={selectFilter}/>
+                    <FormInput label='L.Servicio' item='servicePoint' select={selectFilter}/>
+                  </div>
+                  <div  className='col-sm-4'>
+                    <b>Por personas</b>
+                    <FormInput label='Supervisor' item='supervisor' placeholder='nombre exacto o parte' select={selectFilter}/>
+                    <FormInput label='Solicitante' item='solicitor' placeholder='nombre exacto o parte' select={selectFilter}/>
+                  </div>
                 </div>
-                {partialList&&partialList.map(dev=>
-                  <div className='deviceLi' onClick={()=>{
-                    setConditions({...conditions, device: dev.code})
-                    setDevice({...device, list:false})
-                    }}>
-                    {`(${dev.code}) (${dev.name})`}
-                  </div>)}
-              </div>}
-            </div>
-            <div className='section'>
-              <label className='dropdownLabel'>Lista</label>
-              <select className="dropdownInput" type='text' disabled={!conditions.line} onChange={(e)=>setConditions({...conditions, device: e.target.value})}>
-                <option value=''>{conditions.line?'Sin Seleccionar':'Seleccionar Línea'}</option>
-                {conditions.line && partialList[0] && partialList.map((device,index)=>
-                  <option key={index} value={device.code}>
-                      {`(${device.code}) ${device.name}`}
-                  </option>)}
-              </select>
+                <div className='row is-flex justify-content-lg-center'>
+                  <div className='col-md-2 d-grid gap-2'>
+                    <button className='btn btn-success' type='submit' onClick={resetFilters}>Aplicar Filtros</button>
+                  </div>
+                  <div className='col-md-2 d-grid gap-2'>
+                    <button className='btn btn-danger' >Quitar Filtros</button>
+                  </div>
+                </div>
+              </form>
             </div>
           </div>
-          <div className='column'>
-              <label className='dropdownLabel'>Solicitó</label>
-              <input placeholder='coincidencia parcial' onChange={(e)=>setConditions({...conditions, solicitor: e.target.value})}/>
-              <br/>
-              <label className='dropdownLabel'>Supervisor</label>
-
-              <select className="dropdownInput" type='text' disabled={!supervisors} onChange={(e)=>setConditions({...conditions, supervisor: e.target.value})}>
-                <option value=''>{'Sin Seleccionar'}</option>
-                {supervisors[0] && supervisors.map((supervisor,index)=>
-                  <option key={index} value={supervisor.idNumber}>
-                      {supervisor.name}
-                  </option>)}
-              </select>
-
-          </div>
-      </div>}
-
+        </div>
+      </div>
+      
       {workOrderList?<div className='wOList'>
         <div className='title'>Listado de OT</div>
         <Paginate length={Math.min(7,workOrderList.length)} 
@@ -213,10 +262,53 @@ export default function WorkOrders(){
           select={(pg)=>{setPage({...page, first: page.size*pg})}}
           size={(value)=>setPage({...page, size: value})}
           />
-          {workOrderList.slice(page.first, page.first+page.size).map((order, index)=>
-            <WorkOrderListItem key={index} order={order} index={index} isAdmin={isAdmin}/>)}
-
-          </div>
+          <table className="table table-striped miniTable">  
+            <thead>
+              <tr>
+                <th scope="col">OT N°</th>
+                <th scope="col">Clase</th>
+                <th scope="col">Equipo</th>
+                <th scope="col">Linea</th>                
+                <th scope="col">Solicitada</th>
+                <th scope="col">Supervisor</th>
+                <th scope="col">Descripción</th>
+                <th scope="col">Cierre</th>
+                <th scope="col">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+            {filteredList.slice(page.first, page.first+page.size).map(order=>
+              <tr key={order.code}>
+                <th scope="row">{order.code}</th>
+                <td>{order.class}</td>
+                <td><b>{`[${order.devCode}]`}</b> <div>{order.devName}</div></td>
+                <td>{order.line}</td>
+                <td >
+                  <div>{(new Date (order.date)).toLocaleDateString()}</div>
+                  <div>{order.solicitor}</div>
+                </td>
+                <td >{order.supervisor}</td>
+                <td>{order.description}</td>
+                <td >{order.close ? (new Date (order.close)).toLocaleDateString() : "Pendiente"}</td>
+                <td>
+                  <div className='d-flex'>
+                    <Link className='btn btn-info' title='Detalle' to={`/ots/detail/${order.code}`}>
+                      <i className="fas fa-search"/>
+                    </Link>
+                    {isAdmin && <button className='btn btn-danger' title='Eliminar' id={order.code} onClick={handleWarning}>
+                      <i className="fas fa-trash-alt" id={order.code}/>
+                    </button>}
+                  </div>
+                  {warning && <WarningErrors 
+                    warnings={[`¿Desea eliminar la OT ${order.code}, con todas las intervenciones asociadas y los consumos de gas?`]}
+                    proceed={()=>dispatch(deleteOrder(warning))}
+                    close={()=>setWarning(false)}
+                  />}
+                </td>
+              </tr>)}
+            </tbody>
+          </table>
+        </div>
           :<div className='waiting'/>}
     </div>
   )

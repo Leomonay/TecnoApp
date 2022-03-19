@@ -3,7 +3,7 @@ const initialState = {
     deviceFilters:[],
     partialList:[],
     deviceOptions:[],
-    selectedWODevice:'',
+    selectedDevice:{},
     deviceResult:{},
 
     deviceView:'',
@@ -12,19 +12,24 @@ const initialState = {
 
 export default function deviceReducer (state = initialState,action){
     switch (action.type){
-        case 'NEW_DEVICE':
+        case 'DEVICE_DETAIL':
             if(action.payload.error)
             if(action.payload.error) return {...state, deviceResult: {error: action.payload.error}}
             return{...state, 
-                selectedWODevice: action.payload,
+                selectedDevice: action.payload,
                 deviceResult: {success: action.payload.code},
-                deviceFullList: state.deviceFullList[0]? [...state.deviceFullList,action.payload] : []
+                deviceFullList: state.deviceFullList[0]?
+                    (state.deviceFullList.map(d=>d.code).includes(action.payload.code) ?
+                        [state.deviceFullList]
+                        :[...state.deviceFullList,action.payload])
+                : []
             };
+
         case 'RESET_RESULT':{
-            return{
-                ...state,
-                deviceResult:action.payload
-            }
+            return{...state,deviceResult:{}}
+        }
+        case 'RESET_DEVICE':{
+            return{...state,selectedDevice:{}}
         }
         case 'FULL_DEVICE_LIST':
             return{
@@ -45,11 +50,6 @@ export default function deviceReducer (state = initialState,action){
             return{
                 ...state,
                 deviceView: action.payload
-            };
-        case 'DEVICE_WORK_ORDER_DETAIL':
-            return{
-                ...state,
-                selectedWODevice: action.payload
             };
         case 'DEVICE_OPTIONS':
             return{

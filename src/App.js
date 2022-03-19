@@ -14,7 +14,7 @@ import WorkOrders from './pages/WorkOrders';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserFromToken } from './actions/dataActions';
 import AdminPanel from './pages/Admin/AdminPanel';
-import WorkOrder from './components/forms/WorkOrder';
+import WorkOrder from './pages/WorkOrder';
 import { getPlan } from './actions/planActions';
 import Device from './pages/Device';
 

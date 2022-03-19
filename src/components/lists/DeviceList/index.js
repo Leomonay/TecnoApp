@@ -4,7 +4,7 @@ import { deviceActions } from "../../../actions/StoreActions";
 import { useNavigate } from "react-router-dom";
 import DeviceFilters from "../../filters/DeviceFilters";
 
-export default function DeviceList(){
+export default function DeviceList({close}){
     const {deviceFullList} = useSelector(state=>state.devices)
     const {userData} = useSelector(state=>state.people)
     const [filteredList, setFilteredList] = useState(deviceFullList)
@@ -17,8 +17,9 @@ export default function DeviceList(){
 
     function handleSelect(e, code){
         e.preventDefault()
-        dispatch(deviceActions.setDevice(deviceFullList.find(device=>device.code === code)))
-        navigate(`./${code}`, { replace: true })
+        const device = deviceFullList.find(device=>device.code === code)
+        dispatch(deviceActions.setDevice(device))
+        close? close() : navigate(`./${code}`, { replace: true })
     }
 
     return(

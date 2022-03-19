@@ -38,7 +38,7 @@ function NavBar() {
         </div>
         {isAdmin&& <div className="navBarLinkContainer">
           <NavLink to={'/admin'}
-            className={(navData) => `col btn nav-item navBarLink ${navData.isActive ? "activeAdminLink" :''}`}>
+            className={(navData) => `col btn nav-item navAdminLink ${navData.isActive ? "activeAdminLink" :''}`}>
             Menú Admin
           </NavLink>
         </div>}

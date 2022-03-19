@@ -8,7 +8,7 @@ import { appConfig } from "../../../config"
 const {headersRef}=appConfig
 
 
-function FormInput({label, minWidth, item, placeholder, select, textArea, type, min, max, defaultValue, result, error}){
+export function FormInput({label, item, placeholder, select, textArea, type, min, max, defaultValue, result, error}){
     return(
     <div className={textArea?'col-md-12':'col-md-3'}>
         <div className={`input-group mb-3 required  ${result&&!result[item] && `border border-2 border-danger`}`}>
@@ -32,7 +32,7 @@ function FormInput({label, minWidth, item, placeholder, select, textArea, type, 
     </div>)
 }
 
-const FormSelector = ({label,item, array, values, captions, select, defaultValue, value, error, result})=>{
+export const FormSelector = ({label,item, array, values, captions, select, defaultValue, value, error, result})=>{
     return(
         <div className="col-md-3">
             <div className={`input-group mb-3 required  ${result && !result[item] && `border border-2 border-danger`}`}>
@@ -308,6 +308,7 @@ export default function DeviceAdmin(){
                         </div>
                     </div>
                 </div>
+
                 <div className="row">
                     <b>Filtros</b>
                     {locOptions.map((field)=>

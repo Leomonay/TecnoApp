@@ -9,7 +9,7 @@ import './index.css'
 
 export default function Device(){
     const {userData} = useSelector(state=>state.people)
-    const {selectedWODevice, deviceHistory} = useSelector(state=>state.devices)
+    const {selectedDevice, deviceHistory} = useSelector(state=>state.devices)
     const {year} = useSelector(state=>state.data)
     const {code} = useParams()
     const [device, setDevice] = useState({})
@@ -24,9 +24,9 @@ export default function Device(){
     // Device data
     useEffect(() => code && !device.code && dispatch(deviceActions.getDetail(code)),[dispatch, device, code])   
     useEffect(() => code && dispatch(deviceActions.getHistory(code)),[dispatch, code])   
-    useEffect(() => {if (selectedWODevice){
-        setDevice( selectedWODevice )
-    }}, [selectedWODevice])
+    useEffect(() => {if (selectedDevice.code){
+        setDevice( selectedDevice )
+    }}, [selectedDevice])
 
     // Chart data
     useEffect(()=>{

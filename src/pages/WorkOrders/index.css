@@ -1,3 +1,6 @@
+/* 
+
+
 .filter{
   width: 4rem;
 }
@@ -24,8 +27,8 @@
 }
 .workOrderHeader{
   display: flex;
-  /* flex-direction: column; */
-  /* flex-wrap: wrap; */
+  flex-direction: column; */
+  /* flex-wrap: wrap;
 }
 .workOrderHeader> .column{
   min-width: 19rem
@@ -36,7 +39,7 @@
 }
 
 /*FILTERS*/
-.filterOption{
+/* .filterOption{
   display: flex;
   justify-content: space-between;
   width: 15rem;
@@ -78,12 +81,17 @@
   border-bottom: 1px dotted black;
   background-color: lightcyan;
   cursor: pointer
-}
+} */
 
 @media(max-width: 900px){
+  .miniTable{
+    font-size: 70%;
+  }
+/* 
+
   .workOrderHeader{
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-  }
+  } */
 }
