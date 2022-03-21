@@ -124,7 +124,7 @@ const AddServicePoints = ({
                   name="name"
                   autoComplete="off"
                   value={inputServicePoint.name}
-                  onChange={(e) => handleChangServicePoint(e)}
+                  onBlur={(e) => handleChangServicePoint(e)}
                   placeholder="Ingrese el nombre..."
                 />
               </div>
@@ -135,7 +135,7 @@ const AddServicePoints = ({
                   name="code"
                   autoComplete="off"
                   value={inputServicePoint.code}
-                  onChange={(e) => handleChangServicePoint(e)}
+                  onBlur={(e) => handleChangServicePoint(e)}
                   placeholder="Ingrese el código..."
                 />
               </div>
@@ -146,7 +146,7 @@ const AddServicePoints = ({
                   name="gate"
                   autoComplete="off"
                   value={inputServicePoint.gate}
-                  onChange={(e) => handleChangServicePoint(e)}
+                  onBlur={(e) => handleChangServicePoint(e)}
                   placeholder="Ingrese la puerta..."
                 />
               </div>
@@ -155,7 +155,7 @@ const AddServicePoints = ({
                 <label>Aceria: </label>
                 <select
                   name="aceria"
-                  onChange={(e) => handleChangServicePoint(e)}
+                  onBlur={(e) => handleChangServicePoint(e)}
                 >
                   <option value={false} selected>
                     No
@@ -167,7 +167,7 @@ const AddServicePoints = ({
                 <label>Caloria: </label>
                 <select
                   name="caloria"
-                  onChange={(e) => handleChangServicePoint(e)}
+                  onBlur={(e) => handleChangServicePoint(e)}
                 >
                   <option value={false} selected>
                     No
@@ -179,7 +179,7 @@ const AddServicePoints = ({
                 <label>Tarea Peligrosa: </label>
                 <select
                   name="tareaPeligrosa"
-                  onChange={(e) => handleChangServicePoint(e)}
+                  onBlur={(e) => handleChangServicePoint(e)}
                 >
                   <option value={false} selected>
                     No

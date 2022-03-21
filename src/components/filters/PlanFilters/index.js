@@ -247,7 +247,7 @@ export default function PlanFilters(props){
                     {filters.line?
                         <PlanItemFilter className='wordWidth' item='Equipo' filterKey='code' options={deviceList} value={'code'} caption={'name'}
                             defaultValue={filters.code}/>
-                        :<div><input className='deviceSearcher' onChange={(e)=>{completeDevices(e)}} placeholder='nombre o código de equipo'/>
+                        :<div><input className='deviceSearcher' onBlur={(e)=>{completeDevices(e)}} placeholder='nombre o código de equipo'/>
                             {deviceList[0]&&<ul className='autoComplete'>
                                     {deviceList[1]&&<li onClick={()=>deviceSelect('all')}>Toda la lista</li>}
                                 {deviceList.map((device, index)=>
@@ -286,7 +286,7 @@ export default function PlanFilters(props){
                                         max='100'
                                         placeholder={type}
                                         defaultValue={filters[`${type}Complete`]}
-                                        onChange={(e)=>handleComplete(type,e)}/>)}
+                                        onBlur={(e)=>handleComplete(type,e)}/>)}
                             </div>
                             :<div>
                                 <input
@@ -296,7 +296,7 @@ export default function PlanFilters(props){
                                     max='100'
                                     placeholder="valor"
                                     defaultValue={filters.complete}
-                                    onChange={(e)=>handleComplete('value',e)}/>                
+                                    onBlur={(e)=>handleComplete('value',e)}/>                
                             </div>
                             }
                         {(filters.complete || filters.maxComplete || filters.minComplete) &&

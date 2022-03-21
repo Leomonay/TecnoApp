@@ -29,12 +29,12 @@ export default function LoginForm(){
             <div className="loginInputContainer">
                 <label className="loginLabel">Usuario</label>
                 <input className="loginInput" type="text" 
-                    onChange={(e)=>setLoginData({...loginData, username:e.target.value})}/>
+                    onBlur={(e)=>setLoginData({...loginData, username:e.target.value})}/>
             </div>
                 <div className="loginInputContainer">
                 <label className="loginLabel">Contraseña</label>
             <input className="loginInput" type="password"
-                onChange={(e)=>setLoginData({...loginData, password:e.target.value})}
+                onBlur={(e)=>setLoginData({...loginData, password:e.target.value})}
             />
             </div>
             <div className="loginButtons">

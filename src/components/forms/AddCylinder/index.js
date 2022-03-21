@@ -5,13 +5,10 @@ import './index.css'
 
 export default function AddCylinder(props){
     const {cylinderList, disabled, create} = props
-    // const [stored, setStored]=useState([])
     const [cylinder, setCylinder]=useState({})
     const [max,setMax]=useState(0)
     const [min]=useState(2.2)
     const [errors, setErrors] = useState(undefined)
-
-    // useEffect(()=>setStored(props.stored),[props.stored])
 
     function setCode(code){
         const cylinder = {...cylinderList.find(element=>element.code === code)}
@@ -62,15 +59,16 @@ export default function AddCylinder(props){
     }
 
     return(
-        <div className="formContainer">
-            <div className="gasAISection">
-                <div className="gasLabelTitle">Código (responsable)</div>
-                <div className="gasLabelTitle">Peso inicial</div>
-                <div className="gasLabelTitle">Peso final</div>
-                <div className="gasLabelTitle">Total Kg</div>
+        <form key={(JSON.stringify(cylinder)+'1')[0]} className="container" style={{fontSize: '80%'}}>
+            <div className="row fw-bold">
+                <div className="col-4">Código (responsable)</div>
+                <div className="col">Peso inicial</div>
+                <div className="col">Peso final</div>
+                <div className="col">Total Kg</div>
+                <div className="col">Acción</div>
             </div>
-            <form className="gasAISection" key={(JSON.stringify(cylinder)+'1')[0]}>
-                <select className='aIKGInput'
+            <div className="row">
+                <select className='form-selector col-4 p-0'
                     onChange={(event)=>setCode(event.target.value)}
                     disabled={disabled}
                     defaultValue={cylinder.code}
@@ -83,8 +81,8 @@ export default function AddCylinder(props){
                 </select>
 
                 <input type="number"
-                    className='aIKGInput'
-                    onChange={(event)=>setInit(event.target.value)}
+                    className='form-input col p-0'
+                    onBlur={(event)=>setInit(event.target.value)}
                     defaultValue={cylinder.currentStock}
                     key={cylinder? cylinder.currentStock : 2}
                     disabled={!cylinder.code}
@@ -94,8 +92,8 @@ export default function AddCylinder(props){
                     step={0.1}/>
 
                 <input type="number"
-                    className='aIKGInput'
-                    onChange={(event)=>setFinal(event.target.value)}
+                    className='form-input col p-0'
+                    onBlur={(event)=>setFinal(event.target.value)}
                     defaultValue={cylinder.final || 0}
                     key={cylinder? cylinder.code : 3}
                     disabled={!cylinder.init}
@@ -104,20 +102,22 @@ export default function AddCylinder(props){
                     max={cylinder.init}
                     step={0.1}/>
 
-                <input  className='aIKGInput'
+                <input  className='form-input col p-0'
                     readOnly={true}
                     defaultValue={cylinder.total}
                     placeholder='gas (kg.)'/>
 
-                <div className='aIKGInput'>
-                    <button className='button addCylinder' onClick={(e)=>handleClick(e)} disabled={!cylinder.total}>Agregar</button>
+                <div className='form-input col p-0'>
+                    <button className='btn btn-success p-1 w-100' onClick={(e)=>handleClick(e)} disabled={!cylinder.total}>
+                        <i className="fas fa-check"/>
+                    </button>
                 </div>
-            </form>
-            {errors && <div className="section">
+            </div>
+            {errors && <div className="row">
                 <div className="alert alert-warning" role="alert">
                     {errors}
                 </div>
             </div>}
-        </div>
+        </form>
     )
 }

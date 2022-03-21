@@ -68,7 +68,7 @@ const AddPlant = ({ setShowModal, showModal }) => {
                   name="name"
                   autoComplete="off"
                   value={inputPlant.name}
-                  onChange={(e) => handleChangePlant(e)}
+                  onBlur={(e) => handleChangePlant(e)}
                   placeholder="Ingrese el nombre..."
                 />
               </div>
@@ -79,7 +79,7 @@ const AddPlant = ({ setShowModal, showModal }) => {
                   name="code"
                   autoComplete="off"
                   value={inputPlant.code}
-                  onChange={(e) => handleChangePlant(e)}
+                  onBlur={(e) => handleChangePlant(e)}
                   placeholder="Ingrese el código..."
                 />
               </div>

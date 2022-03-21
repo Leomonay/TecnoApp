@@ -17,7 +17,7 @@ export default function WarningErrors(props){
     }
 
     return(
-        <div className="formModal">
+        <div className="modal">
             <div className="alert alert-warning" role="alert">
             <div className="container p-0">
             <div className="row" style={{alignItems: 'center'}}>

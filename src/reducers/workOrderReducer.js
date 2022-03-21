@@ -7,6 +7,7 @@ const initialState = {
     orderDetail:{},
     newOrderId:'',
     updateResult:'',
+    orderResult:{}
 }
 
 export default function workOrderReducer (state = initialState,action){
@@ -15,6 +16,16 @@ export default function workOrderReducer (state = initialState,action){
     let index = 0
     let array = []
     switch (action.type){
+        case 'UPDATED_ORDER':
+            if (action.payload.error) return{...state,orderResult:{error: action.payload.error}}
+            array = state.workOrderList.filter(order=> order.code !== action.payload.code)
+            array.push(action.payload)
+            for (let key of Object.keys(action.payload)) detail[key] = action.payload[key]
+            return{
+                ...state,
+                orderDetail: detail,
+                updateResult: array.sort((a,b)=>a.code>b.code?1:-1)
+            }
         case 'MOST_RECENT':
             return{
                 ...state,
@@ -47,11 +58,6 @@ export default function workOrderReducer (state = initialState,action){
                 ...state,
                 orderDetail: action.payload
             };
-        case 'UPDATED_ORDER':
-            return{
-                ...state,
-                updateResult: action.payload
-            }
         case 'ADD_INTERVENTION':
             detail.interventions.push(action.payload)
             return{

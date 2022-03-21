@@ -145,7 +145,7 @@ export default function Device(){
                                     <td>{intervention.tasks}</td>
                                     <td>{intervention.gas.map(usage=>`garrafa ${usage.cylinder}: ${usage.consumption} kg`)}</td>
                                     <td>
-                                        <Link title='ver OT' className="btn btn-outline-primary" to={`ots/detail/${intervention.order}`}>
+                                        <Link title='ver OT' className="btn btn-outline-primary" to={`/ots/detail/${intervention.order}`}>
                                             {intervention.order}
                                         </Link>
                                     </td>

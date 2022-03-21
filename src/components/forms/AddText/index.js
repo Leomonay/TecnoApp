@@ -11,15 +11,27 @@ export default function AddTextForm(props){
         select(text)
         close()
     }
+    function handleClose(e){
+        e.preventDefault()
+        close()
+    }
+    function handleWrite(e){
+        e.preventDefault()
+        setText(`(${ today.toLocaleDateString() } ${user}) ${e.target.value}`)
+    }
 
     return(
-        <div className="formModal">
-            <form className="addTextForm" onSubmit={(e)=>handleAddText(e)}>
-                <button className="button closeButton" onClick={()=>close()}>X</button>
-                <div className="title">Agregar Texto</div>
-                <textarea className='addTextInput' onChange={(e)=>setText(`(${ today.toLocaleDateString() } ${user}) ${e.target.value}`)}/>
+        <div className="modal">
+            <form className="container bg-light p-1" style={{width: '30rem', maxWidth:'100vw'}} onSubmit={(e)=>handleAddText(e)}>
+                <div className="row ms-2">
+                    <div className="col d-flex justify-content-between">
+                        <b>Agregar Texto</b>
+                        <button className="btn btn-close" onClick={handleClose}/>
+                    </div>
+                </div>
+                <textarea className='addTextInput' onBlur={handleWrite}/>
                 <div className="flex centerH">
-                    <button className="button addButton" type='submit'>Agregar</button>
+                    <button className="btn btn-success" type='submit'>Agregar</button>
                 </div>
             </form>
         </div>

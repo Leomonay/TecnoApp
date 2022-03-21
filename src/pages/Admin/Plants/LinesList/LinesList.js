@@ -141,7 +141,7 @@ export default function LinesList({
                     id={element}
                     name="linesInput"
                     value={element}
-                    onChange={(e) => handleChangeLines(e)}
+                    onBlur={(e) => handleChangeLines(e)}
                   />
                   <label key={"label" + element}>{element}</label>
                   <button

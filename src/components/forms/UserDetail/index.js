@@ -18,7 +18,7 @@ export default function UserDetail(props){
                 id={`user${props.item}`}
                 placeholder={props.placeholder}
                 defaultValue={ props.item==='password' ? undefined: (user[props.item] || undefined)}
-                onChange={(event)=>setNewUser({...newUser,[props.item]:event.target.value})}
+                onBlur={(event)=>setNewUser({...newUser,[props.item]:event.target.value})}
                 readOnly={false}
                 />
         </div>

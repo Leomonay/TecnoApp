@@ -108,7 +108,7 @@ export default function ProgramForm(props){
                         <label className='formLabel'>Comentarios</label>
                         <textarea className='planComments'
                             placeholder='Descripción o resumen de actividades, recomendaciones, etc.'
-                            onChange={(e)=>setProgramItem('observations',e.target.value)}/>
+                            onBlur={(e)=>setProgramItem('observations',e.target.value)}/>
                     </div>
                 
                 <div className='section' style={{justifyContent:'center'}}>

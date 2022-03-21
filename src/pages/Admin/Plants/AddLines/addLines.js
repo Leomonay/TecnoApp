@@ -93,7 +93,7 @@ const AddLines = ({ areaName, plantName, setShowModal, showModal }) => {
                   name="name"
                   autoComplete="off"
                   value={inputLine.name}
-                  onChange={(e) => handleChangLine(e)}
+                  onBlur={(e) => handleChangLine(e)}
                   placeholder="Ingrese el nombre..."
                 />
               </div>
@@ -104,7 +104,7 @@ const AddLines = ({ areaName, plantName, setShowModal, showModal }) => {
                   name="code"
                   autoComplete="off"
                   value={inputLine.code}
-                  onChange={(e) => handleChangLine(e)}
+                  onBlur={(e) => handleChangLine(e)}
                   placeholder="Ingrese el código..."
                 />
               </div>

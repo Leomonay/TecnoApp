@@ -16,7 +16,7 @@ export function FormInput({label, item, placeholder, select, textArea, type, min
             {textArea? <textarea className="form-control" id="exampleFormControlTextarea1"
                 name={item}
                 defaultValue={defaultValue || (result && result[item])}
-                onChange={select}
+                onBlur={select}
                 placeholder={placeholder}
                 rows="3"/>
             :<input type={type || 'text'} className="form-control" aria-label="Sizing example input"
@@ -24,7 +24,7 @@ export function FormInput({label, item, placeholder, select, textArea, type, min
                 name={item}
                 min={min||'0'}
                 max={max||Infinity}
-                onChange={select}
+                onBlur={select}
                 placeholder={placeholder}
                 aria-describedby="inputGroup-sizing-default"/>}
         </div>
@@ -129,7 +129,7 @@ function CreateDevice({close}){
 
 
     return(
-        <div className="formModal">
+        <div className="modal">
             <div className="container bg-light col-10" style={{maxHeight: '100vh', overflowY:'auto'}}>
                 <div className="container">
                     <div className="row flex-row-reverse">
@@ -300,7 +300,7 @@ export default function DeviceAdmin(){
             <div className="container">
                 <div className="row">
                     <div className="col col-8">
-                        <h3>Administración de Equipos</h3>
+                        <h3 className="text-center">Administración de Equipos</h3>
                     </div>
                     <div className="col col-4">
                         <div className="d-grid gap-2">
@@ -312,9 +312,9 @@ export default function DeviceAdmin(){
                 <div className="row">
                     <b>Filtros</b>
                     {locOptions.map((field)=>
-                    <div className="col" key={field.name}>
-                        <div className="input-group mb-3">
-                            <span className="input-group-text" id="inputGroup-sizing-default">{field.caption}</span>
+                    <div className="col-sm-4" key={field.name}>
+                        <div className="input-group mb-1">
+                            <span className="input-group-text col-3" id="inputGroup-sizing-default">{field.caption}</span>
                             <select key={filters[field.name]} className="form-select"
                                     id={field.name}
                                     value={filters[field.name]}

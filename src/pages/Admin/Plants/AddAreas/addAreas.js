@@ -95,7 +95,7 @@ const AddAreas = ({ plantName, setShowModal, showModal }) => {
                   name="name"
                   autoComplete="off"
                   value={inputArea.name}
-                  onChange={(e) => handleChangArea(e)}
+                  onBlur={(e) => handleChangArea(e)}
                   placeholder="Ingrese el nombre..."
                 />
               </div>
@@ -106,7 +106,7 @@ const AddAreas = ({ plantName, setShowModal, showModal }) => {
                   name="code"
                   autoComplete="off"
                   value={inputArea.code}
-                  onChange={(e) => handleChangArea(e)}
+                  onBlur={(e) => handleChangArea(e)}
                   placeholder="Ingrese el código..."
                 />
               </div>

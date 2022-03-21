@@ -134,7 +134,7 @@ export default function PlanDevice(props){
                 <div className='devicePlanComments'>
                     <label className='formLabel'>Comentarios</label>
                     <textarea className='planComments'
-                        onChange={(e)=>handleProperty('observations',e.target.value)}
+                        onBlur={(e)=>handleProperty('observations',e.target.value)}
                         defaultValue={newProgram && newProgram.observations}
                         />
                 </div>

@@ -64,7 +64,7 @@ export default function RegisterForm(){
                     <input className="loginInput"
                         type={item==='password'?'password':"text"}
                         placeholder={fields[item]&&fields[item].placeholder}
-                        onChange={(e)=>setNewUser({...newUser,[item]:e.target.value})}/>
+                        onBlur={(e)=>setNewUser({...newUser,[item]:e.target.value})}/>
                     {!newUser[item] && <div className='errorMessage'>Dato necesario</div>}
                     {newUser[item] && fields[item].validation && <div className='errorMessage'>{fields[item].validation}</div>}
                 </div>

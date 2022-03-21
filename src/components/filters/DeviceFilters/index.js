@@ -236,7 +236,7 @@ export default function DeviceFilters(props){
                                     type="search"
                                     placeholder="Nombre total o parcial"
                                     aria-label="Search"
-                                    onChange={(e)=>setName(e.target.value)}/>
+                                    onBlur={(e)=>setName(e.target.value)}/>
                                 <button className="btn btn-outline-success col" onClick={(event)=>includeFilter('name',name, event)}>BUSCAR</button>
                             </form>
                         </div>

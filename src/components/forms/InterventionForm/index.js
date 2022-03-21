@@ -7,6 +7,7 @@ import AddCylinder from "../AddCylinder"
 import AddTextForm from "../AddText"
 import { addCylinderUsage, deleteCylinderUsage, updateIntervention } from "../../../actions/workOrderActions"
 import { cylinderActions } from "../../../actions/StoreActions"
+import { FormInput } from "../FormInput"
 
 
 export default function AddIntervention(props){
@@ -20,6 +21,9 @@ export default function AddIntervention(props){
     const [gasUsages, setGasUsages] = useState([])
     const [addText, setAddText]=useState(false)
     const dispatch=useDispatch()
+
+    const today = (new Date()).toISOString().split('T')[0]
+    const time = (new Date()).toString().split(' ')[4].substring(0,5)
 
 
     useEffect(()=>{
@@ -92,7 +96,7 @@ export default function AddIntervention(props){
 
     function deleteCylinder(e){
         e.preventDefault()
-        const index = Number(e.target.value)
+        const index = Number(e.target.id)
         let usages = [...gasUsages]
         usages.splice(index,1)
         setGasUsages(usages)
@@ -101,22 +105,113 @@ export default function AddIntervention(props){
     useEffect(()=>{if(!workersList[0])dispatch(getWorkerList())},[workersList, dispatch])
 
     return(
-        <div className='formModal'>
+        <div className='modal'>
 
-            <div className='formBody'>
-            <div className='section d-flex'>
-                <div className='formTitle aIFtitle'>AGREGAR INTERVENCIÓN</div>
-                <div className='button closeButton' onClick={()=>close()}>X</div>
+            <div className='container-fluid bg-light rounded p-1' style={{width: '40rem', maxWidth: '100vw'}}>
+            <div className='row'>
+                <div className='col d-flex'>
+                    <h5 className="w-100 text-center"><b>AGREGAR INTERVENCIÓN</b></h5>
+                    <div className='btn btn-close' onClick={()=>close()}/>
+                </div>
+            </div>
+            <div className="row">
+                <div className="col-sm-6 text-center">
+                    <FormInput label='Fecha' type='date' defaultValue={intervention.date || today}
+                        onBlur={(e)=>setIntervention({...intervention, date:e.target.value})}
+                        max={today}/>
+                    {(!intervention.date) &&
+                    <div className='errorMessage'>Debe ingresarse una fecha menor o igual que hoy.</div>}
+                </div>
+                <div className="col-sm-6">
+                    <FormInput label='Hora' type='time'
+                        disabled={!intervention.date}
+                        min='00:00'
+                        defaultValue={intervention.time}
+                        max={intervention.date===today? time :'23:59'}
+                        onBlur={(e)=>setIntervention({...intervention, time:e.target.value})}
+                        />
+                </div>                
+            </div>
+            <div className='row text-center'>
+                <PeoplePicker name='Intervinientes'
+                                key={(user?user.id:1)+(intervention.id?intervention.id:1)}
+                                options={workersList}
+                                disabled={!intervention.time || (intervention.id && userData.access!=="Admin")}
+                                idList = {intervention.workers || []}
+                                update={(idArray)=>handlePeople(idArray)}
+                                />
+                            {( (!intervention.workers) || intervention.workers.length<2) &&
+                                <div className='errorMessage'>Debe ingresar al menos 2 personas.</div>}
+            </div>
+            <b>Tarea Realizada</b>
+            <div className="row">
+                <div className='col text-center'>                    
+                    <textarea className='form-text-area w-100'
+                        disabled={!intervention.workers || !intervention.workers[0]}
+                        defaultValue={intervention.task}
+                        onBlur={(e)=>setIntervention({...intervention, task:e.target.value})}
+                        />
+                    {(!intervention.task) &&
+                        <div className='errorMessage'>Este campo no puede quedar vacío.</div>}
+                    {intervention.id&&<button className='btn btn-info' onClick={()=>setAddText(true)}>Agregar comentario</button>}
+                        {addText&&<AddTextForm user={userData.user} 
+                            select={(text)=>setIntervention({...intervention, task: intervention.task+' || '+text})}
+                            close={()=>setAddText(false)}/>}
+                </div>
+            </div>
+            <b>Consumos de GAS</b>
+            <div className="row">
+                <div className='col'>
+                    <AddCylinder 
+                    cylinderList={cylinderList}
+                    disabled={false}
+                    stored={gasUsages}
+                    create={(cylinder)=>setGasUsages([...gasUsages,{...cylinder, user:userData.id}])}/>
+                </div>
+            </div>
+            <div className="row">
+                <div className='col'>
+                        <table className="table text-center">
+                            <thead>
+                                <th>Código</th>
+                                <th>Responsable</th>
+                                <th>Consumo</th>
+                                <th>Quitar</th>
+                            </thead>
+                            <tbody>
+                                {gasUsages.map((cylinder, index)=>
+                                <tr key={index}>
+                                    <td><b>{cylinder.code}</b></td>
+                                    <td>{cylinder.owner}</td>
+                                    <td>{cylinder.total} kg.</td>
+                                    <td>
+                                        <button className='btn btn-danger h-50 p-0 w-100' id={index} onClick={deleteCylinder}>
+                                            <i id={index} className="fas fa-trash-alt"/>
+                                        </button>
+                                    </td>
+                                </tr>
+                                )}
+                                <tr className="table-secondary">
+                                    <td colspan="2"><b>Total:</b></td>
+                                    <td ><b>{`${Number(gasUsages.map(e=>e.total).reduce((a,b)=>a+b,0))} kg.`}</b></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                </div>
             </div>
 
-            {data && data.task}
-                <div className='addInterventionSection'>
+
+
+
+
+                {/* <div className='addInterventionSection'>
                     <div className='addInterventionField'>
                         <b>Fecha</b>
                         <input className='formInterventionItemDate'
                             type='date'
                             max={new Date().toISOString().split("T")[0]}
-                            onChange={(e)=>setIntervention({...intervention, date:e.target.value})}
+                            onBlur={(e)=>setIntervention({...intervention, date:e.target.value})}
                             defaultValue={intervention.date}
                         />
                         {(!intervention.date) && <div className='errorMessage'>Debe ingresarse una fecha menor o igual que hoy.</div>}
@@ -132,7 +227,7 @@ export default function AddIntervention(props){
                         max={intervention.date===(new Date().toISOString().split("T")[0])?
                             Date().toString().split(' ')[4].substring(0,5)
                             :'23:59'}
-                        onChange={(e)=>setIntervention({...intervention, time:e.target.value})}
+                        onBlur={(e)=>setIntervention({...intervention, time:e.target.value})}
                         />
                         {(intervention.time)?
                             ( (intervention.date===(new Date().toISOString().split("T")[0]) && 
@@ -143,7 +238,7 @@ export default function AddIntervention(props){
                             :<div className='errorMessage'>Debe ingresar la hora.</div>
                             }
                     </div>
-            </div>
+            </div> 
 
             <div className='addInterventionSection'>
                     <div className='addInterventionField'>
@@ -167,7 +262,7 @@ export default function AddIntervention(props){
                         id='addInterventionTask'
                         disabled={!intervention.workers || !intervention.workers[0]}
                         defaultValue={intervention.task}
-                        onChange={(e)=>setIntervention({...intervention, task:e.target.value})}
+                        onBlur={(e)=>setIntervention({...intervention, task:e.target.value})}
                         />
                     {(!intervention.task) &&
                         <div className='errorMessage'>Este campo no puede quedar vacío.</div>}
@@ -182,12 +277,13 @@ export default function AddIntervention(props){
                 </div>
             </div>
 
-            <b>Consumos de GAS</b>
             <AddCylinder 
                 cylinderList={cylinderList}
                 disabled={false}
                 stored={gasUsages}
                 create={(cylinder)=>setGasUsages([...gasUsages,{...cylinder, user:userData.id}])}/>
+
+
             <div className="addInterventionField">
             {gasUsages.map((cylinder, index)=>
                 <div className='formListItem fr211' key={index}>
@@ -202,16 +298,18 @@ export default function AddIntervention(props){
                 <div className='listField'>
                     <b>{`TOTAL: ${Number(gasUsages.map(e=>e.total).reduce((a,b)=>a+b,0))} kg.`}</b>
                 </div>
-            </div>
 
-            <div className="addInterventionField">
-                    <button className='button'
-                        onClick={()=>saveIntervention()}>
-                    GUARDAR INTERVENCIÓN
-                    </button>
+            </div>                            
+            */}
+                <div className="row">
+                    <div className="col d-flex justify-content-center">
+                        <button className='btn btn-success'
+                            onClick={()=>saveIntervention()}>
+                            GUARDAR INTERVENCIÓN
+                        </button>
+                    </div>
                 </div>
             </div>
-
         </div>
     )
 

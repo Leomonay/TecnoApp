@@ -12,7 +12,6 @@ import WarningErrors from "../../components/warnings/WarningErrors"
 import AddTextForm from "../../components/forms/AddText"
 import {FormInput, FormSelector} from "../../components/forms/FormInput"
 import AddIntervention from "../../components/forms/InterventionForm"
-import './index.css'
 import DeviceList from "../../components/lists/DeviceList"
 
 function buildDevice(device){
@@ -39,6 +38,8 @@ export default function WorkOrder(){
     const [editDesc, setEditDesc] = useState(false)
     const [errors, setErrors]=useState(false)
     const [warnings, setWarnings]=useState(false)
+    const [toClose, setClose] = useState(false)
+    const [closeOrder, setCloseOrder] = useState('')
 
 //local data states
     const [planDates, setPlanDates] = useState([])
@@ -49,11 +50,13 @@ export default function WorkOrder(){
     const [update, setUpdate] = useState({})
     const [supervisor, setSupervisor] = useState(undefined)
 
-    const [permissions, setPermissions] = useState({woData:false,woDescription:false,editInterventions:true})
+    const [permissions, setPermissions] = useState({create:true,edit:true,admin:false})
     const dispatch = useDispatch()
 
 
     useEffect(()=>console.log('order',order),[order])
+    useEffect(()=>console.log('permissions',permissions),[permissions])
+    useEffect(()=>console.log('closeOrder',closeOrder),[closeOrder])
 
     useEffect(()=> setPlanDates(
         plan.filter(task=>{
@@ -65,13 +68,15 @@ export default function WorkOrder(){
     useEffect(()=>{
     if(!order.code)return
     setPermissions({
-        woData: (order.code && userData.access!=='Admin'),
-        woDescription: order.code && !order.closed 
-            && (userData.id===order.userId || supervisor===userData.id || userData.access==='Admin'),
-        editInterventions: 
-            !order.code
-            || userData.access==='Admin'
-            || (!order.closed && (supervisor===userData.id || order.userId===userData.id) )
+        create: !order.code || userData.access==='Admin',
+        edit: !order.code 
+            || (order.code 
+            && ( !order.completed
+                || order.completed<100 )
+            && (userData.id===order.userId
+                || supervisor===userData.id))
+            || userData.access==='Admin',
+        admin: userData.access==='Admin'
     })},[order,userData, supervisor])
 
     useEffect(()=>{
@@ -165,14 +170,48 @@ export default function WorkOrder(){
         setPickDevice(true)
     }
 
+    function askClose(e){
+        if(e) e.preventDefault()
+        setClose(100)
+        checkErrors()
+    }
+    function handleClose(e){
+        e.preventDefault && e.preventDefault()
+        setClose(true)
+        if (!!closeOrder) setCloseOrder(true)
+        const newOrder={...order, completed:100}
+        if (closeOrder) newOrder.status = "Cerrada"
+        setOrder(newOrder)
+        checkErrors()
+    }
+    function adminCloseOrder(e){
+        if(e) {e.preventDefault()}
+        setCloseOrder(100)
+    }
+
+
     
-    function handleSave(){
+    function handleSave(e){
         //dipatch update taskDate if otCode, add or remove if not
+        if (e) e.preventDefault()
         if(otCode){
-            dispatch(updateOrder(otCode,{...update, supervisor}))
+            dispatch(updateOrder(otCode,{
+                ...update,
+                supervisor,
+                completed: toClose || closeOrder? 100 : order.completed,
+                status: closeOrder? "Cerrada" : order.status || "Abierta",
+                userId: userData.id
+            }))
             dispatch(dateOrder(otCode,update.taskDate))
         }else{
-            const sendOrder = {...order, user:userData.user, interventions, device:deviceCode, supervisor}
+            const sendOrder = {...order,
+                user:userData.user,
+                interventions,
+                device:deviceCode,
+                supervisor,
+                completed: toClose ? 100 : order.completed,
+                userId: userData.id
+            }
             dispatch(newWorkOrder(sendOrder))
         }
     }
@@ -197,79 +236,140 @@ export default function WorkOrder(){
     }
 
     return(
-        <div className="WOBackground">
+        <div className="container-fluid h-100 d-flex flex-column justify-content-between">
             {warnings && <WarningErrors warnings={warnings} close={()=>setWarnings(false)} proceed={()=>handleSave()}/>}
-            <div className='WOupperSection'>
-                
-                <div className="WOcolumn">
+            <div className='row m-1'>
+                {otCode && <div className="col-sm-6 rounded-3 flex">
+                                    <FormInput label='N° OT' defaultValue={otCode} readOnly={true}/>
+                                    <FormInput label='Estado' defaultValue={orderDetail.status} readOnly={true}/>
+                            </div>}
 
-                    <section className="WOsection">
-
-                    {(otCode || planDates[0]) && <section>
-                        {otCode && <div className="WOrow">
-                            <FormInput label='N° OT' defaultValue={otCode} readOnly={true}/>
-                            <FormInput label='Estado' defaultValue={orderDetail.status} readOnly={true}/>
-                        </div>}
-
-                        {(planDates[0] || order.taskDate )&& <div className={`WOformField text-center WOformImportant ${(selectDate || order.taskDate)?'bg-nav':'bg-grey'}`}>
-                                <input className='WOcheck' type='checkBox'
-                                    defaultChecked={(selectedTask && selectedTask.date) || order.taskDate }
-                                    onChange={(e)=>setSelectDate(e.target.checked)}
-                                    disabled={permissions.woData}/>
-                                <label>{`${selectDate?'TAREA DE PLAN':'¿TAREA DE PLAN?'}`}</label>
-                                {selectDate || order.taskDate?
-                                    <FormSelector key={selectedTask} label='Fecha Plan'
-                                        defaultValue={selectedTask ? selectedTask.id :undefined }
-                                        options={planDates}
-                                        valueField='id'
-                                        captionField='localDate'
-                                        onSelect={(e)=>{selectTaskDate(e)}}/>
-                                    :<label className='WOformInput'/>}
-                        </div>}
-
-                    </section>}
-
-                        {pickDevice && <div className='formModal'>
-                            <div className="container bg-light m-2" style={{maxHeight: '100%', overflowY:'auto'}}>
-                                <DeviceList close={()=>setPickDevice(false)}/>
+                {(planDates[0] || order.taskDate ) &&
+                    <div className={`col-sm-6 ${(selectDate || order.taskDate)?'bg-nav':'bg-grey'} flex align-items-center p-1`}>
+                        <div className="col-1 ps-0 pe-0 flex align-items-center">
+                            <input className='form-check' type='checkBox'
+                                style={{margin: '.5rem', transform: 'scale(1.5)'}}
+                                defaultChecked={(selectedTask && selectedTask.date) || order.taskDate }
+                                onChange={(e)=>setSelectDate(e.target.checked)}
+                                disabled={!permissions.edit}/>
+                        </div>
+                        <div className="col-5 ps-0 pe-0 text-light flex align-items-center">
+                            <label>{`${selectDate?'TAREA DE PLAN':'¿TAREA DE PLAN?'}`}</label>
+                        </div>
+                            {(selectDate || order.taskDate) &&
+                            <div className="col-6  ps-0 pe-0">
+                                <FormSelector key={selectedTask} label='Fecha Plan'
+                                    defaultValue={selectedTask ? selectedTask.id :undefined }
+                                    options={planDates}
+                                    valueField='id'
+                                    captionField='localDate'
+                                    disabled={!permissions.edit}
+                                    onSelect={(e)=>{selectTaskDate(e)}}/>
+                            </div>}
+                </div>}
+            </div>
+            <div className='row'>
+                <div className="col-md-4">
+                    <section className="container-fluid p-0 mt-1 mb-1">
+                        {/* {otCode && <div className="row p-1 rounded-3">
+                            <div className="col-6 text-center">
+                                    <FormInput label='N° OT' defaultValue={otCode} readOnly={true}/>
+                                </div>
+                                <div className="col-6 text-center">
+                                    <FormInput label='Estado' defaultValue={orderDetail.status} readOnly={true}/>
                                 </div>
                             </div>}
 
-                        <div className='formTitle'>Datos del equipo</div>
-                        <form className="WOrow" onSubmit={searchCode}>
-                                <FormInput label='Cod.Eq.'
-                                    defaultValue={deviceCode}
-                                    placeholder={'código completo'}
-                                    readOnly={!!otCode}
-                                    changeInput={(e)=>handleDevCode(e)}/>
-                                {!device.code &&
-                                    <button type='submit' className='WOsearchButton button' disabled={!deviceCode}> BUSCAR </button>}
-                                {!device.code && <button className='WOsearchButton button' onClick={handleAdvancedSearch}>BÚSQUEDA AVANZADA</button>}
-                                {device.code &&  <button className='WOsearchButton button'
-                                    disabled={permissions.woData} 
-                                    onClick={handleDevCode}>
-                                    <i className="fas fa-backspace"/>
-                                </button>}
-                            {deviceResult.error && <ErrorModal message={`Equipo código '${deviceCode}' no encontrado`} close={()=>dispatch(deviceActions.resetResult())}/>}
-                        </form>
-                            <FormInput label='Equipo' defaultValue={device.name} readOnly={true}/>
-                        <div className="section">
-                            <FormInput label='Planta' defaultValue={device.plant} readOnly={true}/>
-                            <FormInput label='Area' defaultValue={device.area} readOnly={true}/>
+                        {(planDates[0] || order.taskDate ) &&
+                            <div className={`row ${(selectDate || order.taskDate)?'bg-nav':'bg-grey'} flex align-items-center p-1`}>
+                                <div className="col-1 ps-0 pe-0 flex align-items-center">
+                                    <input className='form-check' type='checkBox'
+                                        style={{margin: '.5rem', transform: 'scale(1.5)'}}
+                                        defaultChecked={(selectedTask && selectedTask.date) || order.taskDate }
+                                        onChange={(e)=>setSelectDate(e.target.checked)}
+                                        disabled={permissions.woData}/>
+                                </div>
+                                <div className="col-5 ps-0 pe-0 text-light flex align-items-center">
+                                    <label>{`${selectDate?'TAREA DE PLAN':'¿TAREA DE PLAN?'}`}</label>
+                                </div>
+                                    {(selectDate || order.taskDate) &&
+                                    <div className="col-6  ps-0 pe-0">
+                                        <FormSelector key={selectedTask} label='Fecha Plan'
+                                            defaultValue={selectedTask ? selectedTask.id :undefined }
+                                            options={planDates}
+                                            valueField='id'
+                                            captionField='localDate'
+                                            onSelect={(e)=>{selectTaskDate(e)}}/>
+                                    </div>}
+                        </div>} */}
+
+                        {pickDevice && <div className='modal'>
+                            <div className="container bg-light m-2" style={{maxHeight: '100%', overflowY:'auto'}}>
+                                <div className="row">
+                                    <div className="col d-flex justify-content-end">
+                                        <button className="btn btn-close" onClick={()=>setPickDevice(false)}/>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col">
+                                        <DeviceList close={()=>setPickDevice(false)}/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>}
+
+                        <div className="accordion" id="accordionExample">
+                            <div className="accordion-item">
+                                <button className="btn btn-secondary w-100" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    <b>{device.code? `[${device.code}] ${device.name}` :'Datos del Equipo'}</b>
+                                </button>
+                                <div id="collapseOne" className="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                <div className="container p-0">
+                                    <form className="row" onSubmit={searchCode}>
+                                        <div className="col d-flex ">
+                                            <FormInput label='Cod.Eq.'
+                                                    defaultValue={deviceCode}
+                                                    placeholder={'código completo'}
+                                                    readOnly={!permissions.create}
+                                                    changeInput={(e)=>handleDevCode(e)}/>
+                                            {!device.code &&
+                                                <button type='submit' className='btn btn-info' disabled={!deviceCode && !permissions.create}><i className="fas fa-search"/></button>}
+                                            {!device.code && <button className='btn btn-outline-info'
+                                                disabled={!deviceCode && !permissions.create}
+                                                onClick={handleAdvancedSearch}>BÚSQUEDA AVANZADA</button>}
+                                            {device.code &&  <button className='btn btn-danger'
+                                                disabled={!permissions.create}
+                                                onClick={handleDevCode}>
+                                                <i className="fas fa-backspace"/>
+                                            </button>}
+                                            {deviceResult.error && <ErrorModal message={`Equipo código '${deviceCode}' no encontrado`} close={()=>dispatch(deviceActions.resetResult())}/>}
+                                        </div>
+                                    </form>
+                                        <FormInput label='Equipo' defaultValue={device.name} readOnly={true}/>
+                                    <div className="section">
+                                        <FormInput label='Planta' defaultValue={device.plant} readOnly={true}/>
+                                        <FormInput label='Area' defaultValue={device.area} readOnly={true}/>
+                                    </div>
+                                        <FormInput label='Linea' defaultValue={device.line} readOnly={true}/>
+                                        <FormInput label='Tipo' defaultValue={device.powerAndType} readOnly={true}/>
+                                    <div className="section">
+                                        <FormInput label='Categoría' defaultValue={device.category} readOnly={true}/>
+                                        <FormInput label='Servicio' defaultValue={device.service} readOnly={true}/>
+                                    </div>
+
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                            <FormInput label='Linea' defaultValue={device.line} readOnly={true}/>
-                            <FormInput label='Tipo' defaultValue={device.powerAndType} readOnly={true}/>
-                        <div className="section">
-                            <FormInput label='Categoría' defaultValue={device.category} readOnly={true}/>
-                            <FormInput label='Servicio' defaultValue={device.service} readOnly={true}/>
-                        </div>
+
                     </section>
                 </div>
 
-                <div className="WOcolumn">
-                    <section className="WOsection">
-                        <div className='formTitle'>Detalle de la orden de trabajo</div>
-                        <div className="WOrow">
+                <div className="col-md-4 h-auto d-flex m-0">
+                    <section className="container h-auto d-flex flex-column justify-content-between p-0">
+                        <div className='row d-grid gap-2 m-0'>
+                            <button className="btn btn-secondary mt-1">Detalle de la orden de trabajo</button>
+                        </div>
                             {(workOrderOptions.supervisor || order.supervisor )&&
                             <FormSelector key={supervisor} label='Supervisor' 
                                 defaultValue={supervisor}
@@ -277,95 +377,124 @@ export default function WorkOrder(){
                                 valueField='id'
                                 captionField='name'
                                 onSelect={(e)=>setSupervisor(e.target.value)}
-                                disabled={permissions.woData || !deviceCode}/>
+                                disabled={!permissions.edit}/>
                             }
                             <FormInput label='OT Cliente' defaultValue={order.clientWO}
-                                readOnly={permissions.woData}
+                                disabled={!permissions.edit}
                                 changeInput={(e)=>handleValue(e,'clientWO')}/>
-                        </div>
                         {workOrderOptions&& Object.keys(workOrderOptions).map( (option,index)=>
                             (option!=='supervisor' &&
-                                <FormSelector key={order[option] || index} label={option} 
-                                    defaultValue={order[option]}
-                                    options={workOrderOptions[option].sort((a,b)=>a>b?1:-1)}
-                                    onSelect={(e)=>handleValue(e,option)}
-                                    disabled={permissions.woData}/>))}
-                        <div className="section">
+                            <FormSelector key={order[option] || index} label={option} 
+                                defaultValue={order[option]}
+                                options={workOrderOptions[option].sort((a,b)=>a>b?1:-1)}
+                                onSelect={(e)=>handleValue(e,option)}
+                                disabled={permissions.edit}/>))}
                             <FormInput label='Solicitó' defaultValue={order.solicitor}
-                                readOnly={permissions.woData || !order.cause || !order.issue || !order.class}
+                                readOnly={!!permissions.edit && !order.cause && !order.issue && !order.class}
                                 changeInput={(e)=>handleValue(e,'solicitor')}/>
                             <FormInput label='Teléfono' defaultValue={order.phone}
-                                readOnly={permissions.woData || !order.cause || !order.issue || !order.class}
+                                readOnly={!permissions.edit && !order.cause && !order.issue && !order.class}
                                 changeInput={(e)=>handleValue(e,'phone')}/>
-                        </div>
                         {!!otCode&&<FormInput label='Creación' key={order.user}
                             defaultValue={`${ getDate(order.regDate)} por ${order.user}`}
-                            readOnly={permissions.woData}
+                            readOnly={!permissions.edit}
                             />}
 
                         <FormSelector key={device.servicePoints} label='L. Servicio' 
                             defaultValue={order.servicePoint}
                             options={device.servicePoints}
                             onSelect={(e)=>handleValue(e,'servicePoint')}
-                            disabled={permissions.woData}/>
+                            disabled={!permissions.edit}/>
                     </section>
                 </div>
 
-                <div className="WOcolumn">
-                    <section className="WOsection">
-                            <div className='formTitle'>Observaciones</div>
-                            <textarea className="WODescription" 
-                                onChange={(e)=>handleValue(e,'description')}
-                                readOnly={(!!otCode && userData.access!=='Admin')|| !order.solicitor}
-                                defaultValue={order.description}/>
-                            {permissions.woDescription&&
-                                <button className='button addButton' onClick={()=>setEditDesc(true)}>Agregar comentario</button>}
-                            {editDesc&&<AddTextForm user={userData.user} 
-                                select={(text)=>setOrder({...order,description: order.description+' || '+text})}
-                                close={()=>setEditDesc(false)}
-                                />}
-                            {/* bloquear para OT Cerradas */}
+                <div className="col-md-4 d-flex h-auto p-0">
+                    <section className="container h-auto d-flex flex-column justify-content-between p-0">
+                        <div className="row d-grid gap-2 m-0">
+                            <button className='btn btn-secondary'>Observaciones</button>
+                        </div>
+                        <textarea className="d-flex h-100" style={{minHeight: '10rem'}}
+                            onChange={(e)=>handleValue(e,'description')}
+                            readOnly={!permissions.create}
+                            defaultValue={order.description}/>
+                        {permissions.edit&&
+                            <button className='btn btn-info' onClick={()=>setEditDesc(true)}>
+                                <i className="fas fa-comment-dots me-1"/>Agregar comentario
+                            </button>}
+                        {editDesc&&<AddTextForm user={userData.user} 
+                            select={(text)=>setOrder({...order,description: order.description+' || '+text})}
+                            close={()=>setEditDesc(false)}
+                            />}
                     </section>
                 </div>
-
             </div>
 
-            <section className='WOsection interventionSection'>
-                <div className='formTitle'>Intervenciones</div>
-                <div className='WOformField woInterventionField' >
-                    
-                    <InterventionList
-                        key={interventions.length}
-                        interventions={ update.interventions?[...interventions,...update.interventions]:interventions }
-                        permission={permissions.editInterventions && order.description}
-                        onDelete={()=>{}}
-                        openAdd={()=>setIntForm(true)}/>
-                    
-                    {intForm&& <AddIntervention
-                        select={(data)=>createIntervention(data)}
-                        close={()=>setIntForm(false)}/>}
-
+            <section className='row'>
+                <div className="container-fluid">
+                    <div className='row'>
+                        <div className='col'>
+                            <b>Intervenciones</b>
+                            <InterventionList
+                                key={interventions.length}
+                                interventions={ update.interventions?[...interventions,...update.interventions]:interventions }
+                                permissions={permissions}
+                                onDelete={()=>{}}
+                                openAdd={()=>setIntForm(true)}/>                            
+                            {intForm&& <AddIntervention
+                                select={(data)=>createIntervention(data)}
+                                close={()=>setIntForm(false)}/>}
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            <section  className="WOsection wOProgress">
-                <label className="formLabel longWord">Avance OT</label>
-                <WOProgress key={`${orderDetail.completed}`||1}
-                    errorCond = {order.interventions && order.interventions.length>0}
-                    defaultValue={`${orderDetail.completed || 0}`}
-                    disabled={permissions.woData}
-                    select={(e)=>handleValue(e,'completed')}/>
+            <section  className="row mt-3 mb-3 me-0 ms-0 p-0">
+                <div className="col-sm-2 bg-secondary text-light text-center rounded">
+                    Avance OT
+                </div>
+                <div className="col-sm-10 p-0">
+                    <WOProgress key={`${order.completed}`||1}
+                        errorCond = {order.interventions && order.interventions.length>0}
+                        defaultValue={`${order.completed || 0}`}
+                        disabled={permissions.edit}
+                        select={(e)=>handleValue(e,'completed')}/>
+                </div>
             </section>
 
-            {errors && <div className="alert alert-danger" role="alert">
-                <b>Ooops! Ocurrieron errores:</b>
-                <ul>{errors.map((e,index)=><li key={index}>{e}</li>)}</ul>
-            </div>}
-
-            {!permissions.woData && <section  className="formField">
-                <button className = 'button' onClick={checkErrors}>Guardar Cambios</button>
-                {otCode&&<button className='button' onClick={()=>{}}>Solicitar Cierre</button>}                
+            {errors &&
+            <section className="row">
+                <div className="col">
+                    <div className="alert alert-danger" role="alert">
+                        <b>Ooops! Ocurrieron errores:</b>
+                        <ul>{errors.map((e,index)=><li key={index}>{e}</li>)}</ul>
+                    </div>
+                </div>
             </section>}
+
+            {!permissions.woData && <section  className="row">
+                <div className="col d-flex justify-content-center">
+                    {(order.completed < 100 && (permissions.edit || permissions.admin) ) && <button className = 'btn btn-info m-1 pe-0 ps-0' style={{width: '10rem'}} onClick={checkErrors}>
+                        <i className="fas fa-save"/> Guardar
+                    </button>}
+                    {(order.completed < 100 && permissions.edit && !permissions.admin) && <button className='btn btn-success m-1 pe-0 ps-0' style={{width: '10rem'}} onClick={askClose}>
+                        <i className="fas fa-lock"/> Solicitar Cierre
+                    </button>}
+                    {permissions.admin && order.status !== "Cerrada" && <button className='btn btn-success m-1 pe-0 ps-0' style={{width: '10rem'}} onClick={adminCloseOrder}>
+                        <i className="fas fa-lock"/> Cerrar OT
+                    </button>}
+                    {toClose === 100 && 
+                        <WarningErrors warnings={['¿Llevar avance al 100% y solicitar cierre?']}
+                        proceed={handleClose}
+                        close={()=>setClose(false)}
+                    />}
+                    {closeOrder === 100 && 
+                        <WarningErrors warnings={['¿Confirma que desea cerrar la Orden de Trabajo?']}
+                        proceed={()=>handleClose(true)}
+                        close={()=>setCloseOrder(false)}
+                    />}
+                    {order.closed && <div>Orden de trabajo cerrada, no puede modificarse.</div>}
+                </div>
+            </section> }
 
         </div>
     )

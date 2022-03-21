@@ -62,7 +62,7 @@ const UpdateArea = ({
                     name="newName"
                     autoComplete="off"
                     value={updateAreaData.newName}
-                    onChange={(e) => handleUpdateArea(e)}
+                    onBlur={(e) => handleUpdateArea(e)}
                     placeholder="Ingrese el nombre..."
                   />
                 </div>

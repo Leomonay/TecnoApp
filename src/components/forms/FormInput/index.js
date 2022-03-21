@@ -3,13 +3,13 @@ import {appConfig} from "../../../config"
 const {headersRef} = appConfig
 
 export function FormInput(props){
-    const {label, type, disabled, defaultValue, min, max, step, changeInput, name, readOnly, placeholder}=props
+    const {label, type, disabled, defaultValue, min, max, step, changeInput, onBlur, name, readOnly, placeholder}=props
     return(
         <div className='input-group'>
-            <span className="input-group-text col-3 ps-1 pe-1 is-flex justify-content-center" style={{minWidth: 'fit-content'}}>
+            <span className="input-group-text col-3 p-1 is-flex justify-content-center" style={{minWidth: 'fit-content'}}>
                 {headersRef[label] || label}
             </span>
-            <input className="form-control"
+            <input className="form-control p-1"
                 disabled={disabled}
                 defaultValue={defaultValue}
                 readOnly={readOnly}
@@ -17,8 +17,9 @@ export function FormInput(props){
                 type={type ||'text'}
                 name={name}
                 min={type==='number' ? min : undefined}
-                max={type==='number' ? max : undefined}
-                step={type==='number' ? step : undefined}
+                max={['number', 'date'].includes(type) ? max : undefined}
+                step={['number', 'date'].includes(type) ? step : undefined}
+                onBlur={onBlur}
                 onChange={(e)=>changeInput&&changeInput(e)}/>
         </div>
     )
@@ -28,10 +29,10 @@ export function FormSelector(props){
     const {label, defaultValue, valueField, name, captionField, options, onSelect, readOnly, disabled}=props
     return(
         <div className='input-group'>
-            <label className="input-group-text col-3 ps-1 pe-1 is-flex justify-content-center" style={{minWidth: 'fit-content'}}>
+            <label className="input-group-text col-3 p-1 is-flex justify-content-center" style={{minWidth: 'fit-content'}}>
                 {headersRef[label] || label}
             </label>
-            <select className="form-select" name={name}
+            <select className="form-select p-1" name={name}
                 defaultValue={defaultValue} readOnly={readOnly}
                 disabled={disabled}
                 onChange={(e)=>onSelect && onSelect(e)}>
@@ -71,7 +72,7 @@ export function FormTextArea({label, disabled, defaultValue, changeInput, name, 
                 placeholder={placeholder}
                 type={'text'}
                 name={name}
-                onChange={(e)=>changeInput&&changeInput(e)}/>
+                onBlur={(e)=>changeInput&&changeInput(e)}/>
         </div>
     )
 }

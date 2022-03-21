@@ -62,7 +62,7 @@ export default function Paginate(props){
                         min={min || 10}
                         step={step || 10}
                         defaultValue={defaultValue || 10}
-                        onChange={(e)=>size(e.target.value)}/></label>}
+                        onBlur={(e)=>size(e.target.value)}/></label>}
         </div>
     )
 }

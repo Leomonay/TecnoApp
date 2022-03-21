@@ -72,7 +72,7 @@ const NewCylinder = ({cylinder, onClose, statuses}) => {
   },[cylinderResult, dispatch])
 
   return (
-    <div className="formModal">
+    <div className="modal">
       <form onSubmit={(e) => handleSubmitCylinder(e)} id="addCylinder" className="formBody" style={{alignItems: 'center'}}>
         <div className="section">
           <div className="formTitle" style={{marginTop: '1rem'}}>Agregar nueva garrafa</div>
