@@ -11,19 +11,22 @@ import { FormInput } from "../FormInput"
 
 
 export default function AddIntervention(props){
+    const today = (new Date()).toISOString().split('T')[0]
+    const time = (new Date()).toString().split(' ')[4].substring(0,5)
     const {data, select, close} = props
     const {userData,workersList} = useSelector(state=>state.people)
     const {allCylinders} = useSelector(state=>state.adminCylinders)
-    const [intervention, setIntervention] = useState(userData.access==="Worker"?
-        {workers:workersList.find(e=>e.id === userData.id)}:{})
+    const [intervention, setIntervention] = useState({date: today,
+        workers: userData.access==="Worker"?
+            [workersList.find(e=>e.id === userData.id)]
+            :[]})
     const [user, setUser] = useState(undefined)
     const [cylinderList, setCylinderList] = useState([])
     const [gasUsages, setGasUsages] = useState([])
     const [addText, setAddText]=useState(false)
     const dispatch=useDispatch()
 
-    const today = (new Date()).toISOString().split('T')[0]
-    const time = (new Date()).toString().split(' ')[4].substring(0,5)
+
 
 
     useEffect(()=>{

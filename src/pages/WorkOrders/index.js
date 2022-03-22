@@ -293,7 +293,7 @@ export default function WorkOrders(){
                 <td>
                   <div className='d-flex'>
                     <Link className='btn btn-info' title='Detalle' to={`/ots/detail/${order.code}`}>
-                      <i className="fas fa-search"/>
+                      <i className="fas fa-search-plus"/>
                     </Link>
                     {isAdmin && <button className='btn btn-danger' title='Eliminar' id={order.code} onClick={handleWarning}>
                       <i className="fas fa-trash-alt" id={order.code}/>

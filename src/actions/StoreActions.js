@@ -1,5 +1,4 @@
 import { appConfig } from "../apiConfig";
-
 const token = localStorage.getItem('tecnoToken')
 
 export function serverAction(data){

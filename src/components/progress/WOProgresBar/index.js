@@ -4,7 +4,7 @@ import { colorByPercent } from '../../../utils/utils'
 import './index.css'
 
 export default function WOProgress(props){
-    const {defaultValue,select, errorCond, disabled}=props
+    const {defaultValue,select, errorCond, disabled, min}=props
     const {userData} = useSelector(state=>state.people)
     const [value, setValue] = useState(props.defaultValue||'0')
     const [style,setStyle] = useState({})
@@ -17,10 +17,10 @@ export default function WOProgress(props){
     function handleChange(e){
         const value = `${userData.access === "Admin" ?
             e.target.value:
-            Math.max(Number(e.target.value), defaultValue)}`
+            Math.max(Number(e.target.value), min)}`
         const obj = {target:{value: value},preventDefault:()=>{}}
-        setError(e.target.value<=defaultValue)
-        setValue(`${ Math.max(value, defaultValue) }`)
+        setError(e.target.value<=min)
+        setValue(`${ Math.max(value, min) }`)
         select(obj)
     }
 
@@ -42,7 +42,7 @@ export default function WOProgress(props){
                 </div>
             </div>
             {errorCond && error && <div className='row'>
-                <div className='errorMessage'>{`El avance debe ser mayor que el actual (${defaultValue}%).`}</div>
+                <div className='errorMessage'>{`El avance debe ser mayor que el actual (${min}%).`}</div>
             </div>}
         </div>
     )

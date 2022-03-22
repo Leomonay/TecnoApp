@@ -1,13 +1,6 @@
 import { serverAction } from "./StoreActions"
 
 
-export function selectWorkOrder(ot){
-    return{
-        type: 'SELECT_WO',
-        payload: ot
-    }
-}
-
 export function callMostRecent(filters){
     return serverAction({
         endpoint:`workorder/mostrecent`,
@@ -15,6 +8,13 @@ export function callMostRecent(filters){
         body: filters,
         type: 'MOST_RECENT'
     })
+}
+
+export function resetOrderResult(){
+    return{
+        type: 'RESET_ORDER_RESULT',
+        payload: {}
+    }
 }
 
 export function getWOOptions(){
@@ -40,7 +40,7 @@ export function updateOrder(code,update){
         endpoint:`workorder/${code}`,
         method: 'PUT',
         body: update,
-        type: 'UPDATED_ORDER'
+        type: 'NEW_ORDER'
     })
 }
 

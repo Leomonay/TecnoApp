@@ -1,11 +1,8 @@
 const initialState = {
-    tableHeaders: ['code', 'status', 'device', 'cause','solicitor', 'line', 'area', 'closed'],
     mostRecent:[],
-    selected:null,
     workOrderOptions:{},
     workOrderList:[],
     orderDetail:{},
-    newOrderId:'',
     updateResult:'',
     orderResult:{}
 }
@@ -16,35 +13,32 @@ export default function workOrderReducer (state = initialState,action){
     let index = 0
     let array = []
     switch (action.type){
-        case 'UPDATED_ORDER':
+        case 'NEW_ORDER':
+            console.log('action.payload', action.payload)
             if (action.payload.error) return{...state,orderResult:{error: action.payload.error}}
             array = state.workOrderList.filter(order=> order.code !== action.payload.code)
             array.push(action.payload)
             for (let key of Object.keys(action.payload)) detail[key] = action.payload[key]
             return{
                 ...state,
-                orderDetail: detail,
-                updateResult: array.sort((a,b)=>a.code>b.code?1:-1)
+                orderDetail: {},
+                workOrderList: array.sort((a,b)=>a.code>b.code?1:-1),
+                orderResult:{success: action.payload.code}
+            }
+        case 'RESET_ORDER_RESULT':
+            return{
+                ...state,
+                orderResult:{}
             }
         case 'MOST_RECENT':
             return{
                 ...state,
                 mostRecent: action.payload
             };
-        case 'SELECT_WO':
-            return{
-                ...state,
-                selected: action.payload
-            };
         case 'GET_WO_OPTIONS':
             return{
                 ...state,
                 workOrderOptions: action.payload
-            }; 
-        case 'NEW_ORDER':
-            return{
-                ...state,
-                newOrderId: action.payload
             };
         case 'ORDER_LIST':
             currentCodeList = state.workOrderList.map(order=>order.code)

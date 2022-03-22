@@ -3,11 +3,11 @@ import { useDispatch, useSelector } from "react-redux"
 import { useParams } from "react-router-dom"
 import { dateOrder, selectTask } from "../../actions/planActions"
 import { deviceActions } from "../../actions/StoreActions"
-import { getWOOptions, newIntervention, newWorkOrder, searchWO, updateOrder } from "../../actions/workOrderActions"
+import { getWOOptions, newIntervention, newWorkOrder, resetOrderResult, searchWO, updateOrder } from "../../actions/workOrderActions"
 
 import InterventionList from "../../components/lists/InterventionList"
 import WOProgress from "../../components/progress/WOProgresBar"
-import { ErrorModal } from "../../components/warnings"
+import { ErrorModal, SuccessModal } from "../../components/warnings"
 import WarningErrors from "../../components/warnings/WarningErrors"
 import AddTextForm from "../../components/forms/AddText"
 import {FormInput, FormSelector} from "../../components/forms/FormInput"
@@ -29,7 +29,7 @@ export default function WorkOrder(){
     const {userData} = useSelector(state=>state.people)
     const {selectedDevice, deviceResult} = useSelector(state=>state.devices)
     const {plan, selectedTask} = useSelector((state=>state.plan))
-    const {workOrderOptions, orderDetail} = useSelector(state=>state.workOrder)
+    const {workOrderOptions, orderDetail, orderResult} = useSelector(state=>state.workOrder)
 
 //openers
     const [selectDate, setSelectDate] = useState(false)
@@ -71,10 +71,8 @@ export default function WorkOrder(){
         create: !order.code || userData.access==='Admin',
         edit: !order.code 
             || (order.code 
-            && ( !order.completed
-                || order.completed<100 )
-            && (userData.id===order.userId
-                || supervisor===userData.id))
+                && ( !order.completed || order.completed<100 )
+                && (userData.id===order.userId || supervisor===userData.id))
             || userData.access==='Admin',
         admin: userData.access==='Admin'
     })},[order,userData, supervisor])
@@ -89,7 +87,8 @@ export default function WorkOrder(){
     
     useEffect(()=>{
         setOrder(orderDetail)
-        if(!orderDetail.code)return
+        console.log('orderDetail L90', orderDetail)
+        if(!orderDetail.code) return
         const {device} = orderDetail
         setDevice( device?buildDevice(device):{})
         setDeviceCode(device.code) 
@@ -195,6 +194,7 @@ export default function WorkOrder(){
         //dipatch update taskDate if otCode, add or remove if not
         if (e) e.preventDefault()
         if(otCode){
+            console.log('update')
             dispatch(updateOrder(otCode,{
                 ...update,
                 supervisor,
@@ -212,6 +212,7 @@ export default function WorkOrder(){
                 completed: toClose ? 100 : order.completed,
                 userId: userData.id
             }
+            console.log('create')
             dispatch(newWorkOrder(sendOrder))
         }
     }
@@ -233,6 +234,13 @@ export default function WorkOrder(){
     function getDate(date){
         const newDate = new Date(date)
         return `${newDate.toLocaleDateString()} ${newDate.getHours()}:${newDate.getMinutes()}`
+    }
+
+    function closeSuccess(){
+        setEditDesc(false)
+        setInterventions([])
+        setOrder({})
+        dispatch(resetOrderResult())
     }
 
     return(
@@ -304,7 +312,7 @@ export default function WorkOrder(){
                         </div>} */}
 
                         {pickDevice && <div className='modal'>
-                            <div className="container bg-light m-2" style={{maxHeight: '100%', overflowY:'auto'}}>
+                            <div className="container bg-light m-2" style={{height: '90%', overflowY:'auto'}}>
                                 <div className="row">
                                     <div className="col d-flex justify-content-end">
                                         <button className="btn btn-close" onClick={()=>setPickDevice(false)}/>
@@ -384,11 +392,13 @@ export default function WorkOrder(){
                                 changeInput={(e)=>handleValue(e,'clientWO')}/>
                         {workOrderOptions&& Object.keys(workOrderOptions).map( (option,index)=>
                             (option!=='supervisor' &&
-                            <FormSelector key={order[option] || index} label={option} 
+                            <FormSelector 
+                                key={order[option]||index}
+                                label={option} 
                                 defaultValue={order[option]}
                                 options={workOrderOptions[option].sort((a,b)=>a>b?1:-1)}
                                 onSelect={(e)=>handleValue(e,option)}
-                                disabled={permissions.edit}/>))}
+                                disabled={!permissions.edit}/>))}
                             <FormInput label='Solicitó' defaultValue={order.solicitor}
                                 readOnly={!!permissions.edit && !order.cause && !order.issue && !order.class}
                                 changeInput={(e)=>handleValue(e,'solicitor')}/>
@@ -435,7 +445,6 @@ export default function WorkOrder(){
                         <div className='col'>
                             <b>Intervenciones</b>
                             <InterventionList
-                                key={interventions.length}
                                 interventions={ update.interventions?[...interventions,...update.interventions]:interventions }
                                 permissions={permissions}
                                 onDelete={()=>{}}
@@ -453,10 +462,12 @@ export default function WorkOrder(){
                     Avance OT
                 </div>
                 <div className="col-sm-10 p-0">
-                    <WOProgress key={`${order.completed}`||1}
+                    <WOProgress
+                    // key={`${order.completed}`||1}
                         errorCond = {order.interventions && order.interventions.length>0}
                         defaultValue={`${order.completed || 0}`}
-                        disabled={permissions.edit}
+                        min={(orderDetail && orderDetail.completed) || 0}
+                        disabled={!permissions.edit}
                         select={(e)=>handleValue(e,'completed')}/>
                 </div>
             </section>
@@ -473,10 +484,10 @@ export default function WorkOrder(){
 
             {!permissions.woData && <section  className="row">
                 <div className="col d-flex justify-content-center">
-                    {(order.completed < 100 && (permissions.edit || permissions.admin) ) && <button className = 'btn btn-info m-1 pe-0 ps-0' style={{width: '10rem'}} onClick={checkErrors}>
+                    {((!order.completed || order.completed < 100) && (permissions.edit || permissions.admin) ) && <button className = 'btn btn-info m-1 pe-0 ps-0' style={{width: '10rem'}} onClick={checkErrors}>
                         <i className="fas fa-save"/> Guardar
                     </button>}
-                    {(order.completed < 100 && permissions.edit && !permissions.admin) && <button className='btn btn-success m-1 pe-0 ps-0' style={{width: '10rem'}} onClick={askClose}>
+                    {((!order.completed || order.completed < 100) && permissions.edit && !permissions.admin) && <button className='btn btn-success m-1 pe-0 ps-0' style={{width: '10rem'}} onClick={askClose}>
                         <i className="fas fa-lock"/> Solicitar Cierre
                     </button>}
                     {permissions.admin && order.status !== "Cerrada" && <button className='btn btn-success m-1 pe-0 ps-0' style={{width: '10rem'}} onClick={adminCloseOrder}>
@@ -495,7 +506,15 @@ export default function WorkOrder(){
                     {order.closed && <div>Orden de trabajo cerrada, no puede modificarse.</div>}
                 </div>
             </section> }
-
+            {orderResult.error && 
+                <ErrorModal message={`La orden de trabajo no se pudo guardar. Error: ${orderResult.error}`}
+                    close={()=>dispatch(resetOrderResult())}
+            />}
+            {orderResult.success && 
+                <SuccessModal message={`La orden de trabajo N° ${orderResult.success} fue guardada exitosamente.`}
+                    link={`/ots/detail/${orderResult.success}`}
+                    close={closeSuccess}
+            />}
         </div>
     )
 
