@@ -34,6 +34,7 @@ function FormInput({label, item, placeholder, select, textArea, type, min, max, 
 }
 
 function applyFilters(element, filters){
+  console.log('element', element, 'filters', filters)
   let check = true
   for (let key of Object.keys(filters)){
     if (key === 'dateMin') {
@@ -93,6 +94,9 @@ export default function WorkOrders(){
   const dispatch = useDispatch()
 
   const [isAdmin] = useState(userData.access === 'Admin')
+
+  useEffect(()=>console.log('filters',filters),[filters])
+  useEffect(()=>console.log('filters',filters),[filters])
 
   function handleWarning(e){
     e.preventDefault()
@@ -244,10 +248,10 @@ export default function WorkOrders(){
                 </div>
                 <div className='row is-flex justify-content-lg-center'>
                   <div className='col-md-2 d-grid gap-2'>
-                    <button className='btn btn-success' type='submit' onClick={resetFilters}>Aplicar Filtros</button>
+                    <button className='btn btn-success' type='submit'>Aplicar Filtros</button>
                   </div>
                   <div className='col-md-2 d-grid gap-2'>
-                    <button className='btn btn-danger' >Quitar Filtros</button>
+                    <button className='btn btn-danger' onClick={resetFilters}>Quitar Filtros</button>
                   </div>
                 </div>
               </form>
