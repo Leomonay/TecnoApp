@@ -10,7 +10,7 @@ export default function PlanDevice(props){
     const [program, setProgram] = useState(device.strategy?
         programs.find(program=>program.name===device.strategy.name)
         :undefined) //programa elegido de la lista de programas
-    const [newProgram, setNewProgram] = useState(device.strategy) // programa nuevo
+    const [newProgram, setNewProgram] = useState(device.strategy||{}) // programa nuevo
     const [save, setSave]=useState(false)
 
     // useEffect(()=>console.log('program', program),[program])

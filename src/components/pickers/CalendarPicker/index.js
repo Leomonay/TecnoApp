@@ -15,8 +15,6 @@ export default function CalendarPicker(props){
         : [])
     const dispatch = useDispatch()
 
-    useEffect(()=>console.log('taskDates',taskDates.length),[taskDates])
-
     useEffect(()=>setFirstDate(taskDates[0] ? `${taskDates[0].getDate()}/${taskDates[0].getMonth()+1}` : ''),[taskDates])
 
     useEffect(()=>setTaskDates(dates.map(date=>new Date(date.date))),[dates])
@@ -73,9 +71,9 @@ export default function CalendarPicker(props){
                     </div>
                 </div>
             </td>
-            <td className='d-flex justify-content-center p-0'>
+            <td className='p-0'>
                 <div className='d-flex align-items-center' style={{height: '2rem'}}>
-                    <input className='form-control p-0 text-center'
+                    <input className='form-control p-0 mx-auto text-center'
                         style={{width: '3rem', fontSize: '100%'}}
                         type='text'
                         placeholder={'dd/mm'} 
@@ -90,7 +88,7 @@ export default function CalendarPicker(props){
                     borderLeft: '1px solid grey',
                     borderRight: '1px solid grey'
                 }}>
-                    <div className='d-flex align-content-center w-100 justify-content-center'
+                    <div className='d-flex align-content-center w-100 justify-content-evenly'
                         style={{height: '2rem'}}>
                         {yearDates.filter(date=>(new Date(date)).getMonth() === index).map((element)=>{
 
