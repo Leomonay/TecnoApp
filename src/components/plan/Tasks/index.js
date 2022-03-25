@@ -21,6 +21,8 @@ export default function PlanTask(props){
     const [filteredList, setFilteredList]=useState(devicePlanList)
     const dispatch = useDispatch()
 
+    // useEffect(()=>console.log(filteredList,filteredList),[filteredList])
+
     useEffect(()=>{
         dispatch(getDeviceOptions())
         dispatch(getStrategies({plant, year}))
@@ -53,24 +55,24 @@ export default function PlanTask(props){
     }
 
     return(
-        <div className="pageContent">
-            <div className="filterRow">
-                <b>Filtros:</b>
-                <DeviceFilters select = {setFilteredList} list = {devicePlanList} plan = {true}/>
-                <div className={`selectorContainer shortForm`}>
-                    <button className='btn btn-primary btn-sm'
+        <div className='container-fluid m-0 pt-1 p-0 bg-light h-full d-flex flex-column'>
+            <div className="row m-0 px-1">
+                <div className="col-sm-6 p-0">
+                    <DeviceFilters select = {setFilteredList} list = {devicePlanList} plan = {true}/>
+                    <button className='btn btn-primary btn-sm mx-1'
                         onClick={()=>handleSelectAll()}>
-                        Seleccionar Todos
+                        Todos
                     </button>
+                    {selection[0]&&
+                        <button className='btn btn-info btn-sm'
+                            onClick={()=>setProgramForm(!programForm)}>
+                            Asignar Programa
+                        </button>
+                    }
                 </div>
-                {selection[0]&&<div className={`devFilterContainer shortForm`}>
-                    <button className='btn btn-primary btn-sm'
-                        onClick={()=>setProgramForm(!programForm)}>
-                        Asignar Programa a Selección
-                    </button>
-                </div>}
             </div>
-            <div className="taskDeviceList" >
+            <div className="row-auto m-0 py-1">
+                <div className="col" style={{height: '70vh', overflowY: 'auto'}}>
                     {filteredList[0] && filteredList.slice(page.first, page.first+page.size).map((device, index)=>{
                         const key = device.code + (device.strategy?
                             Object.keys(device.strategy).map(key=>JSON.stringify(device.strategy[key])[1]).join('')
@@ -90,21 +92,23 @@ export default function PlanTask(props){
                     {!filteredList[0] && <div className='errorMessage'>
                         No hay elementos para mostrar para esa planta y año 
                     </div>}
+                </div>
             </div>
+            <div className="row py-auto m-0 flex-grow-1">
+                <Paginate pages={Math.ceil(filteredList.length / page.size)}
+                        length='8'
+                        min='10'
+                        step='10'
+                        select={(value)=>setPage({...page,first: (Number(value) -1) * page.size })} 
+                        size={(value)=>setPage({...page, size: Number(value)})}
+                        />
 
-            <Paginate pages={Math.ceil(filteredList.length / page.size)}
-                length='10'
-                min='10'
-                step='10'
-                select={(value)=>setPage({...page,first: (Number(value) -1) * page.size })} 
-                size={(value)=>setPage({...page, size: Number(value)})}
-                />
-
-            {programForm&&selection&& <ProgramForm 
-                selection={selection}
-                save={(json)=>handleSave(json)}
-                onClose={()=>setProgramForm(!programForm)}
-                />}
+                {programForm&&selection&& <ProgramForm 
+                    selection={selection}
+                    save={(json)=>handleSave(json)}
+                    onClose={()=>setProgramForm(!programForm)}
+                    />}
+            </div>
         </div>
     )
 }

@@ -26,31 +26,32 @@ export default function AdminPlan(){
     },[])
     
     return(
-        <div className='adminOptionSelected'>
-            <div className='container'>
-                <div className='row'>
-                    <div className='col-md-3'>
-                        <PlantSelector select={(value)=>dispatch(setPlantName(value))}/>
-                    </div>
-                    <div className='col-md-3'>
-                        <FormSelector label='Año' name='year'
-                            defaultValue={''+year}
-                            options={years}
-                            onSelect={(e)=>dispatch(setYear(e.target.value))}/> 
-                    </div>
+        <div className='container-fluid p-0 mb-1 bg-form h-full d-flex flex-column'>
+            <div className='row m-0'>
+                <div className='col-sm-6 p-0 d-flex'>
+                    <PlantSelector select={(value)=>dispatch(setPlantName(value))}/>
+                    <FormSelector label='Año' name='year'
+                        defaultValue={''+year}
+                        options={years}
+                        onSelect={(e)=>dispatch(setYear(e.target.value))}/> 
+                </div>
+                <div className='col-sm-6'>
+                    <ul class="nav nav-tabs">
+                    {steps.map((option, index)=>
+                        <li key={index} 
+                            className={`nav-item nav-link col text-center px-0 ${step===option?'active':''}`}
+                            style={{cursor: 'pointer'}}
+                            onClick={()=>setStep(option)}>                                
+                            {option}
+                        </li>)}
+                    </ul>
                 </div>
             </div>
-
-            <div className="navButtons">
-                {steps.map((option, index)=>
-                    <button key={index}
-                        className="navButton"
-                        onClick={()=>setStep(option)}
-                        value='actions'>{option}</button>)}
+            <div className='row m-0 flex-grow-1'>
+                {step===steps[0]&&<PlanTask year={year}/>}
+                {step===steps[1]&&<PlanCalendar plant={plant} year={year} key={plant+year}/>}
+                {step===steps[2]&&<ProgramManagement plant={plant}/>}
             </div>
-            {step===steps[0]&&<PlanTask year={year}/>}
-            {step===steps[1]&&<PlanCalendar plant={plant} year={year} key={plant+year}/>}
-            {step===steps[2]&&<ProgramManagement plant={plant}/>}
         </div>
     )
 }

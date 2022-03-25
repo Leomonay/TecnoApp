@@ -45,6 +45,7 @@ export default function planReducer (state = initialState,action){
                 programList: action.payload.sort( (a,b)=>a.name>b.name ? 1 : -1 )
             };
         case 'PLAN_DEVICES':
+
             return{
                 ...state,
                 devicePlanList: action.payload
@@ -59,10 +60,7 @@ export default function planReducer (state = initialState,action){
             return{
                 ...state,
                 devicePlanList: state.devicePlanList.map(element=>{
-                    if( device.includes(element.code) ){
-                        if(!element.program)element.program={}
-                        Object.keys(strategy).map(key=>element.program[key] = strategy[key])
-                    }
+                    if( device.includes(element.code) ) element.strategy=strategy
                     return element
                 })
             }

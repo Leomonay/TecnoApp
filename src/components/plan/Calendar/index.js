@@ -10,10 +10,11 @@ export default function PlanCalendar(props){
     const {programList, calendar} = useSelector(state=>state.plan)
     const [plant, setPlant] = useState(props.plant)
     const [year, setYear] = useState(props.year)
-    const [page, setPage]=useState({first: 0, size:10})
+    const [page, setPage]=useState({first: 0, size:15})
     const [filteredList, setFilteredList] = useState([])
     const [dates, setDates] = useState([])
     const dispatch = useDispatch()
+    const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
 
     //trabajar directamente con la lista de equipos
     useEffect(()=>setPlant(props.plant),[props.plant])
@@ -38,6 +39,18 @@ export default function PlanCalendar(props){
         }
         setDates(mondays)
     },[year])
+
+    function sortByFirstDate(e){
+        e.preventDefault()
+        const newList = [...filteredList]
+        setFilteredList(newList.sort((a,b)=>
+            new Date (a.dates[0]?a.dates[0].date : `${year-1}/12/05`)>new Date (b.dates[0]?b.dates[0].date : `${year-1}/12/05`) ? 1 : -1 ))
+    }
+    function sortByDevice(e){
+        e.preventDefault()
+        const newList = [...filteredList]
+        setFilteredList(newList.sort((a,b)=>a.name > b.name?1:-1))
+    }
 
    
     function applyFilters(filters){
@@ -64,40 +77,71 @@ export default function PlanCalendar(props){
     },[plant,year, dispatch])
 
     return(
-        <div className="calendarBody">
-            <div className='rowForm'>
-                <div className='title'>Filtros:</div>
-                {! (props.plant && props.year) && <label className='longLabel'>Debe seleccionar Planta y Año</label>}
-                { (props.plant && props.year) && <ProgramFilters
-                    programList = {programList}
-                    select={(json)=>applyFilters(json)}/>}
+        <><div className="container-fluid bg-light pt-1 d-flex h-full flex-column">
+            <div className="row">
+                <div className="col-auto d-flex align-items-center">
+                    <b>Filtros:</b>
+                </div>
+                <div className="col-auto">
+                        {! (props.plant && props.year) && <label className='longLabel'>Debe seleccionar Planta y Año</label>}
+                        { (props.plant && props.year) && <ProgramFilters
+                            programList = {programList}
+                            select={(json)=>applyFilters(json)}/>}
+                </div>
             </div>
-            
-            <div>
-            <div className='section'>
-                <div className='deviceColumn title'>Equipos</div>
-                <div className='calendarColumn title'>Calendario {year}</div>
+            <div className="row" style={{height: '70vh', overflowY:'auto'}}>
+                <div className="col">
+                    <table className="table">
+                        <thead className="text-center p-0" style={{fontSize: '75%'}}>
+                            <tr>
+                                <th rowSpan='2' className="p-0">
+                                    <button className="btn btn-outline-secondary m-1 py-0"
+                                        onClick={sortByDevice}
+                                        style={{fontSize: '100%'}}>
+                                        <b>Equipos </b><i className="fas fa-sort-alpha-down"/>
+                                    </button>
+                                </th>
+                                <th rowSpan='2' className="p-0">
+                                    <button className="btn btn-outline-secondary m-1 py-0 px-1"
+                                        onClick={sortByFirstDate}
+                                        style={{fontSize: '100%'}}>
+                                        <b>Inicio </b><i class="fas fa-sort-numeric-down"/>
+                                    </button>
+                                </th>
+                                <th colSpan='12' className='fs-6 py-0'>{`Calendario ${year}`}</th>
+                            </tr>
+                            <tr>
+                                {months.map((month, index)=>
+                                    <th className='p-0' key={index} id={index} style={{fontSize: '90%'}}>
+                                        {month}
+                                    </th>                            
+                                )}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {filteredList.slice(page.first, page.first+page.size).map((task, index)=>
+                            <CalendarPicker key={task.code+index}
+                                plant={plant}
+                                year={year}
+                                titles={index===0}
+                                task={task}
+                                yearDates={dates}
+                                />)}
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            {filteredList[0]?
-                filteredList.slice(page.first, page.first+page.size).map((task, index)=>
-                    <CalendarPicker key={task.code+index}
-                        plant={plant}
-                        year={year}
-                        titles={index===0}
-                        task={task}
-                        yearDates={dates}
-                        />)
-                :<div className="errorMessage">No hay equipos que coincidan con la búsqueda</div>}
+            <div className="row flex-fill d-flex">
+                <Paginate pages={Math.ceil(filteredList.length / page.size)}
+                        length='10'
+                        min='5'
+                        step='5'
+                        defaultValue={page.size}
+                        select={(value)=>setPage({...page,first: (Number(value) -1) * page.size })} 
+                        size={(value)=>setPage({...page, size: Number(value)})}
+                        />
             </div>
-
-            <Paginate pages={Math.ceil(filteredList.length / page.size)}
-                length='10'
-                min='5'
-                step='5'
-                defaultValue={page.size}
-                select={(value)=>setPage({...page,first: (Number(value) -1) * page.size })} 
-                size={(value)=>setPage({...page, size: Number(value)})}
-                />
         </div>
+        </>
     )
 }

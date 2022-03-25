@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+// import { useSelector } from 'react-redux'
 import AddIntervention from '../../forms/InterventionForm'
 import './index.css'
 
 export default function InterventionList(props){
     const {onDelete, openAdd, permissions} = props
-    const {userData}=useSelector(state=>state.people)
+    // const {userData}=useSelector(state=>state.people)
     const [edit, setEdit] = useState(false)
     const [interventionList, setInterventionList]=useState(props.interventions)
 

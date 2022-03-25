@@ -7,6 +7,7 @@ import Paginate from '../../components/Paginate'
 import WarningErrors from '../../components/warnings/WarningErrors'
 import { deviceActions, workOrderActions } from '../../actions/StoreActions'
 import './index.css'
+import { selectTask } from '../../actions/planActions'
 
 //Método para editar intervención
 //Asignar garrafas a personal
@@ -292,7 +293,8 @@ export default function WorkOrders(){
                 <td >{order.close ? (new Date (order.close)).toLocaleDateString() : "Pendiente"}</td>
                 <td>
                   <div className='d-flex'>
-                    <Link className='btn btn-info' title='Detalle' to={`/ots/detail/${order.code}`}>
+                    <Link className='btn btn-info' title='Detalle' to={`/ots/detail/${order.code}`}
+                      onClick={()=>dispatch(selectTask({}))}>
                       <i className="fas fa-search-plus"/>
                     </Link>
                     {isAdmin && <button className='btn btn-danger' title='Eliminar' id={order.code} onClick={handleWarning}>

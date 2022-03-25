@@ -4,7 +4,7 @@ import { colorByPercent } from '../../../utils/utils'
 import './index.css'
 
 export default function WOProgress(props){
-    const {defaultValue,select, errorCond, disabled, min}=props
+    const {defaultValue,select, errorCond, disabled, min, max}=props
     const {userData} = useSelector(state=>state.people)
     const [value, setValue] = useState(props.defaultValue||'0')
     const [style,setStyle] = useState({})
@@ -33,6 +33,7 @@ export default function WOProgress(props){
                         type='range'
                         defaultValue={defaultValue || '0'}
                         onChange={(e)=>handleChange(e)}
+                        max={max}
                         disabled={disabled}
                         style={style}
                         />

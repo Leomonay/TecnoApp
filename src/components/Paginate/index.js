@@ -25,7 +25,7 @@ export default function Paginate(props){
 
     function EdgeButton(page, caption, pageTo){
         return (
-        <button className='pageButton'
+        <button className='col-auto btn btn-outline-primary py-0 px-1'
             title={pageTo}
             onClick={(e)=>handleClick(e)}
             disabled={current===page}
@@ -41,8 +41,9 @@ export default function Paginate(props){
     }
 
     return(
-        <div className='pageFooter'>
-            {/* <nav aria-label="Page navigation example">
+        <div className='container-fluid p-0 d-flex align-content-center justify-content-center'>
+            <div className='row m-auto justify-content-center'>
+                            {/* <nav aria-label="Page navigation example">
                 <ul class="pagination m-0">
                     <li class="page-item"><a class="page-link pe-2 ps-2" href="#">{'<<'}</a></li>
                     <li class="page-item">
@@ -80,11 +81,12 @@ export default function Paginate(props){
                 </div>
             </nav> */}
 
-            <div className='paginate'>
+
                 {EdgeButton(1,'<<', 1)}
                 {indexes.map((index,key)=>
                     <button key={key} 
-                        className={`pageButton ${index===current?'currentPage':'otherPage'}`}
+                        className={`col-auto btn px-1 py-0 ${index===current?'btn-info':'btn-outline-info'}`}
+                        style={{minWidth: '1.5rem'}}
                         disabled={index===current}
                         onClick={(e)=>handleClick(e)}
                         value={index}>
@@ -92,15 +94,17 @@ export default function Paginate(props){
                     </button>
                 )}
                 {EdgeButton(last,'>>', pages)}
-            </div>
-            {size &&
-                    <label>Items por Página: 
-                    <input className='numberInput'
-                        type='number'
-                        min={min || 10}
-                        step={step || 10}
+                {size && 
+                    <select className='form-select py-0 ps-1 pe-4'
                         defaultValue={defaultValue || 10}
-                        onBlur={(e)=>size(e.target.value)}/></label>}
+                        onBlur={(e)=>size(e.target.value)}
+                        style={{width: 'fit-content'}}>
+                        <option disabled>items/pág</option>
+                        {[10,15,20,30,50,100,200,500,1000].map(items=>
+                            <option key={items} value={items}>{`${items}/pág`}</option>)}
+                    </select>
+                }
+            </div>
         </div>
     )
 }

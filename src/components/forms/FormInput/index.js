@@ -26,7 +26,7 @@ export function FormInput(props){
 }
 
 export function FormSelector(props){
-    const {label, defaultValue, valueField, name, captionField, options, onSelect, readOnly, disabled}=props
+    const {label, defaultValue, valueField, name, captionField, options, onSelect, onBlur, readOnly, disabled, value}=props
     return(
         <div className='input-group'>
             <label className="input-group-text col-3 p-1 is-flex justify-content-center" style={{minWidth: 'fit-content'}}>
@@ -34,9 +34,11 @@ export function FormSelector(props){
             </label>
             <select className="form-select p-1" name={name}
                 defaultValue={defaultValue} readOnly={readOnly}
+                value={value}
                 disabled={disabled}
+                onBlur={onBlur}
                 onChange={(e)=>onSelect && onSelect(e)}>
-                <option value=''>Seleccionar</option>
+                <option className='w-auto' value=''>Seleccione</option>
                     {options && options.map((element,index)=>
                         <option value={valueField ? element[valueField]  : element} key={index}>
                             {captionField ? element[captionField] : element}

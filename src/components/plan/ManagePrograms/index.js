@@ -68,7 +68,7 @@ export default function ProgramManagement(props){
     useEffect(()=>console.log(plant,year),[plant, year])
 
     return(
-        <div className="container">
+        <div className="container bg-light">
             <button className="btn btn-outline-success m-1" onClick={()=>setCreate(!create)}>Crear Programa</button>
             {create && <NewProgram
                 close={()=>setCreate(!create)}

@@ -212,7 +212,7 @@ export default function DeviceFilters(props){
     return(
         <>
         <button className="btn btn-primary btn-sm" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
-            Filtros de Equipo
+            Filtrar Equipos
         </button>
 
         <div className="offcanvas offcanvas-start" tabIndex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">

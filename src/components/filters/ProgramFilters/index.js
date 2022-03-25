@@ -39,21 +39,20 @@ export default function ProgramFilters(props){
     }
 
 
-    return(<div>
-        <select className='programOption' onChange={(e)=>handleValue('strategy',e.target.value)} disabled={!programList}>
+    return(<div className="input-group m-0">
+        <select className='form-select py-0' onChange={(e)=>handleValue('strategy',e.target.value)} disabled={!programList}>
             <option value = ''>{programList?'todos los programas':'Seleccione Planta y año'}</option>
             {programList && programList.map(element=>element.name).map(name=>
                 <option key={name} value={name}>{name}</option>
             )}
         </select>
-        <select onChange={(e)=>handleValue('responsible', e.target.value)} disabled={!programList}>
+        <select className='form-select py-0' onChange={(e)=>handleValue('responsible', e.target.value)} disabled={!programList}>
             <option value = ''>Todos los responsables</option>
             {workers.map(worker=>
                 <option key={worker.id} value={worker.id}>{worker.name}</option>
             )}
         </select>
-
-        <button className="button openFilters" onClick={()=>handleDates(!filters.dates)}>
+        <button className="btn btn-info py-0" onClick={()=>handleDates(!filters.dates)}>
             {filters.dates?'Mostrar todos los equipos':'Mostrar equipos sin fecha'}
         </button>
 

@@ -53,17 +53,16 @@ export default function WorkOrder(){
     const [permissions, setPermissions] = useState({create:true,edit:true,admin:false})
     const dispatch = useDispatch()
 
+    useEffect(()=> order.taskDate && planDates[0] &&
+        dispatch(selectTask(planDates.find(date=>date.id === order.taskDate)))
+    ,[order, planDates,dispatch])
 
-    useEffect(()=>console.log('order',order),[order])
-    useEffect(()=>console.log('permissions',permissions),[permissions])
-    useEffect(()=>console.log('closeOrder',closeOrder),[closeOrder])
-
-    useEffect(()=> setPlanDates(
+    useEffect(()=>setPlanDates(
         plan.filter(task=>{
             const today = new Date()
             return task.code===device.code && (new Date (task.date)) <= today.setDate(today.getDate()+7)
         }).map(task=>({...task, localDate: (new Date (task.date)).toLocaleDateString()}))
-    ) , [plan, device ])
+    ), [plan, device])
 
     useEffect(()=>{
     if(!order.code)return
@@ -80,20 +79,19 @@ export default function WorkOrder(){
     useEffect(()=>{
         if(!selectedTask)return
         setSelectDate(!!selectedTask.date)
-        if(!supervisor) setSupervisor(selectTask.supervisor)
+        if(!supervisor) setSupervisor(selectedTask.supervisor)
     },[selectedTask, supervisor])
 
     useEffect(()=>otCode && dispatch(searchWO(otCode)),[otCode, dispatch])
     
     useEffect(()=>{
         setOrder(orderDetail)
-        console.log('orderDetail L90', orderDetail)
         if(!orderDetail.code) return
         const {device} = orderDetail
         setDevice( device?buildDevice(device):{})
         setDeviceCode(device.code) 
         setSupervisor(orderDetail.supervisor)
-        dispatch(selectTask(plan.find(date=>date.id === orderDetail.taskDate)))
+        // dispatch(selectTask(plan.find(date=>date.id === orderDetail.taskDate)))
         setOrder(orderDetail)
         setInterventions(orderDetail.interventions)
     },[orderDetail, dispatch, plan])
@@ -194,7 +192,6 @@ export default function WorkOrder(){
         //dipatch update taskDate if otCode, add or remove if not
         if (e) e.preventDefault()
         if(otCode){
-            console.log('update')
             dispatch(updateOrder(otCode,{
                 ...update,
                 supervisor,
@@ -264,53 +261,21 @@ export default function WorkOrder(){
                         <div className="col-5 ps-0 pe-0 text-light flex align-items-center">
                             <label>{`${selectDate?'TAREA DE PLAN':'¿TAREA DE PLAN?'}`}</label>
                         </div>
-                            {(selectDate || order.taskDate) &&
+                            {(selectDate || selectedTask.id) &&
                             <div className="col-6  ps-0 pe-0">
                                 <FormSelector key={selectedTask} label='Fecha Plan'
-                                    defaultValue={selectedTask ? selectedTask.id :undefined }
+                                    defaultValue={selectedTask.id ? selectedTask.id :undefined }
                                     options={planDates}
                                     valueField='id'
                                     captionField='localDate'
                                     disabled={!permissions.edit}
-                                    onSelect={(e)=>{selectTaskDate(e)}}/>
+                                    onBlur={selectTaskDate}/>
                             </div>}
                 </div>}
             </div>
             <div className='row'>
                 <div className="col-md-4">
                     <section className="container-fluid p-0 mt-1 mb-1">
-                        {/* {otCode && <div className="row p-1 rounded-3">
-                            <div className="col-6 text-center">
-                                    <FormInput label='N° OT' defaultValue={otCode} readOnly={true}/>
-                                </div>
-                                <div className="col-6 text-center">
-                                    <FormInput label='Estado' defaultValue={orderDetail.status} readOnly={true}/>
-                                </div>
-                            </div>}
-
-                        {(planDates[0] || order.taskDate ) &&
-                            <div className={`row ${(selectDate || order.taskDate)?'bg-nav':'bg-grey'} flex align-items-center p-1`}>
-                                <div className="col-1 ps-0 pe-0 flex align-items-center">
-                                    <input className='form-check' type='checkBox'
-                                        style={{margin: '.5rem', transform: 'scale(1.5)'}}
-                                        defaultChecked={(selectedTask && selectedTask.date) || order.taskDate }
-                                        onChange={(e)=>setSelectDate(e.target.checked)}
-                                        disabled={permissions.woData}/>
-                                </div>
-                                <div className="col-5 ps-0 pe-0 text-light flex align-items-center">
-                                    <label>{`${selectDate?'TAREA DE PLAN':'¿TAREA DE PLAN?'}`}</label>
-                                </div>
-                                    {(selectDate || order.taskDate) &&
-                                    <div className="col-6  ps-0 pe-0">
-                                        <FormSelector key={selectedTask} label='Fecha Plan'
-                                            defaultValue={selectedTask ? selectedTask.id :undefined }
-                                            options={planDates}
-                                            valueField='id'
-                                            captionField='localDate'
-                                            onSelect={(e)=>{selectTaskDate(e)}}/>
-                                    </div>}
-                        </div>} */}
-
                         {pickDevice && <div className='modal'>
                             <div className="container bg-light m-2" style={{height: '90%', overflowY:'auto'}}>
                                 <div className="row">
@@ -334,17 +299,19 @@ export default function WorkOrder(){
                                 <div id="collapseOne" className="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                 <div className="container p-0">
                                     <form className="row" onSubmit={searchCode}>
-                                        <div className="col d-flex ">
+                                        <div className="col d-flex">
+
                                             <FormInput label='Cod.Eq.'
                                                     defaultValue={deviceCode}
                                                     placeholder={'código completo'}
                                                     readOnly={!permissions.create}
-                                                    changeInput={(e)=>handleDevCode(e)}/>
+                                                    changeInput={handleDevCode}/>
                                             {!device.code &&
                                                 <button type='submit' className='btn btn-info' disabled={!deviceCode && !permissions.create}><i className="fas fa-search"/></button>}
                                             {!device.code && <button className='btn btn-outline-info'
+                                                style={{minWidth:'fit-content'}}
                                                 disabled={!deviceCode && !permissions.create}
-                                                onClick={handleAdvancedSearch}>BÚSQUEDA AVANZADA</button>}
+                                                onClick={handleAdvancedSearch}>ABRIR LISTA</button>}
                                             {device.code &&  <button className='btn btn-danger'
                                                 disabled={!permissions.create}
                                                 onClick={handleDevCode}>
@@ -384,7 +351,7 @@ export default function WorkOrder(){
                                 options={workOrderOptions.supervisor}
                                 valueField='id'
                                 captionField='name'
-                                onSelect={(e)=>setSupervisor(e.target.value)}
+                                onBlur={(e)=>setSupervisor(e.target.value)}
                                 disabled={!permissions.edit}/>
                             }
                             <FormInput label='OT Cliente' defaultValue={order.clientWO}
@@ -397,7 +364,7 @@ export default function WorkOrder(){
                                 label={option} 
                                 defaultValue={order[option]}
                                 options={workOrderOptions[option].sort((a,b)=>a>b?1:-1)}
-                                onSelect={(e)=>handleValue(e,option)}
+                                onBlur={(e)=>handleValue(e,option)}
                                 disabled={!permissions.edit}/>))}
                             <FormInput label='Solicitó' defaultValue={order.solicitor}
                                 readOnly={!!permissions.edit && !order.cause && !order.issue && !order.class}
@@ -467,6 +434,7 @@ export default function WorkOrder(){
                         errorCond = {order.interventions && order.interventions.length>0}
                         defaultValue={`${order.completed || 0}`}
                         min={(orderDetail && orderDetail.completed) || 0}
+                        max='99'
                         disabled={!permissions.edit}
                         select={(e)=>handleValue(e,'completed')}/>
                 </div>
@@ -484,7 +452,7 @@ export default function WorkOrder(){
 
             {!permissions.woData && <section  className="row">
                 <div className="col d-flex justify-content-center">
-                    {((!order.completed || order.completed < 100) && (permissions.edit || permissions.admin) ) && <button className = 'btn btn-info m-1 pe-0 ps-0' style={{width: '10rem'}} onClick={checkErrors}>
+                    {((!order.completed || order.completed < 100 || permissions.admin) && (permissions.edit || permissions.admin) ) && <button className = 'btn btn-info m-1 pe-0 ps-0' style={{width: '10rem'}} onClick={checkErrors}>
                         <i className="fas fa-save"/> Guardar
                     </button>}
                     {((!order.completed || order.completed < 100) && permissions.edit && !permissions.admin) && <button className='btn btn-success m-1 pe-0 ps-0' style={{width: '10rem'}} onClick={askClose}>
@@ -503,7 +471,7 @@ export default function WorkOrder(){
                         proceed={()=>handleClose(true)}
                         close={()=>setCloseOrder(false)}
                     />}
-                    {order.closed && <div>Orden de trabajo cerrada, no puede modificarse.</div>}
+                    {order.closed && !permissions.admin && <div>Orden de trabajo cerrada, no puede modificarse.</div>}
                 </div>
             </section> }
             {orderResult.error && 
