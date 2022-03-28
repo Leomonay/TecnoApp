@@ -5,7 +5,7 @@ import { setDates } from '../../../actions/planActions'
 import './index.css'
 
 export default function CalendarPicker(props){
-    const {year, titles, task, yearDates} = props
+    const {year, task, yearDates} = props
     const {dates, frequency} = task
     const [taskDates, setTaskDates]=useState([])
     const [firstDate, setFirstDate]=useState('')

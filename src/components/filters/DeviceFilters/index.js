@@ -161,9 +161,6 @@ export default function DeviceFilters(props){
         setFilters(newFilters)    
     }
 
-    // function handleDeleteInputText(e){
-    //     e.preventDefault()
-    // }
 
     function deleteFilter(subJson, key){
         let newJson = {...filters[subJson]}
@@ -174,7 +171,7 @@ export default function DeviceFilters(props){
         //     const input = document.getElementById(`${key}${cond}`)
         //     if(input) input.value=''
         // }
-        setFilters(newFilters)    
+        // setFilters(newFilters)    
     }
 
     //**************** SELECTABLE OPTIONS ****************************

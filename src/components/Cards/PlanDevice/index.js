@@ -1,25 +1,21 @@
 import { useEffect } from 'react'
 import { useState } from 'react'
 import { appConfig } from '../../../config'
-import './index.css'
 const {frequencies} = appConfig
 
 export default function PlanDevice(props){
     const {onSave, programs, device} = props
-    const [startProgram, setStartProgram] = useState(device.strategy) // programa en el equipo
+    const [startProgram, setStartProgram] = useState(device.strategy || {}) // programa en el equipo
     const [program, setProgram] = useState(device.strategy?
         programs.find(program=>program.name===device.strategy.name)
         :undefined) //programa elegido de la lista de programas
     const [newProgram, setNewProgram] = useState(device.strategy||{}) // programa nuevo
     const [save, setSave]=useState(false)
 
-    // useEffect(()=>console.log('program', program),[program])
-    useEffect(()=>console.log('newProgram', newProgram),[newProgram])
-
-
     useEffect(()=>setSave( !( JSON.stringify(startProgram) === JSON.stringify(newProgram) ) )
     ,[startProgram,newProgram])
-    useEffect(()=>setStartProgram( device.strategy ),[device.strategy])
+
+    useEffect(()=>setStartProgram( device.strategy || {} ),[device.strategy])
 
     function handleProperty(key, value){
         let program = {...newProgram}
@@ -59,7 +55,7 @@ export default function PlanDevice(props){
                     onChange={(e)=>props.onCheck(e)}
                     />
                 </div>
-                <div className='col p-0 bg-opacity-25 bg-secondary rounded p-1' style={{fontSize: '90%'}}>
+                <div className={`col p-0 bg-opacity-25 ${newProgram.name ? 'bg-success' : 'bg-secondary'} rounded p-1`} style={{fontSize: '90%'}}>
                     <div className='container-fluid p-0 '>
                         <div className='row m-0  d-flex justify-content-between'>
                             <div className='col-auto p-0'>
@@ -81,7 +77,7 @@ export default function PlanDevice(props){
                                     <div className='bg-light rounded shadow-sm px-1 m-1'>{device.environment}</div>
                                     <div className='bg-light rounded shadow-sm px-1 m-1'>{device.age + ' años'}</div>
                                     <div className='bg-light rounded shadow-sm px-1 m-1'>{device.status}</div>
-                                    <div className='bg-light rounded shadow-sm px-1 m-1'>{device.reclaims + 'reclamos'}</div>
+                                    <div className='bg-light rounded shadow-sm px-1 m-1'>{device.reclaims + ' reclamos'}</div>
                                 </div>
                             </div>
                         </div>

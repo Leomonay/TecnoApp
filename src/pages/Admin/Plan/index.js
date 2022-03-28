@@ -36,7 +36,7 @@ export default function AdminPlan(){
                         onSelect={(e)=>dispatch(setYear(e.target.value))}/> 
                 </div>
                 <div className='col-sm-6'>
-                    <ul class="nav nav-tabs">
+                    <ul className="nav nav-tabs">
                     {steps.map((option, index)=>
                         <li key={index} 
                             className={`nav-item nav-link col text-center px-0 ${step===option?'active':''}`}

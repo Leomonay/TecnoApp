@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getDates, getPlanDevices, getStrategies } from "../../../actions/planActions.js";
 import ProgramFilters from "../../filters/ProgramFilters/index.js";
-import Paginate from "../../Paginate/index.js";
+import NewPaginate from "../../newPaginate/index.js";
+// import Paginate from "../../Paginate/index.js";
 import CalendarPicker from "../../pickers/CalendarPicker/index.js";
 import './index.css'
 
@@ -10,7 +11,8 @@ export default function PlanCalendar(props){
     const {programList, calendar} = useSelector(state=>state.plan)
     const [plant, setPlant] = useState(props.plant)
     const [year, setYear] = useState(props.year)
-    const [page, setPage]=useState({first: 0, size:15})
+    // const [page, setPage]=useState({first: 0, size:15})
+    const [paginate, setPaginate] = useState({first:0, last:15})
     const [filteredList, setFilteredList] = useState([])
     const [dates, setDates] = useState([])
     const dispatch = useDispatch()
@@ -105,7 +107,7 @@ export default function PlanCalendar(props){
                                     <button className="btn btn-outline-secondary m-1 py-0 px-1"
                                         onClick={sortByFirstDate}
                                         style={{fontSize: '100%'}}>
-                                        <b>Inicio </b><i class="fas fa-sort-numeric-down"/>
+                                        <b>Inicio </b><i className="fas fa-sort-numeric-down"/>
                                     </button>
                                 </th>
                                 <th colSpan='12' className='fs-6 py-0'>{`Calendario ${year}`}</th>
@@ -119,7 +121,7 @@ export default function PlanCalendar(props){
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredList.slice(page.first, page.first+page.size).map((task, index)=>
+                            {filteredList.slice(paginate.first, paginate.last).map((task, index)=>
                             <CalendarPicker key={task.code+index}
                                 plant={plant}
                                 year={year}
@@ -132,14 +134,13 @@ export default function PlanCalendar(props){
                 </div>
             </div>
             <div className="row flex-fill d-flex">
-                <Paginate pages={Math.ceil(filteredList.length / page.size)}
-                        length='10'
-                        min='5'
-                        step='5'
-                        defaultValue={page.size}
-                        select={(value)=>setPage({...page,first: (Number(value) -1) * page.size })} 
-                        size={(value)=>setPage({...page, size: Number(value)})}
-                        />
+                <NewPaginate
+                    key={filteredList}
+                    length={filteredList.length}
+                    visible='6'
+                    size='15'
+                    select={(first, last, size)=>setPaginate({first, last, size})}
+                 />
             </div>
         </div>
         </>

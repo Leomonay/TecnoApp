@@ -6,6 +6,9 @@
     margin: 5px;
     box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
 }
+.toggleMenu{
+    display: none;
+}
 .navBarLink,.navAdminLink{
     color: inherit;
     min-width: fit-content;
@@ -28,4 +31,47 @@
 }
 .navBarLink:hover,.navBarAdmin:hover{
     border: 1px solid white
+}
+@media(max-width:768px){
+    .navBar{
+        justify-content: space-between;
+    }
+    .toggleMenu{
+        display: block;
+        margin-right: .5rem;
+    }
+    .navBarLinks{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+    }
+    .navBarLinkContainer{
+        position: absolute;
+        top: 3.5rem;
+        bottom:0;
+        right: -100%;
+        display: flex;
+        width: 25rem;
+        max-width: 100vw;
+        flex-direction: column;
+        align-items: center;
+        background-color: darkred;
+        transition-duration: 300ms;
+    }
+    .navBarLinks>*,.logOutButton{
+        display: flex;
+        padding-left:0;
+        padding-right:0;
+        justify-content: center;
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+    }
+    .visibleNavBar{
+        z-index: 1;
+        right: 0;
+        transition-duration: 300ms;
+    }
 }
