@@ -32,11 +32,11 @@ export default function AdminPanel(){
         {selected==='plantas'&&<AdminPlants/>}
         {selected==='plan'&&<AdminPlan/>}
         {selected==='garrafas'&&<AdminCylinders/>}
-        <div className='container-fluid p-0'>
+        {!selected &&<div className='container-fluid p-0'>
             <div className='col-sm-6'>
                 <WOList mostRecent={mostRecent}/>
             </div>
-        </div>
+        </div>}
 
         
     </div>)
