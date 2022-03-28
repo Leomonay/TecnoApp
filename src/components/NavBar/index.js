@@ -37,7 +37,7 @@ function NavBar() {
         style={{height: 'fit-content'}}>
         <i className="fas fa-bars"/>
       </button>
-      <div className={`navBarLinkContainer container py-0 px-2 ${visible ? 'visibleNavBar' : ''} `}>
+      <div className={`navBarLinkContainer container py-0 px-0 ${visible ? 'visibleNavBar' : ''} `}>
         <div className="row m-0 navBarLinks w-100">
           <div className="col-auto p-0 navBarLinks">
             {navOptions.map((option,index)=>
@@ -56,7 +56,7 @@ function NavBar() {
               </NavLink>}
           </div>
           <div className="col-sm p-0 d-flex justify-content-end w-100">
-            <button className="btn btn-outline-secondary logOutButton" onClick={()=>handleLogOut()} 
+            <button className="btn btn-outline-secondary mx-2 logOutButton" onClick={()=>handleLogOut()} 
               style={{height: 'fit-content', minWidth: 'fit-content'}}>
               Cerrar Sesión <i className="fas fa-sign-out-alt"/>
             </button>
@@ -68,36 +68,6 @@ function NavBar() {
             <button className="btn btn-outline-danger" type="submit">Search</button>
           </form> */}
     </nav>
-    {/* <nav className="navbar navbar-expand-md navbar-light" style={{backgroundColor: 'darkred', color:'whitesmoke'}}>
-      <div className="container-fluid">
-        <Link to='/panel'><img className='navBarLogo navbar-brand' src={logo} alt=''/></Link>
-        <button className="navbar-toggler menuIcon" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
-          <span className="navbar-toggler-icon"/>
-        </button>
-        <div className="collapse navbar-collapse" id="navbarTogglerDemo03">          
-          <div className="navBarLinkContainer">
-            {navOptions.map((option,index)=>
-              <NavLink to={option.url} key={index}
-                className={(navData) => `col btn nav-item navBarLink ${navData.isActive ? "activeNavLink" :''}`}>
-                {option.section}
-              </NavLink>
-            )}
-          </div>
-          {isAdmin&& <div className="navBarLinkContainer">
-            <NavLink to={'/admin'}
-              className={(navData) => `col btn nav-item navAdminLink ${navData.isActive ? "activeAdminLink" :''}`}>
-              Menú Admin
-            </NavLink>
-          </div>}
-          <div className="navBarLinkContainer" style={{marginLeft: 'auto'}}>
-            <button className="col btn btn-outline-secondary" onClick={()=>handleLogOut()}>
-            Cerrar Sesión <i className="fas fa-sign-out-alt"/>
-            </button>
-          </div>
-
-        </div>
-      </div>
-    </nav> */}
     </>
   );
 }

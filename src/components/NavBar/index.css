@@ -48,13 +48,16 @@
         width: 100%;
     }
     .navBarLinkContainer{
+        display: flex;
         position: absolute;
         top: 3.5rem;
-        bottom:0;
-        right: -100%;
-        display: flex;
-        width: 25rem;
-        max-width: 100vw;
+        bottom: 0;
+        right: 0;
+        width: 0;
+        max-width: 0;
+        overflow-x: hidden;
+        padding-left: 0;
+        padding-right: 0;
         flex-direction: column;
         align-items: center;
         background-color: darkred;
@@ -70,8 +73,10 @@
         margin-right: 0;
     }
     .visibleNavBar{
-        z-index: 1;
-        right: 0;
+        display: flex;
+        max-width: 100vw;
+        z-index: 5;
+        width: 25rem;
         transition-duration: 300ms;
     }
 }
