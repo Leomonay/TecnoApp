@@ -41,7 +41,8 @@ export const peopleActions = {
   getOptions: ()=> getAction('users/options', 'USER_OPTIONS'), //getUserOptions1
   getAllUsers: (filters)=> postAction('users/filtered', filters, 'USER_LIST'), //getUsersList
   update: (idNumber, update)=> postAction(`users/detail/${idNumber}`, update, 'SELECTED_USER'), //updateUser //should be a PUT action
-  addNew: (user)=> postAction('users', user, 'NEW_USER') //addUser
+  addNew: (user)=> postAction('users', user, 'NEW_USER'), //addUser
+  resetResult: ()=> ({type: "RESET_PEOPLE_RESULT"})
 }
 
 export const deviceActions = {

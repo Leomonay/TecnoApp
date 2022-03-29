@@ -43,12 +43,10 @@ export default function Panel(){
   },[plan])
 
   return (
-    <div className='panelBackground'>
-      <div className='container-fluid h-100 p-0'>
-        <div className='row h-100 m-0'>
-          <div className='col-sm-6 h-100 p-0' style={{overflowY:'auto'}}>
-            <TaskList pendant={pendant} current={current} next={next} access={userData.access}/>
-          </div>
+    <div className='container-fluid h-100 p-0'>
+      <div className='row h-100 m-0'>
+        <div className='col-sm-6 h-100 p-0' style={{overflowY:'auto'}}>
+          <TaskList pendant={pendant} current={current} next={next} access={userData.access}/>
         </div>
       </div>
     </div>

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import {useDispatch, useSelector} from 'react-redux'
 import {Link} from 'react-router-dom'
 import { getSupervisors } from '../../actions/peopleActions'
-import { deleteOrder, resetDetail } from '../../actions/workOrderActions'
+import { deleteOrder, resetDetail, setDetail } from '../../actions/workOrderActions'
 import Paginate from '../../components/Paginate'
 import WarningErrors from '../../components/warnings/WarningErrors'
 import { deviceActions, workOrderActions } from '../../actions/StoreActions'
@@ -152,6 +152,10 @@ export default function WorkOrders(){
     setFilters({})
     setFilteredList(workOrderList)
   }
+  function handleNewReclaim(e){
+    dispatch(deviceActions.resetDevice())
+    dispatch(setDetail({class:"Reclamo"}))
+  }
 
   useEffect(()=>userData && dispatch && year && dispatch(workOrderActions.getList(userData.plant, year)),[dispatch,userData,year])
   useEffect(()=>setFilteredList(workOrderList.sort((a,b)=>a.code<b.code?1:-1)),[workOrderList])
@@ -170,7 +174,7 @@ export default function WorkOrders(){
         <div className='col-md-3 d-grid gap-2'>
           <Link
             to='/ots/new'
-            onClick={()=>dispatch(deviceActions.resetDevice())}
+            onClick={handleNewReclaim}
             className='btn btn-warning ps-0 pe-0'>
             <i className="fas fa-bell"/> Nuevo Reclamo
           </Link>
@@ -197,11 +201,11 @@ export default function WorkOrders(){
           </form>
         </div>
         <div className='col-sm-4 '>
-          <div className='input-group'>
+          <div className='input-group' style={{zIndex: 'inherit'}}>
             <span className="input-group-text" id="inputGroup-sizing-default">Estado</span>
-            <button className={`btn ps-1 pe-1 ${filters.status === 'Abierta' ? 'btn-primary' : 'btn-info'}`} id={'Abierta'} onClick={clickStatus}>Pendientes</button>
-            <button className={`btn ps-1 pe-1 ${filters.status === 'Cerrada' ? 'btn-primary' : 'btn-info'}`} id={'Cerrada'} onClick={clickStatus}>Cerradas</button>
-            <button className={`btn ps-1 pe-1 ${!filters.status ? 'btn-primary' : 'btn-info'}`} id={'all'} onClick={clickStatus}>Todas</button>
+            <button className={`btn ps-1 pe-1 ${filters.status === 'Abierta' ? 'btn-primary' : 'btn-info'}`} id={'Abierta'} style={{zIndex: 'inherit'}} onClick={clickStatus}>Pendientes</button>
+            <button className={`btn ps-1 pe-1 ${filters.status === 'Cerrada' ? 'btn-primary' : 'btn-info'}`} id={'Cerrada'} style={{zIndex: 'inherit'}} onClick={clickStatus}>Cerradas</button>
+            <button className={`btn ps-1 pe-1 ${!filters.status ? 'btn-primary' : 'btn-info'}`} id={'all'} style={{zIndex: 'inherit'}} onClick={clickStatus}>Todas</button>
           </div>
         </div>
       </div>

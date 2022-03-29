@@ -5,7 +5,8 @@ const initialState = {
     userList:[],
     userFilters:'',
     userOptions:'',
-    selectedUser:''
+    selectedUser:'',
+    peopleResult:{}
 }
 
 export default function workOrderReducer (state = initialState,action){
@@ -36,10 +37,17 @@ export default function workOrderReducer (state = initialState,action){
                 userOptions: action.payload
             }
         case 'SELECTED_USER':
+            if (action.payload.error) return{...state, peopleResult: {error: action.payload.error} }
             return{
                 ...state,
+                peopleResult: {success: action.payload.idNumber},
                 selectedUser: action.payload
             }    
+        case 'RESET_PEOPLE_RESULT':
+            return{
+                ...state,
+                peopleResult:{}
+            }
         default: return state;
     }
 }

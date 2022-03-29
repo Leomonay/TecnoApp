@@ -56,7 +56,7 @@ export default function Paginate(props){
                 {size && 
                     <select className='form-select py-0 ps-1 pe-4'
                         defaultValue={defaultValue || 10}
-                        onBlur={(e)=>size(e.target.value)}
+                        onChange={(e)=>size(e.target.value)}
                         style={{width: 'fit-content'}}>
                         <option disabled>items/pág</option>
                         {[10,15,20,30,50,100,200,500,1000].map(items=>

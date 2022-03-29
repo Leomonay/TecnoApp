@@ -66,7 +66,7 @@ function TaskItem(props){
                     <Link className='btn btn-light px-0 py-1 me-1' style={{fontSize: '90%'}} to='/ots/new' onClick={handleNewOrder}>Crear OT</Link>
                 </div>
                 <div className='col-3 p-0 d-grid gap-2'>
-                    <Link className='btn btn-light px-0 py-1 me-1' style={{fontSize: '90%'}} to='/ots/new'>Ver Equipo</Link>
+                    <Link className='btn btn-light px-0 py-1 me-1' style={{fontSize: '90%'}} to={`/devices/${task.code}`}>Ver Equipo</Link>
                 </div>
                 <div className='col-3 p-0 d-flex text-light align-items-center justify-content-center fs-6' style={{background: bgColor}}>
                     <b>{task.completed} %</b>
@@ -127,8 +127,7 @@ export default function TaskList(props){
                         </div>
                     </div>
                 </div>
-                </div>
-
+            </div>
         </div>
     )
 }

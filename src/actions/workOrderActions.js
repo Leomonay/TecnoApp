@@ -10,6 +10,13 @@ export function callMostRecent(filters){
     })
 }
 
+export function setDetail(order){
+    return{
+        type: 'ORDER_DETAIL',
+        payload: order
+    }
+}
+
 export function resetOrderResult(){
     return{
         type: 'RESET_ORDER_RESULT',

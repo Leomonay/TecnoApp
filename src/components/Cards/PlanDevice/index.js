@@ -72,12 +72,12 @@ export default function PlanDevice(props){
                             </div>
                             <div className='col-auto p-0' style={{fontSize: '80%'}}>
                                 <div className='flex w-100 justify-content-start flex-wrap'>
-                                    <div className='bg-light rounded shadow-sm px-1 m-1'>{device.category}</div>
-                                    <div className='bg-light rounded shadow-sm px-1 m-1'>{device.service}</div>
-                                    <div className='bg-light rounded shadow-sm px-1 m-1'>{device.environment}</div>
-                                    <div className='bg-light rounded shadow-sm px-1 m-1'>{device.age + ' años'}</div>
-                                    <div className='bg-light rounded shadow-sm px-1 m-1'>{device.status}</div>
-                                    <div className='bg-light rounded shadow-sm px-1 m-1'>{device.reclaims + ' reclamos'}</div>
+                                    <div className='bg-light rounded shadow-sm px-1 m-1'><i className="fas fa-table me-1"/>{device.category}</div>
+                                    <div className='bg-light rounded shadow-sm px-1 m-1'><i className="fas fa-tools me-1"/>{device.service}</div>
+                                    <div className='bg-light rounded shadow-sm px-1 m-1'><i className="fas fa-globe me-1"/>{device.environment}</div>
+                                    <div className='bg-light rounded shadow-sm px-1 m-1'><i className="far fa-calendar-alt  me-1"/>{device.age + ' años'}</div>
+                                    <div className='bg-light rounded shadow-sm px-1 m-1'><i className="far fa-star  me-1"/>{device.status}</div>
+                                    <div className='bg-light rounded shadow-sm px-1 m-1'><i className="fas fa-bell me-1"/>{device.reclaims + ' reclamos'}</div>
                                 </div>
                             </div>
                         </div>

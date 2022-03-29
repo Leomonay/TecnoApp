@@ -14,7 +14,6 @@ export default function workOrderReducer (state = initialState,action){
     let array = []
     switch (action.type){
         case 'NEW_ORDER':
-            console.log('action.payload', action.payload)
             if (action.payload.error) return{...state,orderResult:{error: action.payload.error}}
             array = state.workOrderList.filter(order=> order.code !== action.payload.code)
             array.push(action.payload)
