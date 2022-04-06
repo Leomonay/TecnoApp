@@ -42,23 +42,23 @@ function PasswordForm({close}){
         <h5 className='text-center fw-bold'><u>Cambiar contraseña</u></h5>
       </div>
       <div className="row">
-        <div class="mb-3">
-          <label for='currentPassword' class="form-label">
+        <div className="mb-3">
+          <label for='currentPassword' className="form-label">
             Contraseña actual
           </label>
-          <input type="password" class="form-control" id="currentPassword" onChange={(e)=>setPassword(e.target.value)} required/>
+          <input type="password" className="form-control" id="currentPassword" onChange={(e)=>setPassword(e.target.value)} required/>
         </div>
-        <div class="mb-3">
-          <label for='newPassword' class="form-label">
+        <div className="mb-3">
+          <label for='newPassword' className="form-label">
             Ingrese nueva contraseña
           </label>
-          <input type="password" class="form-control" id="newPassword"  onChange={(e)=>setNewPassword(e.target.value)} required/>
+          <input type="password" className="form-control" id="newPassword"  onChange={(e)=>setNewPassword(e.target.value)} required/>
         </div>
-        <div class="mb-3">
-          <label for='confirmPassword' class="form-label">
+        <div className="mb-3">
+          <label for='confirmPassword' className="form-label">
             Repita nueva contraseña
           </label>
-          <input type="password" class={`form-control ${error?'btn-outline-danger border-danger':''}`} id="confirmPassword" onChange={(e)=>setConfirm(e.target.value)} required/>
+          <input type="password" className={`form-control ${error?'btn-outline-danger border-danger':''}`} id="confirmPassword" onChange={(e)=>setConfirm(e.target.value)} required/>
         </div>
       </div>
       <div className="row my-2">
@@ -125,7 +125,7 @@ function NavBar() {
             <div className="container-fluid p-0 my-2">
               <div className="row m-0">
                 {navOptions.map((option,index)=>
-                  <div className="col-sm-auto p-0 d-grid gap-2">
+                  <div key={index} className="col-sm-auto p-0 d-grid gap-2">
                     <NavLink to={option.url} key={index}
                       onClick={()=>setVisible(false)}
                       className={(navData) => `col btn nav-item navBarLink ${navData.isActive ? "activeNavLink" :''}`}>
@@ -144,8 +144,8 @@ function NavBar() {
                   <div className="container p-0">
                     <div className="row m-0 pe-2 d-flex justify-content-end">
                       <button className="col-sm-3 px-1 btn btn-outline-warning" style={{minWidth: 'fit-content'}} title='Cambiar contraseña' onClick={handlePassForm}>
-                        <i class="fas fa-exchange-alt"/>
-                        <i class="fas fa-key"/>
+                        <i className="fas fa-exchange-alt"/>
+                        <i className="fas fa-key"/>
                       </button>
                       <button className="col-sm-3 px-1 btn btn-outline-secondary" onClick={handleLogOut} 
                         style={{height: 'fit-content', minWidth: 'fit-content'}}>

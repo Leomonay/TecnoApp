@@ -45,7 +45,7 @@ export default function adminCylindersReducer(state = initialState, action) {
         refrigerants: refrigerants,
       };
       
-    case 'RESET_RESULT':
+    case 'RESET_CYLINDER_RESULT':
       return{
         ...state,
         cylinderResult: action.payload

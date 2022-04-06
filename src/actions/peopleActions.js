@@ -1,58 +1,6 @@
 import { appConfig } from "../apiConfig"
 // const plantCode=appConfig.plantConfig.code
 
-export function getWorkerList(){
-    return async function(dispatch){
-        return fetch(`${appConfig.url}/users?access=Worker`)
-        .then(response => response.json())
-        .then(json=>dispatch({
-            type: 'WORKERS_LIST',
-            payload: json
-            })
-        )
-    }    
-}
-export function getSupervisors(){
-    return async function(dispatch){
-        return fetch(`${appConfig.url}/users?access=Supervisors`)
-        .then(response => response.json())
-        .then(json=>dispatch({
-            type: 'SUPERVISORS',
-            payload: json
-            })
-        )
-    }    
-}
-export function getUserOptions(){
-    return async function(dispatch){
-        return fetch(`${appConfig.url}/users/options`)
-        .then(response => response.json())
-        .then(json=>dispatch({
-            type: 'USER_OPTIONS',
-            payload: json
-            })
-        )
-    } 
-}
-
-export function getUsersList(filters){
-    return async function(dispatch){
-        return fetch(`${appConfig.url}/users/filtered`,{
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body:JSON.stringify({filters})
-        })
-        .then(response => response.json())
-        .then(json=>dispatch({
-            type: 'USER_LIST',
-            payload: json
-            })
-        )
-    } 
-}
 export function updateUser(idNumber, update){
     return async function(dispatch){
         return fetch(`${appConfig.url}/users/detail/${idNumber}`,{

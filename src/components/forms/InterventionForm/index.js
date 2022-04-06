@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { getWorkerList } from "../../../actions/peopleActions"
 import PeoplePicker from "../../pickers/PeoplePicker"
 import './index.css'
 import AddCylinder from "../AddCylinder"
 import AddTextForm from "../AddText"
 import { addCylinderUsage, deleteCylinderUsage, updateIntervention } from "../../../actions/workOrderActions"
-import { cylinderActions } from "../../../actions/StoreActions"
+import { cylinderActions, peopleActions } from "../../../actions/StoreActions"
 import { FormInput } from "../FormInput"
 
 
@@ -24,10 +23,11 @@ export default function AddIntervention(props){
     const [cylinderList, setCylinderList] = useState([])
     const [gasUsages, setGasUsages] = useState([])
     const [addText, setAddText]=useState(false)
+    const [list, setList] = useState(workersList)
     const dispatch=useDispatch()
 
 
-
+    useEffect(()=>setList(workersList),[workersList])
 
     useEffect(()=>{
         if(data){
@@ -105,7 +105,10 @@ export default function AddIntervention(props){
         setGasUsages(usages)
     }
 
-    useEffect(()=>{if(!workersList[0])dispatch(getWorkerList())},[workersList, dispatch])
+    useEffect(()=>{
+        // if(list[0]) return
+        dispatch( peopleActions.getWorkers( userData.access === 'Admin'? undefined: userData.plant ) )
+    },[userData, dispatch])
 
     return(
         <div className='modal'>
@@ -138,7 +141,7 @@ export default function AddIntervention(props){
             <div className='row text-center'>
                 <PeoplePicker name='Intervinientes'
                                 key={(user?user.id:1)+(intervention.id?intervention.id:1)}
-                                options={workersList}
+                                options={list}
                                 disabled={!intervention.time || (intervention.id && userData.access!=="Admin")}
                                 idList = {intervention.workers || []}
                                 update={(idArray)=>handlePeople(idArray)}

@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import {useDispatch, useSelector} from 'react-redux'
 import {Link} from 'react-router-dom'
-import { getSupervisors } from '../../actions/peopleActions'
 import { deleteOrder, resetDetail, setDetail } from '../../actions/workOrderActions'
 import Paginate from '../../components/Paginate'
 import WarningErrors from '../../components/warnings/WarningErrors'
@@ -34,7 +33,6 @@ function FormInput({label, item, placeholder, select, textArea, type, min, max, 
 }
 
 function applyFilters(element, filters){
-  console.log('element', element, 'filters', filters)
   let check = true
   for (let key of Object.keys(filters)){
     if (key === 'dateMin') {
@@ -42,7 +40,7 @@ function applyFilters(element, filters){
     }else if (key === 'dateMax') {
       if( new Date (element.date) > new Date (filters[key]) ) check = false
     }else if (['servicePoint', 'supervisor', 'solicitor'].includes(key)){
-      if(!element[key] || !element[key].includes(filters[key])) check=false
+      if(!element[key] || !element[key].toLowerCase().includes(filters[key].toLowerCase())) check=false
     }else{
       if(!element[key] || element[key]!== (filters[key])) check=false
     }
@@ -95,18 +93,12 @@ export default function WorkOrders(){
 
   const [isAdmin] = useState(userData.access === 'Admin')
 
-  useEffect(()=>console.log('filters',filters),[filters])
-  useEffect(()=>console.log('filters',filters),[filters])
-
   function handleWarning(e){
     e.preventDefault()
     setWarning(Number(e.target.id))
   }
 
-  useEffect(()=>{
-    dispatch(getSupervisors())
-    dispatch(resetDetail())
-  },[dispatch])
+  useEffect(()=>dispatch(resetDetail()),[dispatch])
 
   function selectFilter(e){
     const {name, value}=e.target

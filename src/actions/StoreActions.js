@@ -1,6 +1,13 @@
 import { appConfig } from "../apiConfig";
 const token = localStorage.getItem('tecnoToken')
 
+function jsonToQuery(json){
+  if (!json) return ''
+  const keys = Object.keys(json)
+  if (!keys[0]) return ''
+  return '?'+Object.keys(json).map(key=>`${key}=${json[key]}`).join('&')
+}
+
 export function serverAction(data){
   return async function(dispatch){
     return fetch(`${appConfig.url}/${data.endpoint}`,{
@@ -29,17 +36,17 @@ export const cylinderActions = {
   addNew: (cylinder) => postAction(`cylinders`, cylinder, "NEW_CYLINDER" ),
   update: (cylinder) => putAction(`cylinders`, cylinder, 'UPDATE_CYLINDER'),
   delete: (id) => deleteAction(`cylinders?id=${id}`, 'DELETE_CYLINDER' ),
-  resetResult: () => ({type: 'RESET_RESULT', payload: {}}),
+  resetResult: () => ({type: 'RESET_CYLINDER_RESULT', payload: {}}),
   getGases: ()=>getAction('cylinders/refrigerant', 'GET_REFRIGERANTS'),
   resetList: ()=> ({type: "GET_CYLINDERS", payload: []})
 }
 
 //People Actions
 export const peopleActions = {
-  getWorkers: ()=> getAction('users?access=Worker', 'WORKERS_LIST'), //getWorkerList
-  getSupervisors: ()=> getAction('users?access=Supervisor', 'SUPERVISORS'), //getSupervisors
-  getOptions: ()=> getAction('users/options', 'USER_OPTIONS'), //getUserOptions1
-  getAllUsers: (filters)=> postAction('users/filtered', filters, 'USER_LIST'), //getUsersList
+  getWorkers: (plant)=> getAction(`users?access=Worker${plant? `&plant=${plant}`:''}`, 'WORKERS_LIST'),
+  getSupervisors: (plant)=> getAction(`users?access=Supervisor${plant? `&plant=${plant}`:''}`, 'SUPERVISORS'),
+  getOptions: ()=> getAction('users/options', 'USER_OPTIONS'),
+  getAllUsers: (filters)=> getAction(`users${jsonToQuery(filters)}`, 'USER_LIST'),
   update: (idNumber, update)=> postAction(`users/detail/${idNumber}`, update, 'SELECTED_USER'), //updateUser //should be a PUT action
   addNew: (user)=> postAction('users', user, 'NEW_USER'), //addUser
   resetResult: ()=> ({type: "RESET_PEOPLE_RESULT"})
@@ -51,7 +58,7 @@ export const deviceActions = {
   getHistory: (id)=> getAction(`devices/history?code=${id}`, 'DEVICE_HISTORY'),
   allOptions: ()=> getAction(`devices/fullOptions`, 'DEVICE_OPTIONS'),
   createNew: (device) => postAction(`devices`, device,'DEVICE_DETAIL'),
-  resetResult: ()=> ({type: 'RESET_RESULT'}),
+  resetResult: ()=> ({type: 'RESET_DEVICE_RESULT'}),
   resetDevice: ()=> ({type: 'RESET_DEVICE'}),
 
   getFullList: (plant)=>getAction(`devices/all?plant=${plant}`, 'FULL_DEVICE_LIST'),

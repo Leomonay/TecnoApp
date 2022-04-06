@@ -25,7 +25,7 @@ export default function deviceReducer (state = initialState,action){
                 : []
             };
 
-        case 'RESET_RESULT':{
+        case 'RESET_DEVICE_RESULT':{
             return{...state,deviceResult:{}}
         }
         case 'RESET_DEVICE':{

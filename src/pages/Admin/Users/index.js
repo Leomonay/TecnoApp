@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { getPlantList } from "../../../actions/dataActions"
-import { getUserOptions, getUsersList } from "../../../actions/peopleActions"
+import { peopleActions } from "../../../actions/StoreActions"
 import UserCard from "../../../components/Cards/UserCards/UserCard"
 import DropdownChoice from "../../../components/dropdown/DropdownChoice"
 import UserDetail from '../../../components/forms/UserDetail'
@@ -17,11 +17,9 @@ export default function AdminUsers(){
     const [userDetail,setUserDetail]=useState(null)
 
     useEffect(()=>{
-        dispatch(getUserOptions())
+        dispatch(peopleActions.getOptions())
         dispatch(getPlantList())
     },[dispatch])
-
-    useEffect(()=>options&&dispatch(getUsersList(options)),[dispatch ,options])
 
     function setUserFilters(item, value,e){
         const newOption=cloneJson(options)
@@ -33,21 +31,21 @@ export default function AdminUsers(){
             newOption[item]=value
         }
         setOption(newOption)
-        dispatch(getUsersList(options))
+        dispatch(peopleActions.getAllUsers(options))
     }
 
-    useEffect(()=>{options && dispatch(getUsersList(options))},[dispatch, options])
+    useEffect(()=>{options && dispatch(peopleActions.getAllUsers(options))},[dispatch, options])
 
     return(
         <div className='adminOptionSelected'>
             <button className="button newUser" onClick={()=>setUserDetail('new')}>CREAR USUARIO</button>
             <div className="title">Lista de Usuarios</div>
             <br/>
-            {locationTree && DropdownChoice('plant', Object.keys(locationTree),
-             (item, value)=>setUserFilters(item, value)
+            {locationTree[0] && DropdownChoice('plant', locationTree,
+                (item, value)=>setUserFilters(item, value)
              )}
-            {userOptions && DropdownChoice('charge', userOptions.charge, (item, value)=>setUserFilters(item, value))}
-            {userOptions && DropdownChoice('access', userOptions.access, (item, value)=>setUserFilters(item, value))}
+            {userOptions.charge && DropdownChoice('charge', userOptions.charge, (item, value)=>setUserFilters(item, value))}
+            {userOptions.access && DropdownChoice('access', userOptions.access, (item, value)=>setUserFilters(item, value))}
             
             <input
                 type='checkbox'
