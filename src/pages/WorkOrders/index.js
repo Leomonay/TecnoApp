@@ -39,6 +39,8 @@ function applyFilters(element, filters){
       if( new Date (element.date) < new Date (filters[key]) ) check = false
     }else if (key === 'dateMax') {
       if( new Date (element.date) > new Date (filters[key]) ) check = false
+    } else if (key==='class' && filters.key==='No-Reclamo'){
+      if( element.key === 'Reclamo') check = false
     }else if (['servicePoint', 'supervisor', 'solicitor'].includes(key)){
       if(!element[key] || !element[key].toLowerCase().includes(filters[key].toLowerCase())) check=false
     }else{
@@ -109,11 +111,22 @@ export default function WorkOrders(){
     const newFilters = {...filters}
     const {id}=e.target
     id==='all' ? delete newFilters.status : newFilters.status=id
-    setFilteredList(newFilters.status ?
-      workOrderList.filter(order=>order.status === newFilters.status)
-      :workOrderList)
+    // setFilteredList(newFilters.status ?
+    //   workOrderList.filter(order=>order.status === newFilters.status)
+    //   :workOrderList)
+    setFilteredList(workOrderList.filter(order=>applyFilters(order, newFilters)).sort((a,b)=>a.code<b.code?1:-1))
     setFilters(newFilters)
   }
+
+  function clickClass(e){
+    e.preventDefault()
+    const newFilters = {...filters}
+    const {id}=e.target
+    id==='all' ? delete newFilters.class : newFilters.class=id
+    setFilteredList(workOrderList.filter(order=>applyFilters(order, newFilters)).sort((a,b)=>a.code<b.code?1:-1))
+    setFilters(newFilters)
+  }
+
   function searchByCode(e){
     e.preventDefault()
     setFilteredList(workOrderList.filter(order=>order.code === code))
@@ -144,12 +157,14 @@ export default function WorkOrders(){
     setFilters({})
     setFilteredList(workOrderList)
   }
-  function handleNewReclaim(e){
+  function handleNewReclaim(){
     dispatch(deviceActions.resetDevice())
     dispatch(setDetail({class:"Reclamo"}))
   }
 
+
   useEffect(()=>userData && dispatch && year && dispatch(workOrderActions.getList(userData.plant, year)),[dispatch,userData,year])
+  
   useEffect(()=>setFilteredList(workOrderList.sort((a,b)=>a.code<b.code?1:-1)),[workOrderList])
 
   return(
@@ -174,7 +189,7 @@ export default function WorkOrders(){
       </div>
 
       <div className='row'>
-        <div className='col-sm-4'>
+        <div className='col-lg-3'>
           <form className='d-flex' onSubmit={searchByCode}>
             <FormInput label='N° OT' type='number' item='code' select={(e)=>setCode(Number(e.target.value))}/>
             <div className='col'>
@@ -184,7 +199,7 @@ export default function WorkOrders(){
               </div>
             </form>
         </div>
-        <div className='col-sm-4'>
+        <div className='col-lg-3'>
           <form className='d-flex' onSubmit={searchByDevice}>
             <FormInput label='Equipo' item='device' placeholder='código o parte del nombre' select={(e)=>setDevice(e.target.value)}/>
             <div className='col'>
@@ -192,12 +207,20 @@ export default function WorkOrders(){
             </div>
           </form>
         </div>
-        <div className='col-sm-4 '>
-          <div className='input-group' style={{zIndex: 'inherit'}}>
-            <span className="input-group-text" id="inputGroup-sizing-default">Estado</span>
-            <button className={`btn ps-1 pe-1 ${filters.status === 'Abierta' ? 'btn-primary' : 'btn-info'}`} id={'Abierta'} style={{zIndex: 'inherit'}} onClick={clickStatus}>Pendientes</button>
-            <button className={`btn ps-1 pe-1 ${filters.status === 'Cerrada' ? 'btn-primary' : 'btn-info'}`} id={'Cerrada'} style={{zIndex: 'inherit'}} onClick={clickStatus}>Cerradas</button>
-            <button className={`btn ps-1 pe-1 ${!filters.status ? 'btn-primary' : 'btn-info'}`} id={'all'} style={{zIndex: 'inherit'}} onClick={clickStatus}>Todas</button>
+        <div className='col-md-auto'>
+          <div className='input-group w-100' style={{zIndex: 'none'}}>
+            <span className="input-group-text p-1 mr-1 my-1" style={{minWidth: '4rem'}} id="inputGroup-sizing-default">Estado</span>
+            <button className={`btn p-1 my-1 ${filters.status === 'Abierta' ? 'btn-primary' : 'btn-info'}`} id={'Abierta'} style={{zIndex: 'inherit'}} onClick={clickStatus}>Pendientes</button>
+            <button className={`btn p-1 my-1 ${filters.status === 'Cerrada' ? 'btn-primary' : 'btn-info'}`} id={'Cerrada'} style={{zIndex: 'inherit'}} onClick={clickStatus}>Cerradas</button>
+            <button className={`btn p-1 my-1 ${!filters.status ? 'btn-primary' : 'btn-info'}`} id={'all'} style={{zIndex: 'inherit'}} onClick={clickStatus}>Todas</button>
+          </div>
+        </div>
+        <div className='col-md-auto mb-1'>
+          <div className='input-group' style={{zIndex: 'none'}}>
+            <span className="input-group-text p-1 mr-1 my-1" style={{minWidth: '4rem'}} id="inputGroup-sizing-default">Clase</span>
+            <button className={`btn p-1 my-1 ${filters.class === 'Reclamo' ? 'btn-primary' : 'btn-info'}`} id={'Reclamo'} style={{zIndex: 'inherit'}} onClick={clickClass}>Reclamos</button>
+            <button className={`btn p-1 my-1 ${filters.class === 'No-Reclamo' ? 'btn-primary' : 'btn-info'}`} id={'No-reclamo'} style={{zIndex: 'inherit'}} onClick={clickClass}>No-Reclamos</button>
+            <button className={`btn p-1 my-1 ${!filters.class ? 'btn-primary' : 'btn-info'}`} id={'all'} style={{zIndex: 'inherit'}} onClick={clickClass}>Todas</button>
           </div>
         </div>
       </div>

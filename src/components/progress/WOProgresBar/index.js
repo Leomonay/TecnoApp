@@ -16,8 +16,8 @@ export default function WOProgress(props){
    
     function handleChange(e){
         const value = `${userData.access === "Admin" ?
-            e.target.value:
-            Math.max(Number(e.target.value), min)}`
+            e.target.value
+            :Math.max(Number(e.target.value), min)}`
         const obj = {target:{value: value},preventDefault:()=>{}}
         setError(e.target.value<=min)
         setValue(`${ Math.max(value, min) }`)

@@ -53,6 +53,10 @@ export default function WorkOrder(){
     const [permissions, setPermissions] = useState({create:true,edit:true,admin:false})
     const dispatch = useDispatch()
 
+    // useEffect(()=>console.log('order', order))
+    // useEffect(()=>console.log('update', update))
+    // useEffect(()=>console.log('orderDetail', orderDetail))
+
     useEffect(()=> order.taskDate && planDates[0] &&
         dispatch(selectTask(planDates.find(date=>date.id === order.taskDate)))
     ,[order, planDates,dispatch])
@@ -129,7 +133,7 @@ export default function WorkOrder(){
         }else{
             object[item]=value
         }
-        otCode ? setUpdate ({object}) : setOrder(object)
+        otCode ? setUpdate (object) : setOrder(object)
     }
 
     function checkErrors(){
@@ -148,7 +152,8 @@ export default function WorkOrder(){
         if(!order.servicePoint) warnings.push('¿Seguro que desea guardar la orden sin un lugar de servicio asociado?')
         if(!order.description) errors.push('Debe asignar una descripción')
         if(!interventions || !interventions[0]) warnings.push('¿Seguro que desea guardar la orden sin intervenciones?')
-        if(!order.completed || order.completed === 0 || (!!order.Detail && order.completed === orderDetail.completed)) warnings.push('¿Seguro que desea guardar la orden sin modificar el avance?')
+
+        if((!orderDetail && (!order.completed || order.completed === 0) )|| (!!orderDetail && (!update.completed || orderDetail.completed === update.completed))) warnings.push('¿Seguro que desea guardar la orden sin modificar el avance?')
 
         if (errors[0]){
             setErrors(errors)
@@ -173,7 +178,7 @@ export default function WorkOrder(){
         checkErrors()
     }
     function handleClose(e){
-        e.preventDefault && e.preventDefault()
+        e && e.preventDefault && e.preventDefault()
         setClose(true)
         if (!!closeOrder) setCloseOrder(true)
         const newOrder={...order, completed:100}
@@ -195,7 +200,7 @@ export default function WorkOrder(){
             dispatch(updateOrder(otCode,{
                 ...update,
                 supervisor,
-                completed: toClose || closeOrder? 100 : order.completed,
+                completed: userData.access==='Admin' ? update.completed || order.completed : (toClose || closeOrder? 100 : order.completed),
                 status: closeOrder? "Cerrada" : order.status || "Abierta",
                 userId: userData.id
             }))
@@ -209,7 +214,6 @@ export default function WorkOrder(){
                 completed: toClose ? 100 : order.completed,
                 userId: userData.id
             }
-            console.log('create')
             dispatch(newWorkOrder(sendOrder))
         }
     }
@@ -430,7 +434,7 @@ export default function WorkOrder(){
                 </div>
                 <div className="col-sm-10 p-0">
                     <WOProgress
-                    // key={`${order.completed}`||1}
+                    key={`${order.completed}`||1}
                         errorCond = {order.interventions && order.interventions.length>0}
                         defaultValue={`${order.completed || 0}`}
                         min={(orderDetail && orderDetail.completed) || 0}
