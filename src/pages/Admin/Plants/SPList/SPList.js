@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./SPList.module.css";
+// import styles from "./SPList.module.css";
 
 import { useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
@@ -85,7 +85,7 @@ export default function SPList({
   //Fin función para borrar un SP
 
   return (
-    <div>
+    <div className="container px-0">
       <AddServicePoints
         lineName={lineName}
         plantName={plantName}
@@ -104,48 +104,56 @@ export default function SPList({
         showModalUpdate={showModalUpdate}
       />
 
-      <label>Puntos de Servicio</label>
+      <div className="row">
+        <div className="flex align-items-center justify-content-evenly">
+          <h5>Lugares de Servicio</h5>
+          <button
+            className="btn btn-info"
+            title={
+              habilButtonCreate
+                ? "Seleccione Linea"
+                : "Agregar Lugar de Servicio"
+            }
+            onClick={() => setShowModal(true)}
+            disabled={habilButtonCreate}
+          >
+            Agregar
+          </button>
+        </div>
+      </div>
 
-      {habilButtonCreate ? (
-        <button
-          key="submitFormButton"
-          title="Agregar Area"
-          disabled={habilButtonCreate}
-          className="disabledButton"
-        >
-          Agregar Pto. Serv.
-        </button>
-      ) : (
-        <button
-          title="Agregar Pto. Serv."
-          onClick={() => setShowModal(true)}
-          disabled={habilButtonCreate}
-        >
-          Agregar Pto. Serv.
-        </button>
-      )}
-
-      <div className={styles.divScrollServPoints}>
-        <div className={styles.containerLabel}>
-          {servicePoints.length !== 0 &&
+      <div className="row">
+        <div className="col-12 mt-2 h-50 overflow-auto">
+          {servicePoints.length > 0 &&
             servicePoints.map((element) => {
               return (
-                <div className={styles.cuerpo} key={"divCuerpo" + element}>
-                  <label key={"label" + element}>{element}</label>
+                <div className="d-flex">
                   <button
-                    className={styles.removeButton}
-                    title="Eliminar"
+                    id={element}
+                    className={`btn btn-outline-secondary w-100 flex text-start flex-grow-1 justify-content-start align-items-center`}
+                    key={"divCuerpo" + element}
+                  >
+                    {element}
+                  </button>
+
+                  <button
+                    className="btn btn-danger m-1 p-1"
                     key={"delete" + element}
+                    title="Eliminar"
                     value={element}
                     onClick={(e) => handleDeleteSP(e)}
-                  />
+                  >
+                    <i className="fas fa-trash-alt" />
+                  </button>
                   <button
-                    className={styles.editButton}
+                    className="btn btn-info m-1 p-1"
                     title="Edit"
                     key={"edit" + element}
                     value={element}
                     onClick={(e) => handleEditServicePoint(e)}
-                  />
+                  >
+                    <i className="fas fa-pencil-alt" />
+                  </button>
                 </div>
               );
             })}

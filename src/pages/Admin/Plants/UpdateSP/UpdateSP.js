@@ -80,7 +80,7 @@ const UpdateSP = ({
                 type="text"
                 name="newCode"
                 autoComplete="off"
-                value={updateSPData.newCode}
+                defaultValue={updateSPData.newCode}
                 onChange={(e) => handleUpdateSP(e)}
                 placeholder="Ingrese el código..."
               />
@@ -92,7 +92,7 @@ const UpdateSP = ({
                 type="text"
                 name="newGate"
                 autoComplete="off"
-                value={updateSPData.newGate}
+                defaultValue={updateSPData.newGate}
                 onChange={(e) => handleUpdateSP(e)}
                 placeholder="Ingrese la puerta..."
               />
@@ -100,24 +100,24 @@ const UpdateSP = ({
 
             <div>
               <label>Aceria </label>
-              <select name="newAceria" onChange={(e) => handleUpdateSP(e)}>
-                <option value={false} selected={updateSPData.newAceria}>
-                  No
-                </option>
-                <option value={true} selected={updateSPData.newAceria}>
-                  Si
-                </option>
+              <select
+                name="newAceria"
+                onChange={(e) => handleUpdateSP(e)}
+                defaultValue={updateSPData.newAceria}
+              >
+                <option value={false}>No</option>
+                <option value={true}>Si</option>
               </select>
             </div>
             <div>
               <label>Caloria </label>
-              <select name="newCaloria" onChange={(e) => handleUpdateSP(e)}>
-                <option value={false} selected={updateSPData.newCaloria}>
-                  No
-                </option>
-                <option value={true} selected={updateSPData.newCaloria}>
-                  Si
-                </option>
+              <select
+                name="newCaloria"
+                onChange={(e) => handleUpdateSP(e)}
+                defaultValue={updateSPData.newCaloria}
+              >
+                <option value={false}>No</option>
+                <option value={true}>Si</option>
               </select>
             </div>
             <div>
@@ -125,13 +125,10 @@ const UpdateSP = ({
               <select
                 name="newTareaPeligrosa"
                 onChange={(e) => handleUpdateSP(e)}
+                defaultValue={updateSPData.newTareaPeligrosa}
               >
-                <option value={false} selected={updateSPData.newTareaPeligrosa}>
-                  No
-                </option>
-                <option value={true} selected={updateSPData.newTareaPeligrosa}>
-                  Si
-                </option>
+                <option value={false}>No</option>
+                <option value={true}>Si</option>
               </select>
             </div>
           </form>

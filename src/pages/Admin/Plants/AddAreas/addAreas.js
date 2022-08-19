@@ -8,6 +8,7 @@ import {
 } from "../../../../actions/addPlantsActions.js";
 
 import styles from "./addAreas.module.css";
+import { FormInput } from "../../../../components/forms/FormInput/index.js";
 
 const AddAreas = ({ plantName, setShowModal, showModal }) => {
   const dispatch = useDispatch();
@@ -23,7 +24,10 @@ const AddAreas = ({ plantName, setShowModal, showModal }) => {
 
   //Función crear area
   const handleChangArea = (event) => {
-    setInputArea({ ...inputArea, [event.target.name]: event.target.value });
+    setInputArea({
+      ...inputArea,
+      [event.target.name]: event.target.value.toUpperCase(),
+    });
     if (inputArea.name.length !== 0 && inputArea.code.length !== 0)
       setErrors(false);
     else setErrors(true);
@@ -31,13 +35,13 @@ const AddAreas = ({ plantName, setShowModal, showModal }) => {
 
   const handleSubmitAreas = async (event) => {
     event.preventDefault();
-    let plantCode = await dispatch(getPlantData(plantName));
+    let plantCode = dispatch(getPlantData(plantName));
 
     let datos = { areas: inputAreas, plantCode: plantCode.code };
 
-    let response = await dispatch(addArea(datos));
+    let response = dispatch(addArea(datos));
 
-    await dispatch(getPlantLocation(plantName));
+    dispatch(getPlantLocation(plantName));
     if (response.length === 0) {
       alert(response.message);
     } else {
@@ -49,18 +53,17 @@ const AddAreas = ({ plantName, setShowModal, showModal }) => {
       code: "",
     });
     setShowModal(false);
-    
   };
   //Fin de la función para agregar una planta nueva
 
-  const hanldeDeleteArea = (event) => {
-    setInputAreas(
-      inputAreas.filter((countr) => countr.code !== event.target.value)
-    );
+  const handleDeleteArea = (event) => {
+    event.preventDefault();
+    setInputAreas(inputAreas.filter((a) => a.code !== event.target.id));
   };
 
   //Funcion para agregar areas al listado
-  const handleAddArea = () => {
+  const handleAddArea = (e) => {
+    e.preventDefault();
     setInputAreas([...inputAreas, inputArea]);
     setInputArea({
       name: "",
@@ -71,7 +74,8 @@ const AddAreas = ({ plantName, setShowModal, showModal }) => {
 
   //fin funmción de agregar áreas al listado
 
-  const handleClose = () => {
+  const handleClose = (e) => {
+    e.preventDefault();
     setInputAreas([]);
     setInputArea({
       name: "",
@@ -83,7 +87,84 @@ const AddAreas = ({ plantName, setShowModal, showModal }) => {
 
   return (
     <div className={styles[showHideClassName]}>
-      <section className={styles.modalmain}>
+      <section className="modal">
+        <div className="container bg-light rounded-2 w-auto">
+          <form
+            className="flex flex-column align-items-center p-4 gap-4"
+            onSubmit={(e) => handleSubmitAreas(e)}
+            id="addArea"
+          >
+            <div className="container">
+              <h4 className="text-center mb-4">Agregar Areas</h4>
+              <FormInput
+                label={"Nombre"}
+                placeholder="Nombre del área"
+                name="name"
+                onBlur={(e) => handleChangArea(e)}
+              />
+              <FormInput
+                label={"Código"}
+                placeholder="Código del área"
+                name="code"
+                onBlur={(e) => handleChangArea(e)}
+              />
+              <button
+                className="btn btn-info w-100"
+                disabled={errors}
+                onClick={(e) => handleAddArea(e)}
+              >
+                Agregar Area
+              </button>
+            </div>
+
+            {inputAreas.length > 0 && (
+              <div className="w-100">
+                <h5 className="text-center">Areas a agregar:</h5>
+                {inputAreas.map((element) => {
+                  return (
+                    <div className="w-100 d-flex align-items-center justify-content-between border-bottom">
+                      <span>
+                        <b>
+                          [{element.code}] {element.name}
+                        </b>
+                      </span>
+                      <button
+                        className="btn btn-danger px-1 py-0 m-0"
+                        title="Quitar"
+                        onClick={(event) => handleDeleteArea(event)}
+                        key={element.name}
+                        id={element.code}
+                      >
+                        <i className="fas fa-trash-alt" id={element.code} />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            <div className="flex w-100 justify-content-evenly">
+              <button
+                className="btn btn-success col-4"
+                type="submit"
+                key="submitFormButton"
+                form="addArea"
+                disabled={inputAreas.length === 0}
+              >
+                Crear
+              </button>
+              <button
+                className="btn btn-danger col-4"
+                onClick={(e) => handleClose(e)}
+              >
+                Cancelar
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      {/* <section className={styles.modalmain}>
         <h4>Agregar areas</h4>
         <div className={styles.colContent}>
           <div className={styles.container}>
@@ -94,7 +175,7 @@ const AddAreas = ({ plantName, setShowModal, showModal }) => {
                   type="text"
                   name="name"
                   autoComplete="off"
-                  value={inputArea.name}
+                  // value={inputArea.name}
                   onBlur={(e) => handleChangArea(e)}
                   placeholder="Ingrese el nombre..."
                 />
@@ -105,7 +186,7 @@ const AddAreas = ({ plantName, setShowModal, showModal }) => {
                   type="text"
                   name="code"
                   autoComplete="off"
-                  value={inputArea.code}
+                  // value={inputArea.code}
                   onBlur={(e) => handleChangArea(e)}
                   placeholder="Ingrese el código..."
                 />
@@ -133,11 +214,7 @@ const AddAreas = ({ plantName, setShowModal, showModal }) => {
                   Crear Areas
                 </button>
               ) : (
-                <button
-                  type="submit"
-                  key="submitFormButton"
-                  form="addArea"
-                 >
+                <button type="submit" key="submitFormButton" form="addArea">
                   Crear Areas
                 </button>
               )}
@@ -167,7 +244,7 @@ const AddAreas = ({ plantName, setShowModal, showModal }) => {
               })}
           </div>
         </div>
-      </section>
+      </section> */}
     </div>
   );
 };

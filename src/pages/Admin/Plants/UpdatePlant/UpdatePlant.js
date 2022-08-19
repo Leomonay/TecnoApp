@@ -4,7 +4,8 @@ import {
   getPlantList,
   updatePlant,
 } from "../../../../actions/addPlantsActions.js";
-import styles from './UpdatePlant.module.css'
+import { FormInput } from "../../../../components/forms/FormInput/index.js";
+import styles from "./UpdatePlant.module.css";
 const UpdatePlant = ({
   updatePlantData,
   setUpdatePlantData,
@@ -45,7 +46,49 @@ const UpdatePlant = ({
 
   return (
     <div className={styles[showHideClassName]}>
-      <section className={styles.modalmain}>
+      <section className="modal">
+        <div className="container bg-light rounded-2 w-auto">
+          <form
+            className="flex flex-column align-items-center p-4 gap-4"
+            onSubmit={(e) => handleSubmitUpdatePlant(e)}
+            id="addPlant"
+          >
+            <div className="container">
+              <h4 className="text-center mb-4">Editar planta</h4>
+              <FormInput
+                label={"Nombre"}
+                placeholder="Nombre de la planta"
+                value={updatePlantData.newName}
+                onChange={(e) => handleUpdatePlant(e)}
+              />
+              <FormInput
+                label={"Código"}
+                placeholder="Código de la planta"
+                value={updatePlantData.code}
+                onChange={(e) => handleUpdatePlant(e)}
+              />
+            </div>
+            <div className="flex w-100 justify-content-evenly">
+              <button
+                className="btn btn-success col-4"
+                type="submit"
+                key="submitFormButton"
+                form="updatePlant"
+              >
+                Guardar
+              </button>
+              <button
+                className="btn btn-danger col-4"
+                onClick={() => setShowModalUpdate(false)}
+              >
+                Cancelar
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      {/* <section className={styles.modalmain}>
         <div className={styles.container}>
           <form onSubmit={(e) => handleSubmitUpdatePlant(e)} id="updatePlant">
             <div className={styles.containerInputs}>
@@ -83,7 +126,7 @@ const UpdatePlant = ({
             <button onClick={() => setShowModalUpdate(false)}>Cerrar</button>
           </div>
         </div>
-      </section>
+      </section> */}
     </div>
   );
 };

@@ -3,7 +3,7 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 
-import styles from "./LinesList.module.css";
+// import styles from "./LinesList.module.css";
 
 import {
   getLineServicePoints,
@@ -35,14 +35,12 @@ export default function LinesList({
   }, [areaName]);
 
   const handleChangeLines = (e) => {
-    if (e.target.checked) {
-      dispatch(getLineServicePoints(e.target.value));
-      setSelectedData({
-        ...selectedData,
-        linesName: e.target.value,
-        spName: "",
-      });
-    }
+    dispatch(getLineServicePoints(e.target.id));
+    setSelectedData({
+      ...selectedData,
+      linesName: e.target.id,
+      spName: "",
+    });
   };
 
   //Función boton editar una linea de la lista
@@ -76,14 +74,14 @@ export default function LinesList({
       getLineServicePoints(event.target.value)
     );
     if (plantLocations.length === 0) {
-      let response = await dispatch(deleteLine({ name: event.target.value }));
+      let response = dispatch(deleteLine({ name: event.target.value }));
       if (response.message) {
         alert(response.message);
       } else {
         alert("El área fue borrada");
       }
-      await dispatch(getPlantLocation(plantName));
-      await dispatch(getPlantLines(areaName));
+      dispatch(getPlantLocation(plantName));
+      dispatch(getPlantLines(areaName));
     } else {
       alert("La planta contiene LÍNEAS debe eliminarlas primero");
     }
@@ -91,7 +89,7 @@ export default function LinesList({
   //Fin función para borrar una linea
 
   return (
-    <div>
+    <div className="container px-0">
       <AddLines
         areaName={areaName}
         plantName={plantName}
@@ -108,56 +106,57 @@ export default function LinesList({
         showModalUpdate={showModalUpdate}
       />
 
-      <label>Lineas</label>
+      <div className="row">
+        <div className="flex align-items-center justify-content-evenly">
+          <h5>Lineas</h5>
+          <button
+            className="btn btn-info"
+            title={habilButtonCreate ? "Seleccione Area" : "Agregar Linea"}
+            onClick={() => setShowModal(true)}
+            disabled={habilButtonCreate}
+          >
+            Agregar
+          </button>
+        </div>
+      </div>
 
-      {habilButtonCreate ? (
-        <button
-          key="submitFormButton"
-          title="Agregar Area"
-          disabled={habilButtonCreate}
-          className="disabledButton"
-        >
-          Agregar Linea
-        </button>
-      ) : (
-        <button
-          title="Agregar Linea"
-          onClick={() => setShowModal(true)}
-          disabled={habilButtonCreate}
-        >
-          Agregar Linea
-        </button>
-      )}
-
-      <div className={styles.divScroll}>
-        <div className={styles.containerLabel}>
-          {lines.length !== 0 &&
+      <div className="row">
+        <div className="col-12 mt-2 h-50 overflow-auto">
+          {lines.length > 0 &&
             lines.map((element) => {
               return (
-                <div className={styles.cuerpo} key={"divCuerpo" + element}>
-                  <input
-                    key={"input" + element}
-                    type="radio"
-                    id={element}
-                    name="linesInput"
-                    value={element}
-                    onBlur={(e) => handleChangeLines(e)}
-                  />
-                  <label key={"label" + element}>{element}</label>
+                <div className="d-flex">
                   <button
-                    className={styles.removeButton}
-                    title="Eliminar"
+                    id={element}
+                    className={`btn ${
+                      selectedData.linesName === element
+                        ? "btn-primary"
+                        : "btn-outline-primary"
+                    } w-100 flex flex-grow-1 justify-content-start align-items-center`}
+                    key={"divCuerpo" + element}
+                    onClick={(e) => handleChangeLines(e)}
+                  >
+                    {element}
+                  </button>
+
+                  <button
+                    className="btn btn-danger m-1 p-1"
                     key={"delete" + element}
+                    title="Eliminar"
                     value={element}
                     onClick={(e) => handleDeleteLine(e)}
-                  />
+                  >
+                    <i className="fas fa-trash-alt" />
+                  </button>
                   <button
-                    className={styles.editButton}
+                    className="btn btn-info m-1 p-1"
                     title="Edit"
                     key={"edit" + element}
                     value={element}
                     onClick={(e) => handleEditLine(e)}
-                  />
+                  >
+                    <i className="fas fa-pencil-alt" />
+                  </button>
                 </div>
               );
             })}

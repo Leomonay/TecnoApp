@@ -123,7 +123,7 @@ const AddServicePoints = ({
                   type="text"
                   name="name"
                   autoComplete="off"
-                  value={inputServicePoint.name}
+                  defaultValue={inputServicePoint.name}
                   onBlur={(e) => handleChangServicePoint(e)}
                   placeholder="Ingrese el nombre..."
                 />
@@ -134,7 +134,7 @@ const AddServicePoints = ({
                   type="text"
                   name="code"
                   autoComplete="off"
-                  value={inputServicePoint.code}
+                  defaultValue={inputServicePoint.code}
                   onBlur={(e) => handleChangServicePoint(e)}
                   placeholder="Ingrese el código..."
                 />
@@ -145,7 +145,7 @@ const AddServicePoints = ({
                   type="text"
                   name="gate"
                   autoComplete="off"
-                  value={inputServicePoint.gate}
+                  defaultValue={inputServicePoint.gate}
                   onBlur={(e) => handleChangServicePoint(e)}
                   placeholder="Ingrese la puerta..."
                 />
@@ -156,10 +156,9 @@ const AddServicePoints = ({
                 <select
                   name="aceria"
                   onBlur={(e) => handleChangServicePoint(e)}
+                  defaultValue={false}
                 >
-                  <option value={false} selected>
-                    No
-                  </option>
+                  <option value={false}>No</option>
                   <option value={true}>Si</option>
                 </select>
               </div>
@@ -168,10 +167,9 @@ const AddServicePoints = ({
                 <select
                   name="caloria"
                   onBlur={(e) => handleChangServicePoint(e)}
+                  defaultValue={false}
                 >
-                  <option value={false} selected>
-                    No
-                  </option>
+                  <option value={false}>No</option>
                   <option value={true}>Si</option>
                 </select>
               </div>
@@ -180,10 +178,9 @@ const AddServicePoints = ({
                 <select
                   name="tareaPeligrosa"
                   onBlur={(e) => handleChangServicePoint(e)}
+                  defaultValue={false}
                 >
-                  <option value={false} selected>
-                    No
-                  </option>
+                  <option value={false}>No</option>
                   <option value={true}>Si</option>
                 </select>
               </div>

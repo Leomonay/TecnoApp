@@ -48,7 +48,6 @@ function App() {
   
   if(loading)return(<div className='waiting'></div>)
   if(!loading)return (
-    <div className='appContainer'>
         <Router>
           <Routes>
             <Route exact path="/" element={<Landing/>} hideNavBar={true}/>
@@ -66,7 +65,6 @@ function App() {
             <Route exact path={'/plan'} component={<Layout><Plan/></Layout>}/>
           </Routes>
         </Router>
-    </div>
   );
 }
 

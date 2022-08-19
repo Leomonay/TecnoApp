@@ -8,7 +8,7 @@ import {
 } from "../../../../actions/addPlantsActions.js";
 import { useDispatch } from "react-redux";
 
-import styles from "./PlantList.module.css";
+// import styles from "./PlantList.module.css";
 import AddPlant from "../AddPlant/addPlant.js";
 import UpdatePlant from "../UpdatePlant/UpdatePlant.js";
 
@@ -32,7 +32,7 @@ export default function PlantList({ plants, setSelectedData, selectedData }) {
       oldName: response.name,
       oldCode: response.code,
     });
-    setShowModalUpdate(true)
+    setShowModalUpdate(true);
   };
   //Fin funciones para editar un area de la lista
 
@@ -55,65 +55,73 @@ export default function PlantList({ plants, setSelectedData, selectedData }) {
   //Fin función para borrar una planta
 
   const handleChangePlants = (e) => {
-    if (e.target.checked) {
-      dispatch(getPlantLocation(e.target.value));
-      setSelectedData({plantName: e.target.value,areaName: "",
+    dispatch(getPlantLocation(e.target.id));
+    setSelectedData({
+      plantName: e.target.id,
+      areaName: "",
       linesName: "",
-      spName: "", });
-    }
+      spName: "",
+    });
   };
 
- 
   return (
-    <div>
+    <div className="container px-0">
       <AddPlant setShowModal={setShowModal} showModal={showModal} />
 
       <UpdatePlant
         setUpdatePlantData={setUpdatePlantData}
         updatePlantData={updatePlantData}
-        setShowModalUpdate={setShowModalUpdate} showModalUpdate={showModalUpdate}
+        setShowModalUpdate={setShowModalUpdate}
+        showModalUpdate={showModalUpdate}
       />
-      <div>
-        <label>Plantas</label>
-        <button title="Agregar Planta" onClick={() => setShowModal(true)}>
-          Agregar Planta
-        </button>
-        <div className={styles.divScroll}>
-          <div className={styles.containerLabel}>
-            {plants.length !== 0 &&
-              plants.map((element) => {
-                return (
-                  <div className={styles.cuerpo} key={"divCuerpo" + element}>
-                  <input
-                      key={"input" + element}
-                      type="radio"
-                      id={element}
-                      name="plantsInput"
-                      value={element}
-                      onChange={(e) => handleChangePlants(e)}
-                    />
-                    <label key={"label" + element}>
+      <div className="row">
+        <div className="flex align-items-center justify-content-evenly">
+          <h5>Plantas</h5>
+          <button className="btn btn-info" onClick={() => setShowModal(true)}>
+            Agregar
+          </button>
+        </div>
+      </div>
+      <div className="row">
+        <div className="col-12 mt-2">
+          {plants.length !== 0 &&
+            plants.map((element, i) => {
+              return (
+                <div key={i} className="d-flex">
+                  <button
+                    id={element}
+                    className={`btn ${
+                      selectedData.plantName === element
+                        ? "btn-primary"
+                        : "btn-outline-primary"
+                    } w-100 flex flex-grow-1 justify-content-start align-items-center`}
+                    key={"divCuerpo" + element}
+                    onClick={(e) => handleChangePlants(e)}
+                  >
                     {element}
-                    </label>
+                  </button>
 
-                    <button
-                      key={"delete" + element}
-                      className={styles.removeButton}
-                      title="Eliminar"
-                      value={element}
-                      onClick={(e) => handleDeletePlant(e)}
-                    />
-                    <button
-                      className={styles.editButton}
-                      title="Edit"
-                      key={"edit" + element}
-                      value={element}
-                      onClick={(e) => handleEditPlant(e)}
-                    />
-                    </div>
-                );
-              })}
-          </div>
+                  <button
+                    className="btn btn-danger m-1 p-1"
+                    key={"delete" + element}
+                    title="Eliminar"
+                    value={element}
+                    onClick={(e) => handleDeletePlant(e)}
+                  >
+                    <i className="fas fa-trash-alt" />
+                  </button>
+                  <button
+                    className="btn btn-info m-1 p-1"
+                    title="Edit"
+                    key={"edit" + element}
+                    value={element}
+                    onClick={(e) => handleEditPlant(e)}
+                  >
+                    <i className="fas fa-pencil-alt" />
+                  </button>
+                </div>
+              );
+            })}
         </div>
       </div>
     </div>

@@ -5,6 +5,7 @@ import {
   getPlantList,
   addPlant,
 } from "../../../../actions/addPlantsActions.js";
+import { FormInput } from "../../../../components/forms/FormInput";
 import styles from "./addPlant.module.css";
 
 const AddPlant = ({ setShowModal, showModal }) => {
@@ -51,16 +52,33 @@ const AddPlant = ({ setShowModal, showModal }) => {
       code: "",
     });
     setShowModal(false);
-    setErrors(true)
+    setErrors(true);
   };
 
   return (
     <div className={styles[showHideClassName]}>
-      <section className={styles.modalmain}>
-        <div className={styles.container}>
-          <form onSubmit={(e) => handleSubmitPlant(e)} id="addPlant">
-            <div className={styles.containerInputs}>
-              <h4>Agregar nueva planta</h4>
+      <section className="modal">
+        <div className="container bg-light rounded-2 w-auto">
+          <form
+            className="flex flex-column align-items-center p-4 gap-4"
+            onSubmit={(e) => handleSubmitPlant(e)}
+            id="addPlant"
+          >
+            <div className="container">
+              <h4 className="text-center mb-4">Agregar nueva planta</h4>
+              <FormInput
+                label={"Nombre"}
+                placeholder="Nombre de la planta"
+                value={inputPlant.name}
+                onBlur={(e) => handleChangePlant(e)}
+              />
+              <FormInput
+                label={"Código"}
+                placeholder="Código de la planta"
+                value={inputPlant.code}
+                onBlur={(e) => handleChangePlant(e)}
+              />
+              {/* 
               <div className={styles.inputs}>
                 <label>Nombre: </label>
                 <input
@@ -82,11 +100,29 @@ const AddPlant = ({ setShowModal, showModal }) => {
                   onBlur={(e) => handleChangePlant(e)}
                   placeholder="Ingrese el código..."
                 />
-              </div>
+              </div> */}
+            </div>
+            <div className="flex w-100 justify-content-evenly">
+              <button
+                className="btn btn-success col-4"
+                type="submit"
+                key="submitFormButton"
+                form="addPlant"
+                disabled={errors}
+              >
+                Crear
+              </button>
+              <button
+                className="btn btn-danger col-4"
+                onClick={() => handleClose()}
+              >
+                Cancelar
+              </button>
             </div>
           </form>
-          <div className={styles.buttonContainer}>
-            {errors ?<button
+          {/* <div className={styles.buttonContainer}>
+            {errors ? (
+              <button
                 type="submit"
                 key="submitFormButton"
                 form="addPlant"
@@ -94,14 +130,15 @@ const AddPlant = ({ setShowModal, showModal }) => {
                 className="disabledButton"
               >
                 Crear Planta
-              </button> : 
+              </button>
+            ) : (
               <button type="submit" key="submitFormButton" form="addPlant">
                 Crear Planta
               </button>
-            }
+            )}
 
             <button onClick={() => handleClose()}>Cerrar</button>
-          </div>
+          </div> */}
         </div>
       </section>
     </div>

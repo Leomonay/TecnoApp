@@ -235,13 +235,19 @@ export function getLineData(line) {
   return async function (dispatch) {
     return fetch(`${appConfig.url}/lines/getLineByName/${line}`)
       .then((response) => response.json())
-      .then((json) => {
+      .then((json) =>
         dispatch({
           type: "ACTUAL_DATA",
           payload: json,
-        });
-        return json;
-      });
+        })
+      );
+  };
+}
+
+export function addPlantCreationReset() {
+  return {
+    type: "CREATION_RESET",
+    payload: null,
   };
 }
 
@@ -257,6 +263,10 @@ export function addServPoint(data) {
     })
       .then((response) => response.json())
       .then((json) => {
+        dispatch({
+          type: "CREATION_RESULTS",
+          payload: json,
+        });
         return json;
       });
   };

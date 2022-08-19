@@ -16,12 +16,6 @@
   color: #61dafb;
 }
 
-.appContainer{
-  display: flex;
-  flex-direction: column;
-  width: 100vw;
-  height: 100vh;
-}
 .button{
   background-color: darkred;
   color: white;

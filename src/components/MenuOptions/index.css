@@ -14,10 +14,6 @@
     color: white;
 }
 .menuOptionsBackground{
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    background-color: grey;
     width: 10rem;
 }
 @media(max-width: 768px){

@@ -2,7 +2,6 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getPlantList } from "../../../actions/addPlantsActions.js";
-import styles from "./index.module.css";
 
 import PlantList from "./PlantsList/PlantList.js";
 import AreasList from "./AreasList/AreasList.js";
@@ -26,18 +25,20 @@ export default function AdminPlants() {
 
   return (
     <div className="adminOptionSelected">
-      <div className={styles.divPrincipal}>
-        <div>Administración de Plantas</div>
-        <div className={styles.divContainerScrolls}>
-          <div>
+      <div className="container-fluid px-0 mx-4">
+        <div className="row my-4">
+          <h4>Administración de plantas</h4>
+        </div>
+
+        <div className="row">
+          <div className="col-3">
             <PlantList
               plants={plants}
               setSelectedData={setSelectedData}
               selectedData={selectedData}
             />
           </div>
-
-          <div>
+          <div className="col-3">
             <AreasList
               areas={areas}
               plantName={selectedData.plantName}
@@ -45,8 +46,7 @@ export default function AdminPlants() {
               selectedData={selectedData}
             />
           </div>
-
-          <div>
+          <div className="col-3">
             <LinesList
               lines={lines}
               plantName={selectedData.plantName}
@@ -55,8 +55,7 @@ export default function AdminPlants() {
               selectedData={selectedData}
             />
           </div>
-
-          <div>
+          <div className="col-3">
             <SPList
               servicePoints={servicePoints}
               plantName={selectedData.plantName}

@@ -5,12 +5,14 @@ const initialState = {
   servicePoints: [],
   locationTree: {},
   actualData: {},
+  creationResult: null,
+  createdItems: [],
 };
 
 export default function addPlantsReducer(state = initialState, action) {
   switch (action.type) {
     case "GET_PLANTS":
-      let plants = Object.keys(action.payload);
+      let plants = action.payload;
       return {
         ...state,
         plants: plants,
@@ -44,6 +46,17 @@ export default function addPlantsReducer(state = initialState, action) {
       return {
         ...state,
         actualData: action.payload,
+      };
+    case "CREATION_RESULTS":
+      console.log("action.payload", action.payload);
+      return {
+        state,
+        creationResult: action.payload,
+      };
+    case "CREATION_RESET":
+      return {
+        state,
+        creationResult: null,
       };
     default:
       return state;
