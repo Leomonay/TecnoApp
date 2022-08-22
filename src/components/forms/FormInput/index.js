@@ -8,6 +8,8 @@ export function FormInput(props) {
     type,
     disabled,
     defaultValue,
+    ref,
+    value,
     min,
     max,
     step,
@@ -31,6 +33,8 @@ export function FormInput(props) {
         disabled={disabled}
         defaultValue={defaultValue}
         readOnly={readOnly}
+        ref={ref}
+        value={value}
         placeholder={placeholder}
         type={type || "text"}
         name={name}

@@ -1,27 +1,35 @@
-import React from "react";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { getPlantList } from "../../../actions/addPlantsActions.js";
-
-import PlantList from "./PlantsList/PlantList.js";
-import AreasList from "./AreasList/AreasList.js";
-import LinesList from "./LinesList/LinesList.js";
-import SPList from "./SPList/SPList.js";
+import { useSelector } from "react-redux";
+import { plantActions } from "../../../actions/StoreActions";
+import ElementSection from "./ElementSection.js";
 
 export default function AdminPlants() {
-  const dispatch = useDispatch();
-  const { plants, areas, lines, servicePoints } = useSelector(
-    (state) => state.addPlants
+  const { plantList, areaList, lineList, spList } = useSelector(
+    (state) => state.plants
   );
+  const [data, setData] = useState({});
 
-  let [selectedData, setSelectedData] = useState({
-    plantName: "",
-    areaName: "",
-    linesName: "",
-    spName: "",
-  });
+  function handleSetData(prop, value) {
+    let newData = { ...data };
+    if (newData[prop] === value) {
+      delete newData[prop];
+    } else {
+      newData[prop] = value;
+    }
+    if (["area", "plant"].includes(prop)) delete newData.line;
+    if (prop === "plant") delete newData.area;
+    setData(newData);
+  }
 
-  useEffect(() => dispatch(getPlantList()), [dispatch]);
+  // useEffect(() => console.log("data.plant", data.plant), [data]);
+  // useEffect(
+  //   () =>
+  //     console.log(
+  //       "areaList",
+  //       areaList.filter((a) => (data.plant ? a.plant === data.plant._id : a))
+  //     ),
+  //   [areaList, data]
+  // );
 
   return (
     <div className="adminOptionSelected">
@@ -29,41 +37,60 @@ export default function AdminPlants() {
         <div className="row my-4">
           <h4>Administración de plantas</h4>
         </div>
+        <div></div>
+        <ElementSection
+          item="plant"
+          array={plantList}
+          data={data}
+          setData={handleSetData}
+          create={plantActions.createPlant}
+          update={plantActions.updatePlant}
+          deleteAction={plantActions.deletePlant}
+          getAction={plantActions.getPlants}
+          enableCreation={true}
+        />
 
-        <div className="row">
-          <div className="col-3">
-            <PlantList
-              plants={plants}
-              setSelectedData={setSelectedData}
-              selectedData={selectedData}
-            />
-          </div>
-          <div className="col-3">
-            <AreasList
-              areas={areas}
-              plantName={selectedData.plantName}
-              setSelectedData={setSelectedData}
-              selectedData={selectedData}
-            />
-          </div>
-          <div className="col-3">
-            <LinesList
-              lines={lines}
-              plantName={selectedData.plantName}
-              areaName={selectedData.areaName}
-              setSelectedData={setSelectedData}
-              selectedData={selectedData}
-            />
-          </div>
-          <div className="col-3">
-            <SPList
-              servicePoints={servicePoints}
-              plantName={selectedData.plantName}
-              areaName={selectedData.areaName}
-              lineName={selectedData.linesName}
-            />
-          </div>
-        </div>
+        <ElementSection
+          item="area"
+          array={areaList.filter((a) =>
+            data.plant ? a.plant === data.plant._id : a
+          )}
+          data={data}
+          setData={handleSetData}
+          create={plantActions.createArea}
+          update={plantActions.updateArea}
+          deleteAction={plantActions.deleteArea}
+          getAction={plantActions.getAreas}
+          enableCreation={!!data.plant}
+        />
+
+        <ElementSection
+          item="line"
+          array={lineList.filter((a) =>
+            data.area ? a.area === data.area._id : a
+          )}
+          data={data}
+          setData={handleSetData}
+          create={plantActions.createLine}
+          update={plantActions.updateLine}
+          deleteAction={plantActions.deleteLine}
+          getAction={plantActions.getLines}
+          enableCreation={!!data.area}
+        />
+
+        <ElementSection
+          item="servicePoint"
+          array={spList.filter((a) =>
+            data.line ? a.line === data.line._id : a
+          )}
+          data={data}
+          setData={handleSetData}
+          create={plantActions.createSP}
+          update={plantActions.updateSP}
+          deleteAction={plantActions.deleteSP}
+          getAction={plantActions.getSPs}
+          enableCreation={!!data.line}
+        />
       </div>
     </div>
   );

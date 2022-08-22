@@ -116,7 +116,27 @@ export const workOrderActions = {
 export const plantActions = {
   getLocations: (plant) =>
     getAction(`servicePoints?plant=${plant}`, "LOCATIONS"),
-  getPlants: () => getAction(`plants/list`, "PLANT_LIST"),
+  createPlant: (body) => postAction("plants", body, "CREATE_PLANT"),
+  getPlants: () => getAction(`plants`, "PLANT_LIST"),
+  updatePlant: (body) => putAction(`plants/update`, body, "UPDATE_PLANT"),
+  deletePlant: (plant) =>
+    deleteAction(`plants/delete?code=${plant.code}`, "DELETE_PLANT"),
+  resetResult: () => ({ type: "RESET_PLANT_RESULT", payload: {} }),
+
+  createArea: (body) => postAction(`areas`, body, "NEW_AREAS"),
+  getAreas: () => getAction(`areas`, "AREA_LIST"),
+  updateArea: (body) => putAction("areas", body, "UPDATE_AREA"),
+  deleteArea: (area) => deleteAction(`areas?areaId=${area._id}`, "DELETE_AREA"),
+
+  createLine: (body) => postAction(`lines`, body, "NEW_LINES"),
+  getLines: () => getAction(`lines`, "LINE_LIST"),
+  updateLine: (body) => putAction("lines", body, "UPDATE_LINE"),
+  deleteLine: (area) => deleteAction(`lines?lineId=${area._id}`, "DELETE_LINE"),
+
+  createSP: (body) => postAction(`areas`, body, "NEW_SP"),
+  getSPs: () => getAction(`areas`, "SP_LIST"),
+  updateSP: (body) => putAction("areas", body, "UPDATE_SP"),
+  deleteSP: (area) => deleteAction(`areas?areaId=${area._id}`, "DELETE_SP"),
 };
 
 //review all these device actions...
